@@ -1,0 +1,11 @@
+/resources/web_root/resources/docStart.ftl
+/resources/web_root/resources/docEnd.ftl
+/resources/web_root/resources/player.ftl
+/resources/web_root/resources/playerNotFound.ftl
+/resources/web_root/resources/players.ftl
+/resources/web_root/resources/macros.ftl
+/resources/web_root/resources/sprites.ftl
+/resources/web_root/resources/spriteData.ftl
+/resources/web_root/resources/inventory.ftl
+
+del /resources/web_root/resources/spriteFuncs.ftl

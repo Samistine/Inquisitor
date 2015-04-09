@@ -1,0 +1,11 @@
+name: Inquisitor
+main: com.frdfsnlght.inquisitor.Inquisitor
+version: 2.28_SamThreaded.03
+authors: [snarfattack, frdfsnlght]
+website: http://code.google.com/p/inquisitor-mc/
+description: Collects player statistics, stores them in a database, and optionally serves them through a built-in web server.
+commands:
+  inq:
+    description: Main Inquisitor command. See /inq help for more.
+    usage: /<command> command [<option> ...]
+softdepend: [Vault]
