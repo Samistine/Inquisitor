@@ -15,27 +15,17 @@
  */
 package com.frdfsnlght.inquisitor.handlers.api;
 
-import com.avaje.ebean.text.json.JsonElementObject;
 import com.frdfsnlght.inquisitor.DB;
-import com.frdfsnlght.inquisitor.JSON;
 import com.frdfsnlght.inquisitor.TypeMap;
 import com.frdfsnlght.inquisitor.Utils;
 import com.frdfsnlght.inquisitor.WebRequest;
 import com.frdfsnlght.inquisitor.WebResponse;
 
 import java.io.IOException;
-import java.security.acl.LastOwnerException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 /**
