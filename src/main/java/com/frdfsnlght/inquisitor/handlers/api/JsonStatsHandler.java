@@ -40,7 +40,7 @@ import org.json.simple.JSONObject;
 
 /**
  *
- * @author frdfsnlght <frdfsnlght@gmail.com>
+ * @author Samistine <samuel@samistine.com>
  */
 public final class JsonStatsHandler extends APIHandler {
 
