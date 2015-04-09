@@ -1,2 +1,2 @@
 # Inquisitor
-Licensing and such: http://code.google.com/p/inquisitor-mc/
+Original Project: http://code.google.com/p/inquisitor-mc/
