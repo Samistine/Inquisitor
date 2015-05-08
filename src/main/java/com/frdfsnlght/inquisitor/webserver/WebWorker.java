@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.frdfsnlght.inquisitor;
+package com.frdfsnlght.inquisitor.webserver;
 
+import com.frdfsnlght.inquisitor.Utils;
 import java.io.IOException;
 import java.net.Socket;
 

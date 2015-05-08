@@ -15,6 +15,8 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
+
 /**
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>

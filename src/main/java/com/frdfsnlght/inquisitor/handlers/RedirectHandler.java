@@ -15,9 +15,9 @@
  */
 package com.frdfsnlght.inquisitor.handlers;
 
-import com.frdfsnlght.inquisitor.WebHandler;
-import com.frdfsnlght.inquisitor.WebRequest;
-import com.frdfsnlght.inquisitor.WebResponse;
+import com.frdfsnlght.inquisitor.webserver.WebHandler;
+import com.frdfsnlght.inquisitor.webserver.WebRequest;
+import com.frdfsnlght.inquisitor.webserver.WebResponse;
 import java.io.IOException;
 
 /**

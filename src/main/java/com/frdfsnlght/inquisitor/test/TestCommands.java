@@ -16,7 +16,7 @@
 package com.frdfsnlght.inquisitor.test;
 
 import com.frdfsnlght.inquisitor.Context;
-import com.frdfsnlght.inquisitor.InquisitorException;
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 import com.frdfsnlght.inquisitor.Statistic;
 import com.frdfsnlght.inquisitor.Statistic.Type;
 import com.frdfsnlght.inquisitor.Statistics;

@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

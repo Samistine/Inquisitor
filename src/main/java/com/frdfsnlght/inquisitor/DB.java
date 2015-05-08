@@ -15,6 +15,8 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
+import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -16,9 +16,9 @@
 package com.frdfsnlght.inquisitor.command;
 
 import com.frdfsnlght.inquisitor.Context;
-import com.frdfsnlght.inquisitor.InquisitorException;
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 import com.frdfsnlght.inquisitor.Permissions;
-import com.frdfsnlght.inquisitor.WebServer;
+import com.frdfsnlght.inquisitor.webserver.WebServer;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.command.Command;

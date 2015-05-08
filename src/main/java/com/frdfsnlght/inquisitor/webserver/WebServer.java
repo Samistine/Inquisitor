@@ -13,9 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.frdfsnlght.inquisitor;
+package com.frdfsnlght.inquisitor.webserver;
 
+import com.frdfsnlght.inquisitor.Config;
+import com.frdfsnlght.inquisitor.Context;
+import com.frdfsnlght.inquisitor.Global;
+import com.frdfsnlght.inquisitor.Options;
+import com.frdfsnlght.inquisitor.OptionsException;
+import com.frdfsnlght.inquisitor.OptionsListener;
+import com.frdfsnlght.inquisitor.PlayerStats;
+import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.PlayerStats.PlayerStatsListener;
+import com.frdfsnlght.inquisitor.Statistic;
+import com.frdfsnlght.inquisitor.StatisticsManager;
+import com.frdfsnlght.inquisitor.Utils;
 import com.frdfsnlght.inquisitor.handlers.FileHandler;
 import com.frdfsnlght.inquisitor.handlers.PlayerHandler;
 import com.frdfsnlght.inquisitor.handlers.PlayerSearchHandler;

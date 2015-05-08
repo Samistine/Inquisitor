@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.io.File;
 import java.util.HashSet;
 import java.util.List;

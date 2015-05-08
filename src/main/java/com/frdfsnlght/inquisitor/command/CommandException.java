@@ -15,7 +15,7 @@
  */
 package com.frdfsnlght.inquisitor.command;
 
-import com.frdfsnlght.inquisitor.InquisitorException;
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 
 /**
  *

@@ -15,6 +15,8 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.webserver.WebServer;
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 import com.frdfsnlght.inquisitor.api.API;
 import com.frdfsnlght.inquisitor.command.CommandException;
 import com.frdfsnlght.inquisitor.command.CommandProcessor;

@@ -17,8 +17,8 @@ package com.frdfsnlght.inquisitor.handlers.api;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.Utils;
-import com.frdfsnlght.inquisitor.WebRequest;
-import com.frdfsnlght.inquisitor.WebResponse;
+import com.frdfsnlght.inquisitor.webserver.WebRequest;
+import com.frdfsnlght.inquisitor.webserver.WebResponse;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -16,10 +16,10 @@
 package com.frdfsnlght.inquisitor.handlers;
 
 import com.frdfsnlght.inquisitor.Utils;
-import com.frdfsnlght.inquisitor.WebHandler;
-import com.frdfsnlght.inquisitor.WebRequest;
-import com.frdfsnlght.inquisitor.WebResponse;
-import com.frdfsnlght.inquisitor.WebRoute;
+import com.frdfsnlght.inquisitor.webserver.WebHandler;
+import com.frdfsnlght.inquisitor.webserver.WebRequest;
+import com.frdfsnlght.inquisitor.webserver.WebResponse;
+import com.frdfsnlght.inquisitor.webserver.WebRoute;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
