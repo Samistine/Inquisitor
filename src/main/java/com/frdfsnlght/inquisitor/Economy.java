@@ -24,53 +24,56 @@ import org.bukkit.plugin.RegisteredServiceProvider;
  */
 public final class Economy {
 
-	private static boolean vaultChecked = false;
-	private static net.milkbowl.vault.economy.Economy vaultPlugin = null;
+    private static boolean vaultChecked = false;
+    private static net.milkbowl.vault.economy.Economy vaultPlugin = null;
 
-	public static boolean vaultAvailable() {
-		if ((vaultPlugin != null) && vaultPlugin.isEnabled())
-			return true;
-		if (vaultChecked)
-			return false;
-		vaultChecked = true;
-		Plugin p = Global.plugin.getServer().getPluginManager()
-				.getPlugin("Vault");
-		if (p == null)
-			return false;
-		if (!p.isEnabled())
-			return false;
-		RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin
-				.getServer().getServicesManager()
-				.getRegistration(net.milkbowl.vault.economy.Economy.class);
-		if (rsp == null) {
-			Utils.warning("Vault didn't return a service provider for economy!");
-			return false;
-		}
-		net.milkbowl.vault.economy.Economy plugin = rsp.getProvider();
-		if (plugin == null) {
-			Utils.warning("Vault didn't return an economy provider!");
-			return false;
-		}
-		vaultPlugin = plugin;
-		Utils.info("Initialized Vault for Economy");
-		return true;
-	}
+    public static boolean vaultAvailable() {
+        if ((vaultPlugin != null) && vaultPlugin.isEnabled()) {
+            return true;
+        }
+        if (vaultChecked) {
+            return false;
+        }
+        vaultChecked = true;
+        Plugin p = Global.plugin.getServer().getPluginManager()
+                .getPlugin("Vault");
+        if (p == null) {
+            return false;
+        }
+        if (!p.isEnabled()) {
+            return false;
+        }
+        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin
+                .getServer().getServicesManager()
+                .getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (rsp == null) {
+            Utils.warning("Vault didn't return a service provider for economy!");
+            return false;
+        }
+        net.milkbowl.vault.economy.Economy plugin = rsp.getProvider();
+        if (plugin == null) {
+            Utils.warning("Vault didn't return an economy provider!");
+            return false;
+        }
+        vaultPlugin = plugin;
+        Utils.info("Initialized Vault for Economy");
+        return true;
+    }
 
-	/*
-	 * public static boolean canGetBalance() { return vaultAvailable(); }
-	 */
-
-	public static double getBalanace(Player player) {
-		try {
-			if (vaultAvailable()) {
-				return vaultPlugin.getBalance(player.getName());
-			}
-		} catch (Exception ex) {
-			Utils.warning(
-					"Vault or your Vault compatible economy plugin threw an exception getting player balance: %s",
-					ex.getMessage());
-		}
-		return 0.0d;
-	}
+    /*
+     * public static boolean canGetBalance() { return vaultAvailable(); }
+     */
+    public static double getBalanace(Player player) {
+        try {
+            if (vaultAvailable()) {
+                return vaultPlugin.getBalance(player.getName());
+            }
+        } catch (Exception ex) {
+            Utils.warning(
+                    "Vault or your Vault compatible economy plugin threw an exception getting player balance: %s",
+                    ex.getMessage());
+        }
+        return 0.0d;
+    }
 
 }
