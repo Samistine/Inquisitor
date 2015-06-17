@@ -229,9 +229,9 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
-        if (event.getEntity().getType() != EntityType.SHEEP) {
+        /*if (event.getEntity().getType() != EntityType.SHEEP) {
             return;
-        }
+        }*/
         if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
             return;
         }
