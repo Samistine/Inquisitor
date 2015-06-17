@@ -118,224 +118,209 @@ public final class PlayerListenerImpl implements Listener {
         if (event.isAsynchronous()) {
             Utils.fire(new Runnable() {
                 public void run() {
-                    if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-                        return;
+                    if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+                        PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                                "chatMessages");
                     }
-                    PlayerStats.group
-                            .getStatistics(event.getPlayer().getName()).incr(
-                                    "chatMessages");
                 }
             });
         } else {
-            if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-                return;
+            if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                        "chatMessages");
             }
-            PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                    "chatMessages");
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            Statistics stats = PlayerStats.group.getStatistics(player.getName());
+            int amount = event.getItemDrop().getItemStack().getAmount();
+            stats.add("totalItemsDropped", amount);
+            stats.add(
+                    "itemsDropped",
+                    Utils.titleCase(event.getItemDrop().getItemStack().getType()
+                            .name()), amount);
         }
-        Statistics stats = PlayerStats.group.getStatistics(event.getPlayer()
-                .getName());
-        int amount = event.getItemDrop().getItemStack().getAmount();
-        stats.add("totalItemsDropped", amount);
-        stats.add(
-                "itemsDropped",
-                Utils.titleCase(event.getItemDrop().getItemStack().getType()
-                        .name()), amount);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            Statistics stats = PlayerStats.group.getStatistics(event.getPlayer()
+                    .getName());
+            int amount = event.getItem().getItemStack().getAmount();
+            stats.add("totalItemsPickedUp", amount);
+            stats.add("itemsPickedUp", Utils.titleCase(event.getItem()
+                    .getItemStack().getType().name()), amount);
         }
-        Statistics stats = PlayerStats.group.getStatistics(event.getPlayer()
-                .getName());
-        int amount = event.getItem().getItemStack().getAmount();
-        stats.add("totalItemsPickedUp", amount);
-        stats.add("itemsPickedUp", Utils.titleCase(event.getItem()
-                .getItemStack().getType().name()), amount);
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                    "portalsCrossed");
         }
-        PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                "portalsCrossed");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
-        }
-        switch (event.getPlayer().getItemInHand().getType()) {
-            case BUCKET:
-                if (event.getRightClicked() instanceof Cow) {
-                    PlayerStats.group.getStatistics(event.getPlayer().getName())
-                            .incr("cowsMilked");
-                }
-                break;
-            case BOWL:
-                if (event.getRightClicked() instanceof MushroomCow) {
-                    PlayerStats.group.getStatistics(event.getPlayer().getName())
-                            .incr("mooshroomsMilked");
-                }
-                break;
-            case INK_SACK:
-                if (event.getRightClicked() instanceof Sheep) {
-                    PlayerStats.group.getStatistics(event.getPlayer().getName())
-                            .incr("sheepDyed");
-                }
-                break;
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            switch (player.getItemInHand().getType()) {
+                case BUCKET:
+                    if (event.getRightClicked() instanceof Cow) {
+                        PlayerStats.group.getStatistics(player.getName())
+                                .incr("cowsMilked");
+                    }
+                    break;
+                case BOWL:
+                    if (event.getRightClicked() instanceof MushroomCow) {
+                        PlayerStats.group.getStatistics(player.getName())
+                                .incr("mooshroomsMilked");
+                    }
+                    break;
+                case INK_SACK:
+                    if (event.getRightClicked() instanceof Sheep) {
+                        PlayerStats.group.getStatistics(player.getName())
+                                .incr("sheepDyed");
+                    }
+                    break;
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerExp(PlayerExpChangeEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            PlayerStats.group.getStatistics(player.getName()).add(
+                    "lifetimeExperience", event.getAmount());
         }
-        PlayerStats.group.getStatistics(event.getPlayer().getName()).add(
-                "lifetimeExperience", event.getAmount());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchant(EnchantItemEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getEnchanter())) {
-            return;
+        Player player = event.getEnchanter();
+        if (PlayerStats.isStatsPlayer(player)) {
+            PlayerStats.group.getStatistics(player.getName()).incr(
+                    "itemsEnchanted");
+            PlayerStats.group.getStatistics(player.getName()).add(
+                    "itemEnchantmentLevels", event.getExpLevelCost());
         }
-        PlayerStats.group.getStatistics(event.getEnchanter().getName()).incr(
-                "itemsEnchanted");
-        PlayerStats.group.getStatistics(event.getEnchanter().getName()).add(
-                "itemEnchantmentLevels", event.getExpLevelCost());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            PlayerStats.onPlayerEnterBed(event.getPlayer());
         }
-        PlayerStats.onPlayerEnterBed(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         /*if (event.getEntity().getType() != EntityType.SHEEP) {
-            return;
-        }*/
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
-        }
-        switch (event.getEntity().getType()) {
-            case SHEEP:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "sheepSheared");
-                break;
-            case MUSHROOM_COW:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "mooshroomSheared");
-                break;
+         return;
+         }*/
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            switch (event.getEntity().getType()) {
+                case SHEEP:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "sheepSheared");
+                    break;
+                case MUSHROOM_COW:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "mooshroomSheared");
+                    break;
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerFishEvent(PlayerFishEvent event) {
-        if (event.getState() != PlayerFishEvent.State.CAUGHT_FISH) {
-            return;
+        if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
+            if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                        "fishCaught");
+            }
         }
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
-        }
-        PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                "fishCaught");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEggThrow(PlayerEggThrowEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                    "eggsThrown",
+                    Utils.normalizeEntityTypeName(event.getHatchingType()));
         }
-        PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                "eggsThrown",
-                Utils.normalizeEntityTypeName(event.getHatchingType()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
-        }
-        Material bucket = event.getBucket();
-        switch (bucket) {
-            case BUCKET:
-                switch (event.getBlockClicked().getType()) {
-                    case WATER:
-                    case STATIONARY_WATER:
-                        PlayerStats.group.getStatistics(event.getPlayer().getName())
-                                .incr("waterBucketsFilled");
-                        break;
-                    case LAVA:
-                    case STATIONARY_LAVA:
-                        PlayerStats.group.getStatistics(event.getPlayer().getName())
-                                .incr("lavaBucketsFilled");
-                        break;
-                }
-                break;
-            case WATER_BUCKET:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "waterBucketsFilled");
-                break;
-            case LAVA_BUCKET:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "lavaBucketsFilled");
-                break;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            Material bucket = event.getBucket();
+            switch (bucket) {
+                case BUCKET:
+                    switch (event.getBlockClicked().getType()) {
+                        case WATER:
+                        case STATIONARY_WATER:
+                            PlayerStats.group.getStatistics(event.getPlayer().getName())
+                                    .incr("waterBucketsFilled");
+                            break;
+                        case LAVA:
+                        case STATIONARY_LAVA:
+                            PlayerStats.group.getStatistics(event.getPlayer().getName())
+                                    .incr("lavaBucketsFilled");
+                            break;
+                    }
+                    break;
+                case WATER_BUCKET:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "waterBucketsFilled");
+                    break;
+                case LAVA_BUCKET:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "lavaBucketsFilled");
+                    break;
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
-        if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
-            return;
-        }
-        Material bucket = event.getBucket();
-        switch (bucket) {
-            case WATER_BUCKET:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "waterBucketsEmptied");
-                break;
-            case LAVA_BUCKET:
-                PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
-                        "lavaBucketsEmptied");
-                break;
+        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
+            Material bucket = event.getBucket();
+            switch (bucket) {
+                case WATER_BUCKET:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "waterBucketsEmptied");
+                    break;
+                case LAVA_BUCKET:
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(
+                            "lavaBucketsEmptied");
+                    break;
+            }
         }
     }
 
     // not really a player event, but an inventory event
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraftItem(CraftItemEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
+        if (event.getWhoClicked() instanceof Player) {
+            Player player = (Player) event.getWhoClicked();
+            if (PlayerStats.isStatsPlayer(player)) {
+                Statistics stats = PlayerStats.group.getStatistics(player.getName());
+                int amount = event.getRecipe().getResult().getAmount();
+                stats.add("totalItemsCrafted", amount);
+                stats.add(
+                        "itemsCrafted",
+                        Utils.titleCase(event.getRecipe().getResult().getType().name()),
+                        amount);
+            }
         }
-        if (!PlayerStats.isStatsPlayer((Player) event.getWhoClicked())) {
-            return;
-        }
-        Statistics stats = PlayerStats.group.getStatistics(((Player) event
-                .getWhoClicked()).getName());
-        int amount = event.getRecipe().getResult().getAmount();
-        stats.add("totalItemsCrafted", amount);
-        stats.add(
-                "itemsCrafted",
-                Utils.titleCase(event.getRecipe().getResult().getType().name()),
-                amount);
     }
 
 }
