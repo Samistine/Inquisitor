@@ -37,6 +37,7 @@ import com.frdfsnlght.inquisitor.handlers.SkinHandler;
 import com.frdfsnlght.inquisitor.handlers.TemplateHandler;
 import com.frdfsnlght.inquisitor.handlers.api.FindPlayersHandler;
 import com.frdfsnlght.inquisitor.handlers.api.JsonStatsHandler;
+import com.frdfsnlght.inquisitor.handlers.api.stats.Groups;
 
 import java.io.File;
 import java.io.IOException;
@@ -165,8 +166,12 @@ public final class WebServer {
             if (ROUTES.isEmpty()) {
                 RouteHandler api = new RouteHandler();
                 api.add(new WebRoute(new FindPlayersHandler(), "/findPlayers"));
+                
                 //Samistine Route
-                api.add(new WebRoute(new JsonStatsHandler(), "/sam/(.*)", "playerName"));
+                RouteHandler apiStats = new RouteHandler();
+                apiStats.add(new WebRoute(new Groups(), "/stats/groups/(.*)", "playerName"));
+                apiStats.add(new WebRoute(new JsonStatsHandler(), "/stats/([^/]*)", "playerName"));
+                api.add(new WebRoute(apiStats, "/stats/(.*)", "playerName"));
 
                 // add api routes
 
