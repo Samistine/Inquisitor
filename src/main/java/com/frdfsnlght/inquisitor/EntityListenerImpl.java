@@ -39,18 +39,16 @@ public final class EntityListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (PlayerStats.isStatsPlayer(player)) {
+                Statistics stats = PlayerStats.group.getStatistics(player.getName());
+                stats.add("travelDistances", "Falling", event.getEntity().getFallDistance());
+            }
         }
-        Player player = (Player) event.getEntity();
-        if (!PlayerStats.isStatsPlayer(player)) {
-            return;
-        }
-        Statistics stats = PlayerStats.group.getStatistics(player.getName());
-        stats.add("travelDistances", "Falling", event.getEntity().getFallDistance());
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDeath(EntityDeathEvent event) {
         Entity deadEnt = event.getEntity();
         if (!(deadEnt.getLastDamageCause() instanceof EntityDamageByEntityEvent)) {
@@ -104,45 +102,38 @@ public final class EntityListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityShootBow(EntityShootBowEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (PlayerStats.isStatsPlayer(player)) {
+                PlayerStats.group.getStatistics(player.getName()).incr("arrowsShot");
+            }
         }
-        Player player = (Player) event.getEntity();
-        if (!PlayerStats.isStatsPlayer(player)) {
-            return;
-        }
-        PlayerStats.group.getStatistics(player.getName()).incr("arrowsShot");
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityTame(EntityTameEvent event) {
-        if (!(event.getOwner() instanceof Player)) {
-            return;
+        if (event.getOwner() instanceof Player) {
+            Player player = (Player) event.getOwner();
+            if (PlayerStats.isStatsPlayer(player)) {
+                PlayerStats.group.getStatistics(player.getName()).incr("animalsTamed", Utils.normalizeEntityTypeName(event.getEntityType()));
+            }
         }
-        Player player = (Player) event.getOwner();
-        if (!PlayerStats.isStatsPlayer(player)) {
-            return;
-        }
-        PlayerStats.group.getStatistics(player.getName()).incr("animalsTamed", Utils.normalizeEntityTypeName(event.getEntityType()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (PlayerStats.isStatsPlayer(player)) {
+                if (event.getFoodLevel() <= player.getFoodLevel()) {
+                    return;
+                }
+                Material food = player.getItemInHand().getType();
+                if (food.isEdible()) {
+                    PlayerStats.group.getStatistics(player.getName()).incr("foodEaten", Utils.titleCase(food.name()));
+                }
+            }
         }
-        Player player = (Player) event.getEntity();
-        if (!PlayerStats.isStatsPlayer(player)) {
-            return;
-        }
-        if (event.getFoodLevel() <= player.getFoodLevel()) {
-            return;
-        }
-        Material food = player.getItemInHand().getType();
-        if (!food.isEdible()) {
-            return;
-        }
-        PlayerStats.group.getStatistics(player.getName()).incr("foodEaten", Utils.titleCase(food.name()));
     }
 
 }

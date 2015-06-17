@@ -60,7 +60,7 @@ public final class PlayerListenerImpl implements Listener {
      * onPlayerPreLogin(PlayerPreLoginEvent event) { if (event.getResult() !=
      * PlayerPreLoginEvent.Result.ALLOWED) return; }
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         PlayerStats.onPlayerJoin(player);
@@ -92,7 +92,7 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
-		// You can not short circuit this statement, each MUST be true.
+        // You can not short circuit this statement, each MUST be true.
         // Otherwise travel stats will not be correct
         if (event.getPlayer().isOnline()) {
             if ((event.getFrom().getBlockX() == event.getTo().getBlockX())
@@ -199,7 +199,7 @@ public final class PlayerListenerImpl implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerExp(PlayerExpChangeEvent event) {
         if (!PlayerStats.isStatsPlayer(event.getPlayer())) {
             return;
