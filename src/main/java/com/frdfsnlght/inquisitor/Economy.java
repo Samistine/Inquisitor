@@ -37,10 +37,7 @@ public final class Economy {
         vaultChecked = true;
         Plugin p = Global.plugin.getServer().getPluginManager()
                 .getPlugin("Vault");
-        if (p == null) {
-            return false;
-        }
-        if (!p.isEnabled()) {
+        if (p == null || !p.isEnabled()) {
             return false;
         }
         RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin
