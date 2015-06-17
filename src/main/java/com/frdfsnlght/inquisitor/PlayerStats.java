@@ -82,6 +82,8 @@ public final class PlayerStats {
     //private static final Map<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
     private static final Map<String, PlayerState> playerStates = new ConcurrentHashMap<String, PlayerState>();
 
+    private static final Set<UUID> playerLocks = Collections.synchronizedSet(new HashSet<UUID>());
+
     private static boolean started = false;
     private static int bedCheckTask = -1;
 
@@ -300,6 +302,43 @@ public final class PlayerStats {
     }
 
     public static boolean isStatsPlayer(Player player) {
+
+        //Wait until the player is added
+        long start_time = System.currentTimeMillis();
+        long wait_time = 1000;
+        long end_time = start_time + wait_time;
+        while (playerLocks.contains(player.getUniqueId()) && System.currentTimeMillis() < end_time) {
+            System.out.println("Main thread locking due to concurrency issues");
+        }
+        if (!(System.currentTimeMillis() < end_time)) {
+            System.out.println("Timedout, returning false for isStatsPlayer");
+            return false;
+        }
+
+        if (player.getGameMode() == null) {
+            return false;
+        }
+        if (!invalidPlayerNamePatternSet) {
+            return true;
+        }
+        if (invalidPlayerNamePattern == null) {
+            String pat = getInvalidPlayerNamePattern();
+            if (pat == null) {
+                invalidPlayerNamePatternSet = false;
+                return true;
+            }
+            try {
+                invalidPlayerNamePattern = Pattern.compile(pat);
+            } catch (PatternSyntaxException e) {
+                Utils.severe("invalid regular expression for invalidPlayerNamePattern");
+                invalidPlayerNamePatternSet = false;
+            }
+        }
+        return !invalidPlayerNamePattern.matcher(player.getName()).matches();
+    }
+
+    public static boolean isStatsPlayer2(Player player) {
+
         if (player.getGameMode() == null) {
             return false;
         }
@@ -331,60 +370,62 @@ public final class PlayerStats {
             String servername = Global.plugin.getServer().getServerName();
 
             public void run() {
-
-                if (!isStatsPlayer(player)) {
-                    return;
-                }
-                if (ignoredPlayerJoins.contains(pname)) {
-                    Utils.debug("ignored join for player '%s'", pname);
-                    return;
-                }
-                Utils.debug("onPlayerJoin '%s'", pname);
-
+                playerLocks.add(player.getUniqueId());
                 try {
-					//Very simply update statement that will allow players to add their UUIDs to the db during the
-                    // conversion process, then once a name change happens it will update it based on the uuid matching.
-                    PreparedStatement stmt = null;
-                    StringBuilder sql = new StringBuilder();
-                    sql.append("UPDATE ").append(DB.tableName(group.getName())).append(" SET `");
-                    sql.append(group.getKeyName()).append("`=?, `uuid`=? WHERE `");
-                    sql.append(group.getKeyName()).append("`=? OR `uuid`=?");
-                    stmt = DB.prepare(sql.toString());
-                    stmt.setString(1, pname);
-                    stmt.setString(2, puuidst);
-                    stmt.setString(3, pname);
-                    stmt.setString(4, puuidst);
-                    stmt.execute();
-
-                    final Statistics stats = group.getStatistics(pname);
-                    stats.set("uuid", puuidst);
-                    stats.incr("joins");
-                    stats.set("lastJoin", date);
-                    stats.set("sessionTime", 0);
-                    stats.set("online", true);
-                    if (!stats.isInDB()) {
-                        stats.set("firstJoin", date);
+                    if (!isStatsPlayer2(player)) {
+                        return;
                     }
-                    String bedServer = stats.getString("bedServer");
-                    if ((bedServer != null)
-                            && bedServer.equals(servername)) {
-                        bedOwners.add(pname);
+                    if (ignoredPlayerJoins.contains(pname)) {
+                        Utils.debug("ignored join for player '%s'", pname);
+                        return;
                     }
-                    playerStates.put(pname,
-                            new PlayerState(stats.getFloat("totalTime")));
+                    Utils.debug("onPlayerJoin '%s'", pname);
 
-                    Utils.debug("totalTime: " + stats.getFloat("totalTime"));
+                    try {
+                        //Very simply update statement that will allow players to add their UUIDs to the db during the
+                        // conversion process, then once a name change happens it will update it based on the uuid matching.
+                        PreparedStatement stmt = null;
+                        StringBuilder sql = new StringBuilder();
+                        sql.append("UPDATE ").append(DB.tableName(group.getName())).append(" SET `");
+                        sql.append(group.getKeyName()).append("`=?, `uuid`=? WHERE `");
+                        sql.append(group.getKeyName()).append("`=? OR `uuid`=?");
+                        stmt = DB.prepare(sql.toString());
+                        stmt.setString(1, pname);
+                        stmt.setString(2, puuidst);
+                        stmt.setString(3, pname);
+                        stmt.setString(4, puuidst);
+                        stmt.execute();
 
-                    Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-                        public void run() {
-                            stats.flushSync();
+                        final Statistics stats = group.getStatistics(pname);
+                        stats.set("uuid", puuidst);
+                        stats.incr("joins");
+                        stats.set("lastJoin", date);
+                        stats.set("sessionTime", 0);
+                        stats.set("online", true);
+                        if (!stats.isInDB()) {
+                            stats.set("firstJoin", date);
                         }
-                    });
-                } catch (Exception ex) {
-                    Utils.severe("OnPlayerJoin Exception message: " + ex.getMessage());
-                    StringWriter sw = new StringWriter();
-                    ex.printStackTrace(new PrintWriter(sw));
-                    Utils.severe("Stack Trace: " + sw.toString());
+                        String bedServer = stats.getString("bedServer");
+                        if ((bedServer != null) && bedServer.equals(servername)) {
+                            bedOwners.add(pname);
+                        }
+                        playerStates.put(pname, new PlayerState(stats.getFloat("totalTime")));
+
+                        Utils.debug("totalTime: " + stats.getFloat("totalTime"));
+
+                        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
+                            public void run() {
+                                stats.flushSync();
+                            }
+                        });
+                    } catch (Exception ex) {
+                        Utils.severe("OnPlayerJoin Exception message: " + ex.getMessage());
+                        StringWriter sw = new StringWriter();
+                        ex.printStackTrace(new PrintWriter(sw));
+                        Utils.severe("Stack Trace: " + sw.toString());
+                    }
+                } finally {
+                    playerLocks.remove(player.getUniqueId());
                 }
 
             }
@@ -456,27 +497,26 @@ public final class PlayerStats {
      }*/
     public static void onPlayerQuit(Player player) {
         Utils.debug("onPlayerQuit '%s'", player.getName());
-        if (!isStatsPlayer(player)) {
-            return;
-        }
-        if (ignoredPlayerJoins.remove(player.getName())) {
-            Utils.debug("ignored quit for player '%s'", player.getName());
-            return;
-        }
-        final Statistics stats = group.getStatistics(player.getName());
-        if (!kickedPlayers.remove(player.getName())) {
-            stats.incr("quits");
-            stats.set("lastQuit", new Date());
-        }
-        stats.set("online", false);
-        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-            public void run() {
-                stats.flushSync();
+        if (isStatsPlayer(player)) {
+            if (ignoredPlayerJoins.remove(player.getName())) {
+                Utils.debug("ignored quit for player '%s'", player.getName());
+                return;
             }
-        });
+            final Statistics stats = group.getStatistics(player.getName());
+            if (!kickedPlayers.remove(player.getName())) {
+                stats.incr("quits");
+                stats.set("lastQuit", new Date());
+            }
+            stats.set("online", false);
+            Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
+                public void run() {
+                    stats.flushSync();
+                }
+            });
 
-        group.removeStatistics(player.getName());
-        playerStates.remove(player.getName());
+            group.removeStatistics(player.getName());
+            playerStates.remove(player.getName());
+        }
     }
 
     public static void onPlayerKick(Player player, String message) {
@@ -640,15 +680,13 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        if (!isStatsPlayer(player)) {
-            return;
-        }
-
-        PlayerState state = playerStates.get(player.getName());
-        if (state != null) {
-            onPlayerMove(player, player.getLocation());
-            state.lastLocation = to;
-            state.lastTime = System.currentTimeMillis();
+        if (isStatsPlayer(player)) {
+            PlayerState state = playerStates.get(player.getName());
+            if (state != null) {
+                onPlayerMove(player, player.getLocation());
+                state.lastLocation = to;
+                state.lastTime = System.currentTimeMillis();
+            }
         }
     }
 
@@ -874,14 +912,14 @@ public final class PlayerStats {
                 stackMaps.add(null);
             } else {
                 TypeMap stackMap = new TypeMap();
-				// Code for moving to Names
+                // Code for moving to Names
                 // stackMap.put("type", stack.getType().toString());
                 stackMap.put("type", stack.getTypeId());
                 stackMap.put("amount", stack.getAmount());
                 stackMap.put("durability", stack.getDurability());
                 MaterialData data = stack.getData();
                 if (data != null) {
-					// stackMap.put(
+                    // stackMap.put(
                     // "data",
                     // Integer.parseInt(data.toString().replaceAll(
                     // "[^\\d]", "")));
@@ -1007,7 +1045,7 @@ public final class PlayerStats {
         }
     }
 
-	// Inner classes
+    // Inner classes
     public static interface PlayerStatsListener {
 
         public void onPlayerStatsStarted();
