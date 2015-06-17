@@ -29,6 +29,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -74,10 +76,12 @@ public final class PlayerStats {
 
 	public static final StatisticsGroup group = new StatisticsGroup("players",
 			"name", Type.STRING, 30);
-	private static final Set<String> bedOwners = new HashSet<String>();
+	//private static final Set<String> bedOwners = new HashSet<String>();
+        private static final Set<String> bedOwners = Collections.synchronizedSet(new HashSet<String>());
 	private static final Set<String> ignoredPlayerJoins = new HashSet<String>();
 	private static final Set<String> kickedPlayers = new HashSet<String>();
-	private static final Map<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
+	//private static final Map<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
+        private static final Map<String, PlayerState> playerStates = new ConcurrentHashMap<String, PlayerState>();
 
 	private static boolean started = false;
 	private static int bedCheckTask = -1;
