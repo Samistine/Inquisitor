@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -503,6 +504,30 @@ public final class PlayerStats {
                 return;
             }
             final Statistics stats = group.getStatistics(player.getName());
+            
+            
+            try {
+                String traveling = stats.getString("biomeTimes");
+                String[] split = traveling.split("\\r?\\n");
+                List<Double> values = new ArrayList<Double>();
+                for (String s : split) {
+                    if (s.contains(": ")) {
+                        String[] oneMoreSplit = s.split(": ");
+                        values.add(Double.parseDouble(oneMoreSplit[1]));
+                    }
+                }
+                Double totalTime = 0.00;
+                for (Double value : values) {
+                    totalTime = totalTime + value;
+                }
+                //System.out.println(TimeUnit.SECONDS.toDays(totalTime.intValue()));
+                if (totalTime > 1) {
+                    stats.set("totalTime", totalTime);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
             if (!kickedPlayers.remove(player.getName())) {
                 stats.incr("quits");
                 stats.set("lastQuit", new Date());
