@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,7 +45,7 @@ public final class StatisticsManager {
 
     private static final Set<StatisticsManagerListener> listeners = new HashSet<StatisticsManagerListener>();
 
-    private static final Map<String,StatisticsGroup> groups = new HashMap<String,StatisticsGroup>();
+    private static final Map<String,StatisticsGroup> groups = Collections.synchronizedMap(new HashMap<String,StatisticsGroup>());
     private static final List<Job> jobs = new ArrayList<Job>();
 
     private static Thread jobThread;
@@ -382,7 +383,7 @@ public final class StatisticsManager {
         private void setParameter(PreparedStatement stmt, int colNum, Object val) throws SQLException {
             if (val == null) stmt.setString(colNum++, null);
             else if (val instanceof String) stmt.setString(colNum++, (String)val);
-            else if (val instanceof Boolean) stmt.setInt(colNum++, ((Boolean)val).booleanValue() ? 1 : 0);
+            else if (val instanceof Boolean) stmt.setInt(colNum++, ((Boolean)val) ? 1 : 0);
             else if (val instanceof Byte) stmt.setByte(colNum++, (Byte)val);
             else if (val instanceof Short) stmt.setShort(colNum++, (Short)val);
             else if (val instanceof Integer) stmt.setInt(colNum++, (Integer)val);
