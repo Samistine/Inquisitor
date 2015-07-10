@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -39,12 +38,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -57,7 +53,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.permissions.BroadcastPermissions;
 
 /**
  *
@@ -308,12 +303,22 @@ public final class PlayerStats {
         long start_time = System.currentTimeMillis();
         long wait_time = 1000;
         long end_time = start_time + wait_time;
-        while (playerLocks.contains(player.getUniqueId()) && System.currentTimeMillis() < end_time) {
-            System.out.println("Main thread locking due to concurrency issues");
-        }
-        if (!(System.currentTimeMillis() < end_time)) {
-            System.out.println("Timedout, returning false for isStatsPlayer");
-            return false;
+        
+        if (playerLocks.contains(player.getUniqueId())) {
+            boolean once = false;
+            while (playerLocks.contains(player.getUniqueId()) && System.currentTimeMillis() <= end_time) {
+                if (!once) {
+                    System.out.println("Main thread locking due to concurrency issues");
+                    once = true;
+                }
+            }
+            if (playerLocks.contains(player.getUniqueId())) {
+                System.out.println("Timedout, returning false for isStatsPlayer and removing thread lock, PROBLEMS LIKELY TO OCCUR");
+                playerLocks.remove(player.getUniqueId());
+                return false;
+            } else {
+                System.out.println("Thread unlocked");
+            }
         }
 
         if (player.getGameMode() == null) {
