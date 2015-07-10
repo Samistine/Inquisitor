@@ -35,8 +35,6 @@ import java.util.Set;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class StatisticsManager {
 
     private static final Set<String> OPTIONS = new HashSet<String>();
@@ -45,7 +43,7 @@ public final class StatisticsManager {
 
     private static final Set<StatisticsManagerListener> listeners = new HashSet<StatisticsManagerListener>();
 
-    private static final Map<String,StatisticsGroup> groups = Collections.synchronizedMap(new HashMap<String,StatisticsGroup>());
+    private static final Map<String, StatisticsGroup> groups = Collections.synchronizedMap(new HashMap<String, StatisticsGroup>());
     private static final List<Job> jobs = new ArrayList<Job>();
 
     private static Thread jobThread;
@@ -67,6 +65,7 @@ public final class StatisticsManager {
                     start();
                 }
             }
+
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }
@@ -76,13 +75,15 @@ public final class StatisticsManager {
             public void onDBConnected() {
                 start();
             }
+
             public void onDBDisconnecting() {
                 stop();
             }
         });
     }
 
-    public static void init() {}
+    public static void init() {
+    }
 
     public static void addListener(StatisticsManagerListener listener) {
         listeners.add(listener);
@@ -93,13 +94,17 @@ public final class StatisticsManager {
     }
 
     public static void start() {
-        if (started) return;
+        if (started) {
+            return;
+        }
         try {
-            if (! DB.isConnected())
+            if (!DB.isConnected()) {
                 throw new Exception("database is not connected");
+            }
 
-            for (StatisticsGroup group : groups.values())
+            for (StatisticsGroup group : groups.values()) {
                 group.validate();
+            }
             int purged = purge();
             Utils.info("purged %s invalid cached statistics instances", purged);
 
@@ -107,15 +112,18 @@ public final class StatisticsManager {
 
             started = true;
             jobThread = new Thread(new Runnable() {
-                public void run() { background(); }
+                public void run() {
+                    background();
+                }
             });
             jobThread.setDaemon(true);
             jobThread.setName("Statistics updater");
             jobThread.start();
             Utils.info("statistics manager started");
 
-            for (StatisticsManagerListener listener : listeners)
+            for (StatisticsManagerListener listener : listeners) {
                 listener.onStatisticsManagerStarted();
+            }
 
         } catch (Exception e) {
             Utils.warning("statistics manager cannot be started: %s", e.getMessage());
@@ -123,11 +131,15 @@ public final class StatisticsManager {
     }
 
     public static void stop() {
-        if (! started) return;
-        for (StatisticsManagerListener listener : listeners)
+        if (!started) {
+            return;
+        }
+        for (StatisticsManagerListener listener : listeners) {
             listener.onStatisticsManagerStopping();
-        if (flushCheckTask != -1)
+        }
+        if (flushCheckTask != -1) {
             Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
+        }
         flushCheckTask = -1;
         flushAllSync();
         started = false;
@@ -137,13 +149,17 @@ public final class StatisticsManager {
     }
 
     public static void addGroup(StatisticsGroup group) {
-        if (groups.containsKey(group.getName())) return;
+        if (groups.containsKey(group.getName())) {
+            return;
+        }
         groups.put(group.getName(), group);
         group.validate();
     }
 
     public static void removeGroup(StatisticsGroup group) {
-        if (! groups.containsKey(group.getName())) return;
+        if (!groups.containsKey(group.getName())) {
+            return;
+        }
         groups.remove(group.getName());
     }
 
@@ -156,13 +172,18 @@ public final class StatisticsManager {
     }
 
     public static StatisticsGroup findGroup(String name) {
-        if (groups.containsKey(name)) return groups.get(name);
+        if (groups.containsKey(name)) {
+            return groups.get(name);
+        }
         String lname = name.toLowerCase();
         StatisticsGroup group = null;
         for (String key : groups.keySet()) {
             if (key.toLowerCase().startsWith(lname)) {
-                if (group == null) group = groups.get(key);
-                else return null;
+                if (group == null) {
+                    group = groups.get(key);
+                } else {
+                    return null;
+                }
             }
         }
         return group;
@@ -177,48 +198,55 @@ public final class StatisticsManager {
     public static Collection<String> getJobsSnapshot() {
         Collection<String> snaps = new ArrayList<String>();
         synchronized (jobs) {
-            for (Job job : jobs)
+            for (Job job : jobs) {
                 snaps.add(job.toString());
+            }
         }
         return snaps;
     }
 
     public static Statistics getStatistics(String groupName, Object key) {
         StatisticsGroup group = groups.get(groupName);
-        if (group == null)
+        if (group == null) {
             throw new IllegalArgumentException("statistics group '" + groupName + "' does not exist");
+        }
         return group.getStatistics(key);
     }
 
     public static int purge() {
         int count = 0;
-        for (StatisticsGroup group : groups.values())
+        for (StatisticsGroup group : groups.values()) {
             count += group.purge();
+        }
         return count;
     }
 
     public static void flushAll() {
-        for (StatisticsGroup group : groups.values())
+        for (StatisticsGroup group : groups.values()) {
             group.flushAll();
+        }
     }
 
     public static void flushAllSync() {
-        for (StatisticsGroup group : groups.values())
+        for (StatisticsGroup group : groups.values()) {
             group.flushAllSync();
+        }
     }
 
     public static void flush() {
-        for (StatisticsGroup group : groups.values())
+        for (StatisticsGroup group : groups.values()) {
             group.flush();
+        }
     }
 
     public static void delete() {
-        for (StatisticsGroup group : groups.values())
+        for (StatisticsGroup group : groups.values()) {
             group.delete();
+        }
     }
 
     public static void submitJob(Job job) {
-        if (! started) {
+        if (!started) {
             Utils.warning("statistics manager is not started, discarding %s", job);
             return;
         }
@@ -229,7 +257,6 @@ public final class StatisticsManager {
     }
 
     /* Begin options */
-
     public static boolean getDebug() {
         return Config.getBooleanDirect("stats.debug", false);
     }
@@ -243,8 +270,9 @@ public final class StatisticsManager {
     }
 
     public static void setFlushCheckInterval(int i) {
-        if (i < 1000)
+        if (i < 1000) {
             throw new IllegalArgumentException("flushCheckInterval must be at least 1000");
+        }
         Config.setPropertyDirect("stats.flushCheckInterval", i);
     }
 
@@ -261,18 +289,17 @@ public final class StatisticsManager {
     }
 
     /* End options */
-
-
-
     private static void scheduleFlushCheck() {
-        if (flushCheckTask != -1)
+        if (flushCheckTask != -1) {
             Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
+        }
         flushCheckTask = Utils.fireDelayed(new Runnable() {
             public void run() {
                 flush();
                 delete();
                 scheduleFlushCheck();
-            };
+            }
+         ;
         }, getFlushCheckInterval());
     }
 
@@ -283,40 +310,48 @@ public final class StatisticsManager {
                 while (started && jobs.isEmpty()) {
                     try {
                         jobs.wait(5000);
-                    } catch (InterruptedException ie) {}
-                    if (! started) break;
+                    } catch (InterruptedException ie) {
+                    }
+                    if (!started) {
+                        break;
+                    }
                 }
-                if (! jobs.isEmpty())
+                if (!jobs.isEmpty()) {
                     job = jobs.remove(0);
+                }
             }
             if (job != null) {
-                if (getDebug())
+                if (getDebug()) {
                     Utils.debug("committing %s", job);
+                }
                 job.commit();
                 job = null;
-            } else if (! started)
+            } else if (!started) {
                 break;
+            }
         }
     }
 
     public static interface StatisticsManagerListener {
+
         public void onStatisticsManagerStarted();
+
         public void onStatisticsManagerStopping();
     }
 
     public static class Job {
 
         private String tableName;
-        private Map<String,Object> data;
+        private Map<String, Object> data;
         private Object keyValue;
         private String keyColumn;
         private boolean committed = false;
 
-        public Job(String tableName, Map<String,Object> data, Object keyValue) {
+        public Job(String tableName, Map<String, Object> data, Object keyValue) {
             this(tableName, data, keyValue, null);
         }
 
-        public Job(String tableName, Map<String,Object> data, Object keyValue, String keyColumn) {
+        public Job(String tableName, Map<String, Object> data, Object keyValue, String keyColumn) {
             this.tableName = tableName;
             this.data = data;
             this.keyValue = keyValue;
@@ -340,29 +375,34 @@ public final class StatisticsManager {
                 if (keyColumn == null) {
                     // insert
                     sql.append("INSERT INTO ").append(DB.tableName(tableName)).append(" (");
-                    for (String col : cols)
+                    for (String col : cols) {
                         sql.append('`').append(col).append("`,");
+                    }
                     sql.deleteCharAt(sql.length() - 1);
                     sql.append(") VALUES (");
-                    for (String col : cols)
+                    for (String col : cols) {
                         sql.append("?,");
+                    }
                     sql.deleteCharAt(sql.length() - 1);
                     sql.append(")");
                     stmt = DB.prepare(sql.toString());
                     int colNum = 1;
-                    for (String col : cols)
+                    for (String col : cols) {
                         setParameter(stmt, colNum++, data.get(col));
+                    }
                 } else {
                     // update
                     sql.append("UPDATE ").append(DB.tableName(tableName)).append(" SET ");
-                    for (String col : cols)
+                    for (String col : cols) {
                         sql.append('`').append(col).append("`=?,");
+                    }
                     sql.deleteCharAt(sql.length() - 1);
                     sql.append(" WHERE `").append(keyColumn).append("`=?");
                     stmt = DB.prepare(sql.toString());
                     int colNum = 1;
-                    for (String col : cols)
+                    for (String col : cols) {
                         setParameter(stmt, colNum++, data.get(col));
+                    }
                     setParameter(stmt, colNum++, keyValue);
                 }
                 stmt.executeUpdate();
@@ -371,8 +411,11 @@ public final class StatisticsManager {
                 Utils.severe("SQLException while committing statistics for '%s' in '%s': %s", keyValue, tableName, se.getMessage());
             } finally {
                 try {
-                    if (stmt != null) stmt.close();
-                } catch (SQLException se) {}
+                    if (stmt != null) {
+                        stmt.close();
+                    }
+                } catch (SQLException se) {
+                }
             }
             committed = true;
             synchronized (this) {
@@ -381,22 +424,33 @@ public final class StatisticsManager {
         }
 
         private void setParameter(PreparedStatement stmt, int colNum, Object val) throws SQLException {
-            if (val == null) stmt.setString(colNum++, null);
-            else if (val instanceof String) stmt.setString(colNum++, (String)val);
-            else if (val instanceof Boolean) stmt.setInt(colNum++, ((Boolean)val) ? 1 : 0);
-            else if (val instanceof Byte) stmt.setByte(colNum++, (Byte)val);
-            else if (val instanceof Short) stmt.setShort(colNum++, (Short)val);
-            else if (val instanceof Integer) stmt.setInt(colNum++, (Integer)val);
-            else if (val instanceof Long) stmt.setLong(colNum++, (Long)val);
-            else if (val instanceof Float) stmt.setFloat(colNum++, (Float)val);
-            else if (val instanceof Double) stmt.setDouble(colNum++, (Double)val);
-            else if (val instanceof Date) stmt.setTimestamp(colNum++, new Timestamp(((Date)val).getTime()));
-            else if (val instanceof Clob) stmt.setClob(colNum++, (Clob)val);
-            else
+            if (val == null) {
+                stmt.setString(colNum++, null);
+            } else if (val instanceof String) {
+                stmt.setString(colNum++, (String) val);
+            } else if (val instanceof Boolean) {
+                stmt.setInt(colNum++, ((Boolean) val) ? 1 : 0);
+            } else if (val instanceof Byte) {
+                stmt.setByte(colNum++, (Byte) val);
+            } else if (val instanceof Short) {
+                stmt.setShort(colNum++, (Short) val);
+            } else if (val instanceof Integer) {
+                stmt.setInt(colNum++, (Integer) val);
+            } else if (val instanceof Long) {
+                stmt.setLong(colNum++, (Long) val);
+            } else if (val instanceof Float) {
+                stmt.setFloat(colNum++, (Float) val);
+            } else if (val instanceof Double) {
+                stmt.setDouble(colNum++, (Double) val);
+            } else if (val instanceof Date) {
+                stmt.setTimestamp(colNum++, new Timestamp(((Date) val).getTime()));
+            } else if (val instanceof Clob) {
+                stmt.setClob(colNum++, (Clob) val);
+            } else {
                 throw new SQLException(val.getClass().getName() + " is an unsupported parameter type");
+            }
         }
 
     }
-
 
 }
