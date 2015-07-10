@@ -159,14 +159,13 @@ public final class PlayerStats {
         group.addStatistic(new Statistic("lastDeathMessage", Type.STRING, 255));
         group.addStatistic(new Statistic("totalPlayersKilled", Type.INTEGER));
         group.addStatistic(new Statistic("playersKilled", Type.INTEGER, true));
-        group.addStatistic(new Statistic("playersKilledByWeapon", Type.INTEGER,
-                true));
+        group.addStatistic(new Statistic("playersKilledByWeapon", Type.INTEGER, true));
+        
         group.addStatistic(new Statistic("lastPlayerKill", Type.TIMESTAMP));
         group.addStatistic(new Statistic("lastPlayerKilled", Type.STRING, 30));
         group.addStatistic(new Statistic("totalMobsKilled", Type.INTEGER));
         group.addStatistic(new Statistic("mobsKilled", Type.INTEGER, true));
-        group.addStatistic(new Statistic("mobsKilledByWeapon", Type.INTEGER,
-                true));
+        group.addStatistic(new Statistic("mobsKilledByWeapon", Type.INTEGER, true));
         group.addStatistic(new Statistic("lastMobKill", Type.TIMESTAMP));
         group.addStatistic(new Statistic("lastMobKilled", Type.STRING, 30));
 
