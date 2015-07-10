@@ -58,10 +58,8 @@ public final class DB {
 
         options = new Options(DB.class, OPTIONS, "inq.db",
                 new OptionsListener() {
-                    public void onOptionSet(Context ctx, String name,
-                            String value) {
-                        ctx.sendLog("database option '%s' set to '%s'", name,
-                                value);
+                    public void onOptionSet(Context ctx, String name, String value) {
+                        ctx.sendLog("database option '%s' set to '%s'", name, value);
                         if (RESTART_OPTIONS.contains(name)) {
                             Config.save(ctx);
                             stop();
@@ -106,8 +104,7 @@ public final class DB {
             connect();
 
         } catch (Exception e) {
-            Utils.warning("database connection cannot be completed: %s",
-                    e.getMessage());
+            Utils.warning("database connection cannot be completed: %s", e.getMessage());
         }
     }
 
@@ -226,8 +223,7 @@ public final class DB {
                 Utils.warning("unexpectedly disconnected from database");
                 db = null;
             }
-            db = DriverManager.getConnection(getUrl(), getUsername(),
-                    getRealPassword());
+            db = DriverManager.getConnection(getUrl(), getUsername(), getRealPassword());
             db.setAutoCommit(true);
             db.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             Utils.info("connected to database");
@@ -357,8 +353,7 @@ public final class DB {
             new String[]{"itemsDropped", "totalItemsDropped", "int"},
             new String[]{"itemsPickedUp", "totalItemsPickedUp", "int"},
             new String[]{"itemsCrafted", "totalItemsCrafted", "int"},
-            new String[]{"travelDistances", "totalDistanceTraveled",
-                "float"}};
+            new String[]{"travelDistances", "totalDistanceTraveled", "float"}};
 
         Utils.debug("doing DB updates");
 
