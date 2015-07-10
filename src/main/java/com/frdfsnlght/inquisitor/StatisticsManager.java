@@ -43,7 +43,7 @@ public final class StatisticsManager {
 
     private static final Set<StatisticsManagerListener> listeners = new HashSet<StatisticsManagerListener>();
 
-    private static final Map<String, StatisticsGroup> groups = Collections.synchronizedMap(new HashMap<String, StatisticsGroup>());
+    private static final Map<String,StatisticsGroup> groups = new HashMap<String,StatisticsGroup>();
     private static final List<Job> jobs = new ArrayList<Job>();
 
     private static Thread jobThread;
