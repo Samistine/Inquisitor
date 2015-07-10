@@ -577,8 +577,7 @@ public final class PlayerStats {
         kickedPlayers.add(player.getName());
     }
 
-    public static void onPlayerDeath(Player player, String message,
-            EntityDamageEvent.DamageCause cause) {
+    public static void onPlayerDeath(Player player, String message, EntityDamageEvent.DamageCause cause) {
         if (!isStatsPlayer(player)) {
             return;
         }
@@ -743,8 +742,7 @@ public final class PlayerStats {
             if (!player.hasPlayedBefore()) {
                 continue;
             }
-            if ((player.getBedSpawnLocation() == null)
-                    || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
+            if ((player.getBedSpawnLocation() == null) || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
                 bedOwners.remove(name);
                 Utils.debug("player '%s' no longer has a bed", name);
 
@@ -878,12 +876,9 @@ public final class PlayerStats {
         stats.set("displayName", player.getDisplayName());
 
         stats.set("address", player.getAddress().getAddress().getHostAddress());
-        stats.set("inventory", encodeItemStacks(player.getInventory()
-                .getContents()));
-        stats.set("armor", encodeItemStacks(player.getInventory()
-                .getArmorContents()));
-        stats.set("ender", encodeItemStacks(player.getEnderChest()
-                .getContents()));
+        stats.set("inventory", encodeItemStacks(player.getInventory().getContents()));
+        stats.set("armor", encodeItemStacks(player.getInventory().getArmorContents()));
+        stats.set("ender", encodeItemStacks(player.getEnderChest().getContents()));
         stats.set("heldItemSlot", player.getInventory().getHeldItemSlot());
         stats.set("health", player.getHealth());
         stats.set("remainingAir", player.getRemainingAir());
@@ -895,8 +890,7 @@ public final class PlayerStats {
         stats.set("level", player.getLevel());
         stats.set("exp", player.getExp());
         stats.set("totalExperience", player.getTotalExperience());
-        stats.set("potionEffects",
-                encodePotionEffects(player.getActivePotionEffects()));
+        stats.set("potionEffects", encodePotionEffects(player.getActivePotionEffects()));
 
         stats.set("server", Global.plugin.getServer().getServerName());
         stats.set("world", player.getWorld().getName());
@@ -908,18 +902,14 @@ public final class PlayerStats {
         }
 
         if ((!DB.getShared()) || bedOwners.contains(player.getName())) {
-            if ((player.getBedSpawnLocation() == null)
-                    || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
+            if ((player.getBedSpawnLocation() == null) || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
                 stats.set("bedServer", null);
                 stats.set("bedWorld", null);
                 stats.set("bedCoords", null);
             } else {
-                stats.set("bedServer", Global.plugin.getServer()
-                        .getServerName());
-                stats.set("bedWorld", player.getBedSpawnLocation().getWorld()
-                        .getName());
-                stats.set("bedCoords",
-                        encodeCoords(player.getBedSpawnLocation()));
+                stats.set("bedServer", Global.plugin.getServer().getServerName());
+                stats.set("bedWorld", player.getBedSpawnLocation().getWorld().getName());
+                stats.set("bedCoords", encodeCoords(player.getBedSpawnLocation()));
             }
         }
 
