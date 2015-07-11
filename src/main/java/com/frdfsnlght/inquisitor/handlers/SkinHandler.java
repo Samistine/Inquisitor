@@ -38,7 +38,7 @@ public final class SkinHandler extends TemplateHandler {
 
     private static final String CACHE_DIR = "web-cache";
     private static final long CACHE_REFRESH = 3600 * 3 * 1000;
-    private static final String SKIN_URL = "http://s3.amazonaws.com/MinecraftSkins/";
+    private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/";
     private static final String DEFAULT_SKIN = "char";
 
     private static File cacheDir = null;
