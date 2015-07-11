@@ -28,21 +28,18 @@ public final class Economy {
     private static net.milkbowl.vault.economy.Economy vaultPlugin = null;
 
     public static boolean vaultAvailable() {
-        if ((vaultPlugin != null) && vaultPlugin.isEnabled()) {
+        if (vaultPlugin != null && vaultPlugin.isEnabled()) {
             return true;
         }
         if (vaultChecked) {
             return false;
         }
         vaultChecked = true;
-        Plugin p = Global.plugin.getServer().getPluginManager()
-                .getPlugin("Vault");
+        Plugin p = Global.plugin.getServer().getPluginManager().getPlugin("Vault");
         if (p == null || !p.isEnabled()) {
             return false;
         }
-        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin
-                .getServer().getServicesManager()
-                .getRegistration(net.milkbowl.vault.economy.Economy.class);
+        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
         if (rsp == null) {
             Utils.warning("Vault didn't return a service provider for economy!");
             return false;
@@ -66,9 +63,7 @@ public final class Economy {
                 return vaultPlugin.getBalance(player.getName());
             }
         } catch (Exception ex) {
-            Utils.warning(
-                    "Vault or your Vault compatible economy plugin threw an exception getting player balance: %s",
-                    ex.getMessage());
+            Utils.warning("Vault or your Vault compatible economy plugin threw an exception getting player balance: %s", ex.getMessage());
         }
         return 0.0d;
     }
