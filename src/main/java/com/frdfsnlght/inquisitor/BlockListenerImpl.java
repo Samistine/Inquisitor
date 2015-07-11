@@ -35,43 +35,46 @@ public class BlockListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-		if (!PlayerStats.isStatsPlayer(player))
-			return;
-        Material type = event.getBlock().getType();
-        if (player.isOnline()) {
-            Statistics stats = PlayerStats.group.getStatistics(player.getName());
-            stats.incr("totalBlocksBroken");
-            stats.incr("blocksBroken", Utils.titleCase(type.name()));
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            Material type = event.getBlock().getType();
+            if (player.isOnline()) {
+                Statistics stats = PlayerStats.group.getStatistics(player.getName());
+                stats.incr("totalBlocksBroken");
+                stats.incr("blocksBroken", Utils.titleCase(type.name()));
+            }
+            if (type == Material.BED_BLOCK) {
+                PlayerStats.checkBeds();
+            }
         }
-        if (type == Material.BED_BLOCK)
-            PlayerStats.checkBeds();
     }
 
     // placed by player only
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-		if (!PlayerStats.isStatsPlayer(player))
-			return;
-        Statistics stats = PlayerStats.group.getStatistics(player.getName());
-        Material type = event.getBlock().getType();
-        stats.incr("totalBlocksPlaced");
-        stats.incr("blocksPlaced", Utils.titleCase(type.name()));
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            Material type = event.getBlock().getType();
+            Statistics stats = PlayerStats.group.getStatistics(player.getName());
+            stats.incr("totalBlocksPlaced");
+            stats.incr("blocksPlaced", Utils.titleCase(type.name()));
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
-        if (event.getBlock().getType() == Material.BED_BLOCK)
+        if (event.getBlock().getType() == Material.BED_BLOCK) {
             PlayerStats.checkBeds();
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getPlayer() == null) return;
-        Player player = event.getPlayer();
-		if (!PlayerStats.isStatsPlayer(player))
-			return;
-        PlayerStats.group.getStatistics(player.getName()).incr("firesStarted");
+        if (event.getPlayer() != null) {
+            Player player = event.getPlayer();
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+                PlayerStats.group.getStatistics(player.getName()).incr("firesStarted");
+            }
+        }
     }
 
 }

@@ -41,7 +41,7 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player)) {
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 Statistics stats = PlayerStats.group.getStatistics(player.getName());
                 stats.add("travelDistances", "Falling", event.getEntity().getFallDistance());
             }
@@ -67,7 +67,7 @@ public final class EntityListenerImpl implements Listener {
         }
 
         Player player = (Player) killerEnt;
-        if (!PlayerStats.isStatsPlayer(player)) {
+        if (!PlayerStats.isStatsPlayer(player) || !PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             return;
         }
 
@@ -104,7 +104,7 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player)) {
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 PlayerStats.group.getStatistics(player.getName()).incr("arrowsShot");
             }
         }
@@ -114,7 +114,7 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityTame(EntityTameEvent event) {
         if (event.getOwner() instanceof Player) {
             Player player = (Player) event.getOwner();
-            if (PlayerStats.isStatsPlayer(player)) {
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 PlayerStats.group.getStatistics(player.getName()).incr("animalsTamed", Utils.normalizeEntityTypeName(event.getEntityType()));
             }
         }
@@ -124,7 +124,7 @@ public final class EntityListenerImpl implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player)) {
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 if (event.getFoodLevel() <= player.getFoodLevel()) {
                     return;
                 }
