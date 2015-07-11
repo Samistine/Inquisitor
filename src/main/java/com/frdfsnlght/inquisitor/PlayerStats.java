@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +55,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  *
@@ -66,20 +70,17 @@ public final class PlayerStats {
 
     private static final Set<PlayerStatsListener> listeners = new HashSet<PlayerStatsListener>();
 
-    private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat(
-            "#.###", new DecimalFormatSymbols(Locale.US));
+    private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.US));
 
-    public static final StatisticsGroup group = new StatisticsGroup("players",
-            "name", Type.STRING, 30);
-    //private static final Set<String> bedOwners = new HashSet<String>();
-    private static final Set<String> bedOwners = Collections.synchronizedSet(new HashSet<String>());
+    public static final StatisticsGroup group = new StatisticsGroup("players", "name", Type.STRING, 30);
+
+    protected static final Set<String> bedOwners = Collections.synchronizedSet(new HashSet<String>());
     private static final Set<String> ignoredPlayerJoins = new HashSet<String>();
     private static final Set<String> kickedPlayers = new HashSet<String>();
-    //private static final Map<String, PlayerState> playerStates = new HashMap<String, PlayerState>();
-    private static final Map<String, PlayerState> playerStates = new ConcurrentHashMap<String, PlayerState>();
+    
+    protected static final Map<String, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<String, PlayerState>());
 
-    private static final Set<UUID> playerLocks = Collections.synchronizedSet(new HashSet<UUID>());
-
+    private static final Map<Integer, String> playerLoginTasks = Collections.synchronizedMap(new HashMap<Integer, String>());
     private static boolean started = false;
     private static int bedCheckTask = -1;
 
@@ -160,7 +161,7 @@ public final class PlayerStats {
         group.addStatistic(new Statistic("totalPlayersKilled", Type.INTEGER));
         group.addStatistic(new Statistic("playersKilled", Type.INTEGER, true));
         group.addStatistic(new Statistic("playersKilledByWeapon", Type.INTEGER, true));
-        
+
         group.addStatistic(new Statistic("lastPlayerKill", Type.TIMESTAMP));
         group.addStatistic(new Statistic("lastPlayerKilled", Type.STRING, 30));
         group.addStatistic(new Statistic("totalMobsKilled", Type.INTEGER));
@@ -298,52 +299,6 @@ public final class PlayerStats {
 
     public static boolean isStatsPlayer(Player player) {
 
-        //Wait until the player is added
-        long start_time = System.currentTimeMillis();
-        long wait_time = 1000;
-        long end_time = start_time + wait_time;
-        
-        if (playerLocks.contains(player.getUniqueId())) {
-            boolean once = false;
-            while (playerLocks.contains(player.getUniqueId()) && System.currentTimeMillis() <= end_time) {
-                if (!once) {
-                    System.out.println("Main thread locking due to concurrency issues");
-                    once = true;
-                }
-            }
-            if (playerLocks.contains(player.getUniqueId())) {
-                System.out.println("Timedout, returning false for isStatsPlayer and removing thread lock, PROBLEMS LIKELY TO OCCUR");
-                playerLocks.remove(player.getUniqueId());
-                return false;
-            } else {
-                System.out.println("Thread unlocked");
-            }
-        }
-
-        if (player.getGameMode() == null) {
-            return false;
-        }
-        if (!invalidPlayerNamePatternSet) {
-            return true;
-        }
-        if (invalidPlayerNamePattern == null) {
-            String pat = getInvalidPlayerNamePattern();
-            if (pat == null) {
-                invalidPlayerNamePatternSet = false;
-                return true;
-            }
-            try {
-                invalidPlayerNamePattern = Pattern.compile(pat);
-            } catch (PatternSyntaxException e) {
-                Utils.severe("invalid regular expression for invalidPlayerNamePattern");
-                invalidPlayerNamePatternSet = false;
-            }
-        }
-        return !invalidPlayerNamePattern.matcher(player.getName()).matches();
-    }
-
-    public static boolean isStatsPlayer2(Player player) {
-
         if (player.getGameMode() == null) {
             return false;
         }
@@ -367,75 +322,46 @@ public final class PlayerStats {
     }
 
     public static void onPlayerJoin(final Player player) {
-        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
+        String puuidst = player.getUniqueId().toString();
+        String pname = player.getName();
+        Date date = new Date();
+        String servername = Global.plugin.getServer().getServerName();
+        if (!isStatsPlayer(player)) {
+            return;
+        }
+        if (ignoredPlayerJoins.contains(pname)) {
+            Utils.debug("ignored join for player '%s'", pname);
+            return;
+        }
+        Utils.debug("onPlayerJoin '%s'", pname);
 
-            String puuidst = player.getUniqueId().toString();
-            String pname = player.getName();
-            Date date = new Date();
-            String servername = Global.plugin.getServer().getServerName();
+        BukkitRunnable onJoin = new PlayerJoinRunnable(puuidst, pname, date, servername);
+        playerLoginTasks.put(onJoin.runTaskAsynchronously(Global.plugin).getTaskId(), puuidst);
 
-            public void run() {
-                playerLocks.add(player.getUniqueId());
-                try {
-                    if (!isStatsPlayer2(player)) {
-                        return;
+    }
+
+    /**
+     *
+     * @param uuid
+     * @return false if the player is still logging in
+     */
+    public static boolean hasNoPendingLogin(UUID uuid) {
+        BukkitScheduler scheduler = Global.plugin.getServer().getScheduler();
+        synchronized (playerLoginTasks) {
+            Iterator iterator = playerLoginTasks.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<Integer, String> entry = (Map.Entry) iterator.next();
+                if (scheduler.isQueued(entry.getKey()) || scheduler.isCurrentlyRunning(entry.getKey())) { //This task is still running
+                    if (entry.getValue().equals(uuid.toString())) { //Check if its the task for our player
+                        Global.plugin.getLogger().severe("ATTEMPTED TO GET/MODIFY STATS WHILE THE PLAYER's STATS WERE BEING LOADED");
+                        return false;
                     }
-                    if (ignoredPlayerJoins.contains(pname)) {
-                        Utils.debug("ignored join for player '%s'", pname);
-                        return;
-                    }
-                    Utils.debug("onPlayerJoin '%s'", pname);
-
-                    try {
-                        //Very simply update statement that will allow players to add their UUIDs to the db during the
-                        // conversion process, then once a name change happens it will update it based on the uuid matching.
-                        PreparedStatement stmt = null;
-                        StringBuilder sql = new StringBuilder();
-                        sql.append("UPDATE ").append(DB.tableName(group.getName())).append(" SET `");
-                        sql.append(group.getKeyName()).append("`=?, `uuid`=? WHERE `");
-                        sql.append(group.getKeyName()).append("`=? OR `uuid`=?");
-                        stmt = DB.prepare(sql.toString());
-                        stmt.setString(1, pname);
-                        stmt.setString(2, puuidst);
-                        stmt.setString(3, pname);
-                        stmt.setString(4, puuidst);
-                        stmt.execute();
-
-                        final Statistics stats = group.getStatistics(pname);
-                        stats.set("uuid", puuidst);
-                        stats.incr("joins");
-                        stats.set("lastJoin", date);
-                        stats.set("sessionTime", 0);
-                        stats.set("online", true);
-                        if (!stats.isInDB()) {
-                            stats.set("firstJoin", date);
-                        }
-                        String bedServer = stats.getString("bedServer");
-                        if ((bedServer != null) && bedServer.equals(servername)) {
-                            bedOwners.add(pname);
-                        }
-                        playerStates.put(pname, new PlayerState(stats.getFloat("totalTime")));
-
-                        Utils.debug("totalTime: " + stats.getFloat("totalTime"));
-
-                        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-                            public void run() {
-                                stats.flushSync();
-                            }
-                        });
-                    } catch (Exception ex) {
-                        Utils.severe("OnPlayerJoin Exception message: " + ex.getMessage());
-                        StringWriter sw = new StringWriter();
-                        ex.printStackTrace(new PrintWriter(sw));
-                        Utils.severe("Stack Trace: " + sw.toString());
-                    }
-                } finally {
-                    playerLocks.remove(player.getUniqueId());
+                } else {
+                    iterator.remove();
                 }
-
             }
-        });
-
+        }
+        return true;
     }
 
     /*    public static void onPlayerJoin(Player player) {
@@ -508,8 +434,7 @@ public final class PlayerStats {
                 return;
             }
             final Statistics stats = group.getStatistics(player.getName());
-            
-            
+
             try {
                 String traveling = stats.getString("biomeTimes");
                 String[] split = traveling.split("\\r?\\n");
@@ -531,7 +456,7 @@ public final class PlayerStats {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
+
             if (!kickedPlayers.remove(player.getName())) {
                 stats.incr("quits");
                 stats.set("lastQuit", new Date());
@@ -1058,6 +983,7 @@ public final class PlayerStats {
             try {
                 if (stmt != null) {
                     stmt.close();
+
                 }
             } catch (SQLException se) {
             }
@@ -1072,31 +998,7 @@ public final class PlayerStats {
         public void onPlayerStatsStopping();
     }
 
-    private static class PlayerState {
-
-        long joinTime;
-        float totalTimeBase;
-        Location lastLocation;
-        long lastTime;
-        TravelMode lastMode;
-        Biome lastBiome;
-
-        PlayerState(float totalTimeBase) {
-            this.joinTime = System.currentTimeMillis();
-            this.totalTimeBase = totalTimeBase;
-            reset();
-        }
-
-        final void reset() {
-            lastLocation = null;
-            lastTime = 0;
-            lastMode = null;
-            lastBiome = null;
-        }
-
-    }
-
-    private static enum TravelMode {
+    protected static enum TravelMode {
 
         WALKING, SPRINTING, SNEAKING, FLYING, SWIMMING, RIDING, RIDING_MINECART, RIDING_PIG, RIDING_BOAT, RIDING_HORSE;
     }
