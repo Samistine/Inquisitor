@@ -17,7 +17,6 @@ package com.frdfsnlght.inquisitor.handlers;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.PlayerStats;
-import com.frdfsnlght.inquisitor.Statistic;
 import com.frdfsnlght.inquisitor.TypeMap;
 import com.frdfsnlght.inquisitor.Utils;
 import com.frdfsnlght.inquisitor.webserver.WebRequest;
@@ -29,7 +28,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

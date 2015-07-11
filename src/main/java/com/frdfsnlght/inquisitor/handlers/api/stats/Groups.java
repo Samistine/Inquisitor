@@ -13,7 +13,6 @@ import com.frdfsnlght.inquisitor.handlers.api.APIHandler;
 import com.frdfsnlght.inquisitor.webserver.WebRequest;
 import com.frdfsnlght.inquisitor.webserver.WebResponse;
 import java.io.IOException;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +50,7 @@ public class Groups extends APIHandler {
                 builder.append("?,");
             }
             String str = builder.deleteCharAt(builder.length() - 1).toString();
-            sql.append(" WHERE name in (" + str.toString() + ")");
+            sql.append(" WHERE name in (" + str + ")");
             sql.append(" ORDER BY NAME ASC");
             System.out.println(sql.toString());
             stmt = conn.prepareStatement(sql.toString());
