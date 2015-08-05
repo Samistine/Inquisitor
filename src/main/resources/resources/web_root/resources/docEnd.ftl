@@ -1,16 +1,16 @@
 
         <div id="footer" class="grid_16">
             <p>
-                Powered by <a href="http://code.google.com/p/inquisitor-mc/" target="_blank">${pluginName} v${pluginVersion}</a> &copy; ${now?string("yyyy")} frdfsnlght, snarfattack
+                Powered by <a href="https://www.spigotmc.org/resources/inquistor-refresh.5821/" target="_blank">${pluginName} v${pluginVersion}</a> &copy; ${now?string("yyyy")} frdfsnlght, snarfattack
             </p>
             <p>
-                Fugue Icons &copy; 2012 Yusuke Kamiyamane. All rights reserved. Icons are available under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 License</a>.
+                Fugue Icons &copy; 2012 Yusuke Kamiyamane. All rights reserved. Icons are available under a <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 License</a>.
             </p>
             <p>
                 Other icons and images &copy; 2012 Mojang. All rights reserved.
             </p>
             <p>
-                <a href="http://code.google.com/p/inquisitor-mc/" target="_blank"><img src="http://code.google.com/p/inquisitor-mc/logo?cct=1392441729"/></a>
+                <a href="https://code.google.com/p/inquisitor-mc/" target="_blank"><img src="https://code.google.com/p/inquisitor-mc/logo?cct=1392441729"/></a>
             </p>
         </div>
         <div class="clear"></div>
