@@ -36,7 +36,7 @@ import com.frdfsnlght.inquisitor.handlers.RouteHandler;
 import com.frdfsnlght.inquisitor.handlers.SkinHandler;
 import com.frdfsnlght.inquisitor.handlers.TemplateHandler;
 import com.frdfsnlght.inquisitor.handlers.api.FindPlayersHandler;
-import com.frdfsnlght.inquisitor.handlers.api.JsonStatsHandler;
+import com.frdfsnlght.inquisitor.handlers.api.stats.AllStats;
 import com.frdfsnlght.inquisitor.handlers.api.stats.Groups;
 
 import java.io.File;
@@ -170,7 +170,7 @@ public final class WebServer {
                 //Samistine Route
                 RouteHandler apiStats = new RouteHandler();
                 apiStats.add(new WebRoute(new Groups(), "/stats/groups/(.*)", "playerName"));
-                apiStats.add(new WebRoute(new JsonStatsHandler(), "/stats/([^/]*)", "playerName"));
+                apiStats.add(new WebRoute(new AllStats(), "/stats/([^/]*)", "playerName"));
                 api.add(new WebRoute(apiStats, "/stats/(.*)", "playerName"));
 
                 // add api routes
@@ -445,7 +445,7 @@ public final class WebServer {
         setPlayersRestrictColumnsFromList(list);
     }
 
-    private static List<String> getPlayersRestrictColumnsAsList() {
+    public static List<String> getPlayersRestrictColumnsAsList() {
         String v = Config.getStringDirect("webServer.playersRestrictColumns");
         if (v == null) return new ArrayList<String>(Arrays.asList(DEFAULT_RESTRICTCOLUMNS));
         List<String> list = new ArrayList<String>();

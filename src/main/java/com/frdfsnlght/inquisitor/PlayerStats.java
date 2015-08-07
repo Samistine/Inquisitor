@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -354,6 +355,7 @@ public final class PlayerStats {
                 if (scheduler.isQueued(entry.getKey()) || scheduler.isCurrentlyRunning(entry.getKey())) { //This task is still running
                     if (entry.getValue().equals(uuid.toString())) { //Check if its the task for our player
                         Global.plugin.getLogger().severe("ATTEMPTED TO GET/MODIFY STATS WHILE THE PLAYER's STATS WERE BEING LOADED");
+                        //System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
                         return false;
                     }
                 } else {
