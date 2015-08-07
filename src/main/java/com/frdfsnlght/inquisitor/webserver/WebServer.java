@@ -159,7 +159,7 @@ public final class WebServer {
                 if (Utils.installManifest("/resources/web_root/manifest", webRoot, false))
                     Utils.info("installed default web root");
             } else if (getUpgradeWebRoot()) {
-                if (Utils.installManifest("/resources/web_root/manifest", webRoot, true))
+                if (Utils.installManifest("/resources/web_root/manifest", webRoot, false))
                     Utils.info("upgraded web root");
             }
 
