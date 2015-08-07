@@ -51,8 +51,7 @@ public class HelpCommand extends CommandProcessor {
         for (CommandProcessor cp : Global.commands) {
             List<String> usage = cp.getUsage(ctx);
             if ((usage == null) || usage.isEmpty()) continue;
-            if (usage != null)
-                help.addAll(usage);
+            help.addAll(usage);
         }
 
         if (ctx.isConsole()) {
