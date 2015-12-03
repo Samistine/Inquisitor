@@ -79,6 +79,7 @@ public final class SkinHandler extends TemplateHandler {
         res.setContentType("image/png");
         res.setContentLength(buffer.length);
         res.setLastModified(new Date(cacheFile.lastModified()));
+        res.setHeader("Cache-Control", "max-age=" + (CACHE_REFRESH/1000));
         res.flushHeaders();
         if (req.getMethod().equals("HEAD")) return;
         res.getPrintStream().write(buffer);

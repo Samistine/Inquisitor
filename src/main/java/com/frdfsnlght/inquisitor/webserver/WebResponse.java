@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  *
@@ -34,6 +35,9 @@ public class WebResponse {
 
     // Sat, 29 Oct 1994 19:43:31 GMT
     public static final SimpleDateFormat HTTP_DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss zzz");
+    static {
+        HTTP_DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     public final byte[] EOL = {(byte) '\r', (byte) '\n'};
 

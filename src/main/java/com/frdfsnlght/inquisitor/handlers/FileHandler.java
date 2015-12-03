@@ -37,6 +37,8 @@ import java.util.Map;
 public final class FileHandler extends WebHandler {
 
     public static final Map<String,String> MIME_TYPES = new HashMap<String,String>();
+    
+    private static final long CACHE_REFRESH = 3600 * 72; //Cache static files for 72 hours
 
     static {
         MIME_TYPES.put("css", "text/css; charset=utf-8");
@@ -93,6 +95,7 @@ public final class FileHandler extends WebHandler {
         res.setContentType(contentType);
         res.setContentLength(buffer.length);
         res.setLastModified(new Date(realFile.lastModified()));
+        res.setHeader("Cache-Control", "max-age=" + CACHE_REFRESH);
         res.flushHeaders();
         if (req.getMethod().equals("HEAD")) return;
         res.getPrintStream().write(buffer);
