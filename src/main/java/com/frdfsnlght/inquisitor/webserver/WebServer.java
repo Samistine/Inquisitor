@@ -19,7 +19,7 @@ import com.frdfsnlght.inquisitor.Config;
 import com.frdfsnlght.inquisitor.Context;
 import com.frdfsnlght.inquisitor.Global;
 import com.frdfsnlght.inquisitor.Options;
-import com.frdfsnlght.inquisitor.OptionsException;
+import com.frdfsnlght.inquisitor.exceptions.OptionsException;
 import com.frdfsnlght.inquisitor.OptionsListener;
 import com.frdfsnlght.inquisitor.PlayerStats;
 import com.frdfsnlght.inquisitor.exceptions.PermissionsException;

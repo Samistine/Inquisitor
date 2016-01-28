@@ -38,101 +38,98 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
 /**
- * 
+ *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
 public class Inquisitor extends JavaPlugin {
 
-	private BlockListenerImpl blockListener;
-	private PlayerListenerImpl playerListener;
-	private EntityListenerImpl entityListener;
+    private BlockListenerImpl blockListener;
+    private PlayerListenerImpl playerListener;
+    private EntityListenerImpl entityListener;
 
-	private API api = null;
+    private API api = null;
 
-	@Override
-	public void onEnable() {
-		Global.plugin = this;
-		PluginDescriptionFile pdf = getDescription();
-		Global.pluginName = pdf.getName();
-		Global.pluginVersion = pdf.getVersion();
-		Global.started = false;
+    @Override
+    public void onEnable() {
+        Global.plugin = this;
+        PluginDescriptionFile pdf = getDescription();
+        Global.pluginName = pdf.getName();
+        Global.pluginVersion = pdf.getVersion();
+        Global.started = false;
 
-		Global.enabled = true;
+        Global.enabled = true;
 
-		final Context ctx = new Context();
+        final Context ctx = new Context();
 
-		// install/update resources
+        // install/update resources
+        File dataFolder = Global.plugin.getDataFolder();
 
-		File dataFolder = Global.plugin.getDataFolder();
+        if (!dataFolder.exists()) {
+            ctx.sendLog("creating data folder");
+            dataFolder.mkdirs();
+        }
+        Utils.copyFileFromJar("/resources/LICENSE.txt", dataFolder, true);
+        Utils.copyFileFromJar("/resources/README.txt", dataFolder, true);
 
-		if (!dataFolder.exists()) {
-			ctx.sendLog("creating data folder");
-			dataFolder.mkdirs();
-		}
-		Utils.copyFileFromJar("/resources/LICENSE.txt", dataFolder, true);
-		Utils.copyFileFromJar("/resources/README.txt", dataFolder, true);
+        if (Utils.copyFileFromJar("/resources/config.yml", dataFolder, false)) {
+            ctx.sendLog("installed default configuration");
+        }
 
-		if (Utils.copyFileFromJar("/resources/config.yml", dataFolder, false))
-			ctx.sendLog("installed default configuration");
+        // copy FreeMarker
+        if (Utils.copyFileFromJar("/resources/freemarker.jar", Global.plugin.getDataFolder(), false)) {
+            ctx.sendLog("installed FreeMarker");
+        }
 
-		// copy FreeMarker
-		if (Utils.copyFileFromJar("/resources/freemarker.jar",
-				Global.plugin.getDataFolder(), false))
-			ctx.sendLog("installed FreeMarker");
+        // add FreeMarker to class path
+        // add FreeMarker to class path
+        URLClassLoader classLoader = (URLClassLoader) getClass().getClassLoader();
 
-		// add FreeMarker to class path
-		// add FreeMarker to class path
-		URLClassLoader classLoader = (URLClassLoader) getClass()
-				.getClassLoader();
+        try {
+            Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
+            method.setAccessible(true);
 
-		try {
-			Method method = URLClassLoader.class.getDeclaredMethod("addURL",
-					URL.class);
-			method.setAccessible(true);
+            try {
+                URL u = (new File(Global.plugin.getDataFolder(), "freemarker.jar")).toURI().toURL();
+                method.invoke(classLoader, u);
+            } catch (IllegalAccessException iae) {
+            } catch (InvocationTargetException ite) {
+            } catch (MalformedURLException mue) {
+            }
 
-			try {
-				URL u = (new File(Global.plugin.getDataFolder(),
-						"freemarker.jar")).toURI().toURL();
-				method.invoke(classLoader, u);
-			} catch (IllegalAccessException iae) {
-			} catch (InvocationTargetException ite) {
-			} catch (MalformedURLException mue) {
-			}
+        } catch (NoSuchMethodException nsme) {
+        }
 
-		} catch (NoSuchMethodException nsme) {
-		}
+        Config.load(ctx);
 
-		Config.load(ctx);
+        Utils.checkVersion();
 
-		Utils.checkVersion();
+        blockListener = new BlockListenerImpl();
+        playerListener = new PlayerListenerImpl();
+        entityListener = new EntityListenerImpl();
 
-		blockListener = new BlockListenerImpl();
-		playerListener = new PlayerListenerImpl();
-		entityListener = new EntityListenerImpl();
+        DB.init();
+        StatisticsManager.init();
+        PlayerStats.init();
+        WebServer.init();
 
-		DB.init();
-		StatisticsManager.init();
-		PlayerStats.init();
-		WebServer.init();
+        DB.start();
 
-		DB.start();
+        PluginManager pm = getServer().getPluginManager();
 
-		PluginManager pm = getServer().getPluginManager();
+        pm.registerEvents(blockListener, this);
+        pm.registerEvents(playerListener, this);
+        pm.registerEvents(entityListener, this);
 
-		pm.registerEvents(blockListener, this);
-		pm.registerEvents(playerListener, this);
-		pm.registerEvents(entityListener, this);
+        Global.started = true;
 
-		Global.started = true;
+        try {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        } catch (IOException e) {
+            ctx.warn("unable to start metrics: %s", e.getMessage());
+        }
 
-		try {
-			Metrics metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-			ctx.warn("unable to start metrics: %s", e.getMessage());
-		}
-
-		ctx.sendLog("ready on server '%s'", getServer().getServerName());
+        ctx.sendLog("ready on server '%s'", getServer().getServerName());
 
 //		int x = 0;
 //		while (x < 100) {
@@ -140,89 +137,96 @@ public class Inquisitor extends JavaPlugin {
 //			ctx.sendLog(m.getId() + ":" + m.toString());
 //			x++;
 //		}
+    }
 
-	}
+    @Override
+    public void onDisable() {
+        if (!Global.enabled) {
+            return;
+        }
+        Global.enabled = false;
+        Context ctx = new Context();
+        Config.save(ctx);
+        DB.stop();
+        ctx.sendLog("disabled");
+        Global.plugin = null;
+    }
 
-	@Override
-	public void onDisable() {
-		if (!Global.enabled)
-			return;
-		Global.enabled = false;
-		Context ctx = new Context();
-		Config.save(ctx);
-		DB.stop();
-		ctx.sendLog("disabled");
-		Global.plugin = null;
-	}
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] rawArgs) {
+        // Rebuild quoted arguments
+        List<String> args = new ArrayList<String>();
+        boolean inQuotes = false;
+        StringBuilder argBuffer = null;
+        for (String arg : rawArgs) {
+            if (arg.isEmpty()) {
+                continue;
+            }
+            if (inQuotes) {
+                argBuffer.append(" ");
+                argBuffer.append(arg);
+                if (arg.endsWith("\"")) {
+                    argBuffer.deleteCharAt(argBuffer.length() - 1);
+                    inQuotes = false;
+                    args.add(argBuffer.toString());
+                    argBuffer = null;
+                }
+            } else if (arg.startsWith("\"")) {
+                argBuffer = new StringBuilder(arg);
+                argBuffer.deleteCharAt(0);
+                if ((arg.length() > 1) && arg.endsWith("\"")) {
+                    argBuffer.deleteCharAt(argBuffer.length() - 1);
+                    args.add(argBuffer.toString());
+                    argBuffer = null;
+                } else {
+                    inQuotes = true;
+                }
+            } else {
+                args.add(arg);
+            }
+        }
+        if (argBuffer != null) {
+            args.add(argBuffer.toString());
+        }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label,
-			String[] rawArgs) {
-		// Rebuild quoted arguments
-		List<String> args = new ArrayList<String>();
-		boolean inQuotes = false;
-		StringBuilder argBuffer = null;
-		for (String arg : rawArgs) {
-			if (arg.isEmpty())
-				continue;
-			if (inQuotes) {
-				argBuffer.append(" ");
-				argBuffer.append(arg);
-				if (arg.endsWith("\"")) {
-					argBuffer.deleteCharAt(argBuffer.length() - 1);
-					inQuotes = false;
-					args.add(argBuffer.toString());
-					argBuffer = null;
-				}
-			} else if (arg.startsWith("\"")) {
-				argBuffer = new StringBuilder(arg);
-				argBuffer.deleteCharAt(0);
-				if ((arg.length() > 1) && arg.endsWith("\"")) {
-					argBuffer.deleteCharAt(argBuffer.length() - 1);
-					args.add(argBuffer.toString());
-					argBuffer = null;
-				} else
-					inQuotes = true;
-			} else
-				args.add(arg);
-		}
-		if (argBuffer != null)
-			args.add(argBuffer.toString());
+        Context ctx = new Context(sender);
 
-		Context ctx = new Context(sender);
+        if (args.isEmpty()) {
+            ctx.send("this is v%s", Global.pluginVersion);
+            return true;
+        }
 
-		if (args.isEmpty()) {
-			ctx.send("this is v%s", Global.pluginVersion);
-			return true;
-		}
+        // Find the matching commands
+        List<CommandProcessor> cps = new ArrayList<CommandProcessor>();
+        for (CommandProcessor cp : Global.commands) {
+            if (!cp.matches(ctx, cmd, args)) {
+                continue;
+            }
+            cps.add(cp);
+        }
+        // Execute the matching command
+        try {
+            if (cps.isEmpty()) {
+                throw new CommandException("huh? try %sinq help",
+                        (ctx.isPlayer() ? "/" : ""));
+            }
+            if (cps.size() > 1) {
+                throw new CommandException("ambiguous command; try %sinq help",
+                        (ctx.isPlayer() ? "/" : ""));
+            }
+            cps.get(0).process(ctx, cmd, args);
+            return true;
+        } catch (InquisitorException te) {
+            ctx.warn(te.getMessage());
+            return true;
+        }
+    }
 
-		// Find the matching commands
-		List<CommandProcessor> cps = new ArrayList<CommandProcessor>();
-		for (CommandProcessor cp : Global.commands) {
-			if (!cp.matches(ctx, cmd, args))
-				continue;
-			cps.add(cp);
-		}
-		// Execute the matching command
-		try {
-			if (cps.isEmpty())
-				throw new CommandException("huh? try %sinq help",
-						(ctx.isPlayer() ? "/" : ""));
-			if (cps.size() > 1)
-				throw new CommandException("ambiguous command; try %sinq help",
-						(ctx.isPlayer() ? "/" : ""));
-			cps.get(0).process(ctx, cmd, args);
-			return true;
-		} catch (InquisitorException te) {
-			ctx.warn(te.getMessage());
-			return true;
-		}
-	}
-
-	public API getAPI() {
-		if (api == null)
-			api = new API();
-		return api;
-	}
+    public API getAPI() {
+        if (api == null) {
+            api = new API();
+        }
+        return api;
+    }
 
 }

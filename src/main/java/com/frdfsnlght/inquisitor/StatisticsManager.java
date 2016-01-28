@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.OptionsException;
 import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.DB.DBListener;
 import java.sql.Clob;

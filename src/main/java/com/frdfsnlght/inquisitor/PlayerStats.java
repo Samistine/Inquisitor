@@ -15,20 +15,18 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.exceptions.OptionsException;
 import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.Statistic.Type;
 import com.frdfsnlght.inquisitor.StatisticsGroup.BeforeFlushListener;
 import com.frdfsnlght.inquisitor.StatisticsManager.StatisticsManagerListener;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -40,14 +38,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -274,8 +270,7 @@ public final class PlayerStats {
             }
 
         } catch (Exception e) {
-            Utils.warning("player stats collection cannot be started: %s",
-                    e.getMessage());
+            Utils.warning("player stats collection cannot be started: %s", e.getMessage());
         }
     }
 
@@ -579,8 +574,7 @@ public final class PlayerStats {
                         newMode = TravelMode.RIDING;
                 }
             }
-        } else if ((block.getType() == Material.WATER)
-                || (block.getType() == Material.STATIONARY_WATER)) {
+        } else if ((block.getType() == Material.WATER) || (block.getType() == Material.STATIONARY_WATER)) {
             newMode = TravelMode.SWIMMING;
         } else if (player.isSprinting()) {
             newMode = TravelMode.SPRINTING;
@@ -657,8 +651,7 @@ public final class PlayerStats {
 
     public static void checkBeds() {
         for (String name : new HashSet<String>(bedOwners)) {
-            OfflinePlayer player = Global.plugin.getServer().getOfflinePlayer(
-                    name);
+            OfflinePlayer player = Global.plugin.getServer().getOfflinePlayer(name);
             if (player == null) {
                 player = Global.plugin.getServer().getPlayer(name);
                 if (player == null) {
@@ -723,14 +716,12 @@ public final class PlayerStats {
 
     /* Begin options */
     public static int getFlushInterval() {
-        return Config.getIntDirect("players.flushInterval",
-                (int) group.getFlushInterval());
+        return Config.getIntDirect("players.flushInterval", (int) group.getFlushInterval());
     }
 
     public static void setFlushInterval(int i) {
         if (i < 1000) {
-            throw new IllegalArgumentException(
-                    "flushInterval must be at least 1000");
+            throw new IllegalArgumentException("flushInterval must be at least 1000");
         }
         Config.setPropertyDirect("players.flushInterval", i);
         group.setFlushInterval(i);
@@ -742,15 +733,13 @@ public final class PlayerStats {
 
     public static void setBedCheckInterval(int i) {
         if (i < 1000) {
-            throw new IllegalArgumentException(
-                    "bedCheckInterval must be at least 1000");
+            throw new IllegalArgumentException("bedCheckInterval must be at least 1000");
         }
         Config.setPropertyDirect("players.bedCheckInterval", i);
     }
 
     public static int getDeleteAge() {
-        return Config.getIntDirect("players.deleteAge",
-                (int) group.getDeleteAge());
+        return Config.getIntDirect("players.deleteAge", (int) group.getDeleteAge());
     }
 
     public static void setDeleteAge(int i) {
@@ -776,18 +765,15 @@ public final class PlayerStats {
         invalidPlayerNamePatternSet = (s != null);
     }
 
-    public static void getOptions(Context ctx, String name)
-            throws OptionsException, PermissionsException {
+    public static void getOptions(Context ctx, String name) throws OptionsException, PermissionsException {
         options.getOptions(ctx, name);
     }
 
-    public static String getOption(Context ctx, String name)
-            throws OptionsException, PermissionsException {
+    public static String getOption(Context ctx, String name) throws OptionsException, PermissionsException {
         return options.getOption(ctx, name);
     }
 
-    public static void setOption(Context ctx, String name, String value)
-            throws OptionsException, PermissionsException {
+    public static void setOption(Context ctx, String name, String value) throws OptionsException, PermissionsException {
         options.setOption(ctx, name, value);
     }
 
@@ -938,8 +924,7 @@ public final class PlayerStats {
                 Utils.debug("added '%s' as a bed owner", rs.getString("name"));
             }
         } catch (SQLException se) {
-            Utils.warning("SQLException during bed owner initialization: %s",
-                    se.getMessage());
+            Utils.warning("SQLException during bed owner initialization: %s", se.getMessage());
         } finally {
             try {
                 if (rs != null) {
@@ -967,8 +952,7 @@ public final class PlayerStats {
                 checkBeds();
                 scheduleBedCheck();
             }
-         ;
-		}, getBedCheckInterval());
+        }, getBedCheckInterval());
     }
 
     private static void initializeOnline() {
@@ -979,13 +963,11 @@ public final class PlayerStats {
             stmt.setString(1, Global.plugin.getServer().getServerName());
             stmt.executeUpdate();
         } catch (SQLException se) {
-            Utils.warning("SQLException during online state change: %s",
-                    se.getMessage());
+            Utils.warning("SQLException during online state change: %s", se.getMessage());
         } finally {
             try {
                 if (stmt != null) {
                     stmt.close();
-
                 }
             } catch (SQLException se) {
             }
