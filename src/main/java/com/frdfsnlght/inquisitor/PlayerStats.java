@@ -322,9 +322,6 @@ public final class PlayerStats {
         String pname = player.getName();
         Date date = new Date();
         String servername = Global.plugin.getServer().getServerName();
-        if (!isStatsPlayer(player)) {
-            return;
-        }
         if (ignoredPlayerJoins.contains(pname)) {
             Utils.debug("ignored join for player '%s'", pname);
             return;
@@ -425,55 +422,51 @@ public final class PlayerStats {
      }*/
     public static void onPlayerQuit(Player player) {
         Utils.debug("onPlayerQuit '%s'", player.getName());
-        if (isStatsPlayer(player)) {
-            if (ignoredPlayerJoins.remove(player.getName())) {
-                Utils.debug("ignored quit for player '%s'", player.getName());
-                return;
-            }
-            final Statistics stats = group.getStatistics(player.getName());
-
-            try {
-                String traveling = stats.getString("biomeTimes");
-                String[] split = traveling.split("\\r?\\n");
-                List<Double> values = new ArrayList<Double>();
-                for (String s : split) {
-                    if (s.contains(": ")) {
-                        String[] oneMoreSplit = s.split(": ");
-                        values.add(Double.parseDouble(oneMoreSplit[1]));
-                    }
-                }
-                Double totalTime = 0.00;
-                for (Double value : values) {
-                    totalTime = totalTime + value;
-                }
-                //System.out.println(TimeUnit.SECONDS.toDays(totalTime.intValue()));
-                if (totalTime > 1) {
-                    stats.set("totalTime", totalTime);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (!kickedPlayers.remove(player.getName())) {
-                stats.incr("quits");
-                stats.set("lastQuit", new Date());
-            }
-            stats.set("online", false);
-            Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-                public void run() {
-                    stats.flushSync();
-                }
-            });
-
-            group.removeStatistics(player.getName());
-            playerStates.remove(player.getName());
+        if (ignoredPlayerJoins.remove(player.getName())) {
+            Utils.debug("ignored quit for player '%s'", player.getName());
+            return;
         }
+        final Statistics stats = group.getStatistics(player.getName());
+
+        try {
+            String traveling = stats.getString("biomeTimes");
+            String[] split = traveling.split("\\r?\\n");
+            List<Double> values = new ArrayList<Double>();
+            for (String s : split) {
+                if (s.contains(": ")) {
+                    String[] oneMoreSplit = s.split(": ");
+                    values.add(Double.parseDouble(oneMoreSplit[1]));
+                }
+            }
+            Double totalTime = 0.00;
+            for (Double value : values) {
+                totalTime = totalTime + value;
+            }
+            //System.out.println(TimeUnit.SECONDS.toDays(totalTime.intValue()));
+            if (totalTime > 1) {
+                stats.set("totalTime", totalTime);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (!kickedPlayers.remove(player.getName())) {
+            stats.incr("quits");
+            stats.set("lastQuit", new Date());
+        }
+        stats.set("online", false);
+        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
+            public void run() {
+                stats.flushSync();
+            }
+        });
+
+        group.removeStatistics(player.getName());
+        playerStates.remove(player.getName());
+
     }
 
     public static void onPlayerKick(Player player, String message) {
-        if (!isStatsPlayer(player)) {
-            return;
-        }
         if (ignoredPlayerJoins.contains(player.getName())) {
             Utils.debug("ignored kick for player '%s'", player.getName());
             return;
@@ -482,8 +475,7 @@ public final class PlayerStats {
 
         if ((message != null) && message.contains("[Redirect]")) {
             if (message.contains("[InterRealm]")) {
-                Utils.debug("player '%s' is leaving the realm",
-                        player.getName());
+                Utils.debug("player '%s' is leaving the realm", player.getName());
                 onPlayerQuit(player);
             } else {
                 Utils.debug("ignoring kick for player '%s' due to transport to intra-realm server");
@@ -499,9 +491,6 @@ public final class PlayerStats {
     }
 
     public static void onPlayerDeath(Player player, String message, EntityDamageEvent.DamageCause cause) {
-        if (!isStatsPlayer(player)) {
-            return;
-        }
         Utils.debug("onPlayerDeath '%s'", player.getName());
 
         final Statistics stats = group.getStatistics(player.getName());
@@ -523,9 +512,6 @@ public final class PlayerStats {
     }
 
     public static void onPlayerMove(Player player, Location to) {
-        if (!isStatsPlayer(player)) {
-            return;
-        }
         // Utils.debug("onPlayerMove '%s'", player.getName());
 
         Statistics stats = group.getStatistics(player.getName());
@@ -629,21 +615,15 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        if (isStatsPlayer(player)) {
-            PlayerState state = playerStates.get(player.getName());
-            if (state != null) {
-                onPlayerMove(player, player.getLocation());
-                state.lastLocation = to;
-                state.lastTime = System.currentTimeMillis();
-            }
+        PlayerState state = playerStates.get(player.getName());
+        if (state != null) {
+            onPlayerMove(player, player.getLocation());
+            state.lastLocation = to;
+            state.lastTime = System.currentTimeMillis();
         }
     }
 
     public static void onPlayerEnterBed(Player player) {
-        if (!isStatsPlayer(player)) {
-            return;
-        }
-
         bedOwners.add(player.getName());
         Statistics stats = group.getStatistics(player.getName());
         stats.incr("timesSlept");

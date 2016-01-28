@@ -61,7 +61,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             PlayerStats.onPlayerJoin(player);
         }
     }
@@ -69,7 +69,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             PlayerStats.onPlayerQuit(player);
         }
     }
@@ -78,7 +78,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
         String message = ChatColor.stripColor(event.getLeaveMessage());
-        if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             PlayerStats.onPlayerKick(player, message);
         }
     }
@@ -91,7 +91,7 @@ public final class PlayerListenerImpl implements Listener {
         if (damageEvent == null) {
             return;
         }
-        if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             PlayerStats.onPlayerDeath(player, message, damageEvent.getCause());
         }
     }
@@ -107,7 +107,7 @@ public final class PlayerListenerImpl implements Listener {
                     & (event.getFrom().getBlockZ() == event.getTo().getBlockZ())) {
                 return;
             }
-            if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 PlayerStats.onPlayerMove(player, event.getTo());
             }
         }
@@ -116,7 +116,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             PlayerStats.onPlayerTeleport(player, event.getTo());
         }
     }
