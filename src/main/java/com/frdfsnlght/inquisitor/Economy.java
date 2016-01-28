@@ -60,7 +60,7 @@ public final class Economy {
     public static double getBalanace(Player player) {
         try {
             if (vaultAvailable()) {
-                return vaultPlugin.getBalance(player.getName());
+                return vaultPlugin.getBalance(player);
             }
         } catch (Exception ex) {
             Utils.warning("Vault or your Vault compatible economy plugin threw an exception getting player balance: %s", ex.getMessage());
