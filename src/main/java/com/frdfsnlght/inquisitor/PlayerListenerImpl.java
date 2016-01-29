@@ -80,8 +80,8 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
-        String message = ChatColor.stripColor(event.getLeaveMessage());
         if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            String message = ChatColor.stripColor(event.getLeaveMessage());
             PlayerStats.onPlayerKick(player, message);
         }
     }
