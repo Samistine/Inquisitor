@@ -450,7 +450,6 @@ public final class Statistics {
         lastFlushed = System.currentTimeMillis();
         inDB = true;
         dirty.clear();
-        if (StatisticsManager.getDebug())
             Utils.debug("flushed %s %s", group.getName(), key);
 
         return job;
