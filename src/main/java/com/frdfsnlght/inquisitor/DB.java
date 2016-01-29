@@ -125,13 +125,6 @@ public final class DB {
     }
 
     /* Begin options */
-    public static boolean getDebug() {
-        return Config.getBooleanDirect("db.debug", false);
-    }
-
-    public static void setDebug(boolean b) {
-        Config.setPropertyDirect("db.debug", b);
-    }
 
     public static String getUrl() {
         return Config.getStringDirect("db.url", null);
@@ -248,7 +241,7 @@ public final class DB {
     }
 
     public static PreparedStatement prepare(String sql) throws SQLException {
-        if (getDebug()) {
+        if (Config.getDebug()) {
             Utils.debug(sql);
         }
         return connect().prepareStatement(sql);
@@ -438,14 +431,14 @@ public final class DB {
                     stmt2 = prepare("UPDATE " + tableName("players") + " SET `"
                             + Statistic.MappedObjectsColumn
                             + "`=? WHERE `id`=?");
-                    if (getDebug()) {
+                    if (Config.getDebug()) {
                         Utils.debug("Updating %s players...", data.keySet()
                                 .size());
                     }
                     for (int id : data.keySet()) {
                         stmt2.setClob(1, encodeToJSON((TypeMap) data.get(id)));
                         stmt2.setInt(2, id);
-                        if (getDebug()) {
+                        if (Config.getDebug()) {
                             Utils.debug("updating player %s", id);
                         }
                         stmt2.executeUpdate();
