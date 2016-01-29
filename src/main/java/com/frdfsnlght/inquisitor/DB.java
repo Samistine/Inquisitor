@@ -241,7 +241,7 @@ public final class DB {
     }
 
     public static PreparedStatement prepare(String sql) throws SQLException {
-            Utils.debug(sql);
+        Utils.debug(sql);
         return connect().prepareStatement(sql);
     }
 
@@ -426,11 +426,11 @@ public final class DB {
                     stmt2 = prepare("UPDATE " + tableName("players") + " SET `"
                             + Statistic.MappedObjectsColumn
                             + "`=? WHERE `id`=?");
-                        Utils.debug("Updating %s players...", data.keySet().size());
+                    Utils.debug("Updating %s players...", data.keySet().size());
                     for (int id : data.keySet()) {
                         stmt2.setClob(1, encodeToJSON((TypeMap) data.get(id)));
                         stmt2.setInt(2, id);
-                            Utils.debug("updating player %s", id);
+                        Utils.debug("updating player %s", id);
                         stmt2.executeUpdate();
                     }
                     stmt2.close();
