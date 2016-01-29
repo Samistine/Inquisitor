@@ -364,8 +364,7 @@ public final class DB {
                                 + " SET " + data[1] + "=? WHERE id=?");
                         while (rs.next()) {
                             int id = rs.getInt("id");
-                            TypeMap map = (TypeMap) decodeFromJSON(rs
-                                    .getClob(data[0]));
+                            TypeMap map = (TypeMap) decodeFromJSON(rs.getClob(data[0]));
                             if (data[2].equals("int")) {
                                 int count = totalIntegerTypeMap(map);
                                 stmt2.setInt(1, count);
@@ -394,8 +393,7 @@ public final class DB {
                         }
                         sb.append(",`").append(stat.getName()).append('`');
                     }
-                    stmt1 = prepare("SELECT " + sb.toString() + " FROM "
-                            + tableName("players"));
+                    stmt1 = prepare("SELECT " + sb.toString() + " FROM " + tableName("players"));
                     rs = stmt1.executeQuery();
                     Map<Integer, Object> data = new HashMap<Integer, Object>();
                     while (rs.next()) {
@@ -405,8 +403,7 @@ public final class DB {
                             if (!stat.isMapped()) {
                                 continue;
                             }
-                            TypeMap map = (TypeMap) decodeFromJSON(rs
-                                    .getClob(stat.getName()));
+                            TypeMap map = (TypeMap) decodeFromJSON(rs.getClob(stat.getName()));
                             mappedObjects.put(stat.getName(), map);
                         }
                         data.put(id, mappedObjects);
@@ -432,8 +429,7 @@ public final class DB {
                             + Statistic.MappedObjectsColumn
                             + "`=? WHERE `id`=?");
                     if (Config.getDebug()) {
-                        Utils.debug("Updating %s players...", data.keySet()
-                                .size());
+                        Utils.debug("Updating %s players...", data.keySet().size());
                     }
                     for (int id : data.keySet()) {
                         stmt2.setClob(1, encodeToJSON((TypeMap) data.get(id)));
