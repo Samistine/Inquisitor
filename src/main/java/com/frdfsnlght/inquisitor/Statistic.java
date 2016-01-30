@@ -122,7 +122,9 @@ public enum Statistic {
     itemEnchantmentLevels("itemEnchantmentLevels", Type.INTEGER),
     //
     sessionTime("sessionTime", Type.ELAPSED_TIME),
-    totalTime("totalTime", Type.ELAPSED_TIME);
+    totalTime("totalTime", Type.ELAPSED_TIME),
+    
+    BLAHS("blahs", Type.INTEGER, false);
 
     public static final String MappedObjectsColumn = "mapped";
 

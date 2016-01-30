@@ -97,7 +97,7 @@ public class TestCommands extends CommandProcessor {
                 StatisticsManager.removeGroup(statsGroup);
             if (statsGroup == null) {
                 statsGroup = new StatisticsGroup("stats", "name", Type.STRING, 30);
-                statsGroup.addStatistic(new Statistic("blahs", Type.INTEGER, false));
+                statsGroup.addStatistic(Statistic.BLAHS);
             }
             StatisticsManager.addGroup(statsGroup);
 
