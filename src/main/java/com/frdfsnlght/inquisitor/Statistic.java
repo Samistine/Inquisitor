@@ -156,17 +156,16 @@ public enum Statistic {
         if (mapped) {
             size = -1;
             def = null;
-        } else
-            switch (type) {
-                case STRING:
-                    if (size < 1)
-                        throw new IllegalArgumentException("size must be at least 1");
-                    break;
-                default:
-                    size = -1;
-                    def = null;
-                    break;
+        } else {
+            if (type == Type.STRING) {
+                if (size < 1) {
+                    throw new IllegalArgumentException("size must be at least 1");
+                }
+            } else {
+                size = -1;
+                def = null;
             }
+        }
 
         this.name = name;
         this.type = type;
