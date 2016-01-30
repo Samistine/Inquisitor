@@ -95,10 +95,8 @@ public final class PlayerStats {
 
         options = new Options(PlayerStats.class, OPTIONS, "inq.players",
                 new OptionsListener() {
-                    public void onOptionSet(Context ctx, String name,
-                            String value) {
-                        ctx.sendLog("player stats option '%s' set to '%s'",
-                                name, value);
+                    public void onOptionSet(Context ctx, String name, String value) {
+                        ctx.sendLog("player stats option '%s' set to '%s'", name, value);
                         if (RESTART_OPTIONS.contains(name)) {
                             Config.save(ctx);
                             stop();
