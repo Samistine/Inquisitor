@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -131,7 +132,6 @@ public enum Statistic {
     private final int size;   // for STRING
     private final String def; // for STRING
     private final StatisticsGroup group = null;
-    private final Set<String> oldNames = new HashSet<String>();
 
     private Statistic(String name, Type type) {
         this(name, type, false, -1, null);
@@ -207,8 +207,17 @@ public enum Statistic {
         return group;
     }
 
-    public void addOldName(String oldName) {
-        oldNames.add(oldName);
+    public Set<String> getOldNames() {
+        switch (this) {
+            case mooshroomsMilked:
+                return new HashSet<String>(Arrays.asList("mushroomCowsMilked"));
+            case totalPlayersKilled:
+                return new HashSet<String>(Arrays.asList("playerKills"));
+            case totalMobsKilled:
+                return new HashSet<String>(Arrays.asList("mobKills"));
+            default:
+                return null;
+        }
     }
 
     public void validate() {
@@ -217,7 +226,7 @@ public enum Statistic {
         if (mapped)
             group.validateColumn(MappedObjectsColumn, Type.OBJECT, -1, null, null);
         else
-            group.validateColumn(name, type, size, def, oldNames);
+            group.validateColumn(name, type, size, def, getOldNames());
     }
 
     public enum Type {

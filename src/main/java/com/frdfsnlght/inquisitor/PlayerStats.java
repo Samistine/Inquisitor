@@ -206,11 +206,6 @@ public final class PlayerStats {
         group.addStatistic(Statistic.sessionTime);
         group.addStatistic(Statistic.totalTime);
 
-        group.getStatistic("mooshroomsMilked").addOldName("mushroomCowsMilked");
-        group.getStatistic("mooshroomsMilked").addOldName("mushroomCowsMilked");
-        group.getStatistic("totalPlayersKilled").addOldName("playerKills");
-        group.getStatistic("totalMobsKilled").addOldName("mobKills");
-
         group.addListener(new BeforeFlushListener() {
             public void beforeFlush(Statistics stats) {
                 savePlayerInfo(stats);
