@@ -164,8 +164,6 @@ public final class Statistics {
     }
 
     public void set(Statistic statistic, Object value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
         String name = statistic.getName();
@@ -213,8 +211,6 @@ public final class Statistics {
     }
 
     public void set(Statistic statistic, String key, Object value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (! statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
         String name = statistic.getName();
@@ -267,8 +263,6 @@ public final class Statistics {
     }
 
     public void add(Statistic statistic, Number value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (value == null) return;
         if (statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
@@ -302,8 +296,6 @@ public final class Statistics {
     }
 
     public void add(Statistic statistic, String key, Number value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (value == null) return;
         if (! statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");

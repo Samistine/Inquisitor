@@ -131,7 +131,6 @@ public enum Statistic {
     private final boolean mapped;
     private final int size;   // for STRING
     private final String def; // for STRING
-    private final StatisticsGroup group = null;
 
     private Statistic(String name, Type type) {
         this(name, type, false, -1, null);
@@ -199,14 +198,6 @@ public enum Statistic {
         return def;
     }
 
-    public void setGroup(StatisticsGroup group) {
-        this.group = group;
-    }
-
-    public StatisticsGroup getGroup() {
-        return group;
-    }
-
     public Set<String> getOldNames() {
         switch (this) {
             case mooshroomsMilked:
@@ -220,7 +211,7 @@ public enum Statistic {
         }
     }
 
-    public void validate() {
+    public void validate(StatisticsGroup group) {
         if (group == null)
             throw new IllegalStateException(this + " group has not been set");
         if (mapped)

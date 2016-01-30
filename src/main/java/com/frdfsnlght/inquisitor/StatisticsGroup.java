@@ -156,8 +156,7 @@ public final class StatisticsGroup {
             }
             statistics.put(statistic.getName(), statistic);
         }
-        statistic.setGroup(this);
-        statistic.validate();
+        statistic.validate(this);
         for (Statistics s : stats.values()) {
             s.addStatistic(statistic);
         }
@@ -168,7 +167,6 @@ public final class StatisticsGroup {
             if (!statistics.containsKey(statistic.getName())) {
                 return;
             }
-            statistic.setGroup(null);
             statistics.remove(statistic.getName());
         }
         for (Statistics s : stats.values()) {
@@ -513,7 +511,7 @@ public final class StatisticsGroup {
 
             synchronized (statistics) {
                 for (Statistic statistic : statistics.values()) {
-                    statistic.validate();
+                    statistic.validate(this);
                 }
             }
 
