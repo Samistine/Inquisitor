@@ -46,13 +46,13 @@ public class PlayerJoinRunnable extends BukkitRunnable {
             stmt.execute();
 
             final Statistics stats = group.getStatistics(pname);
-            stats.set("uuid", puuidst);
-            stats.incr("joins");
-            stats.set("lastJoin", date);
-            stats.set("sessionTime", 0);
-            stats.set("online", true);
+            stats.set(Statistic.uuid, puuidst);
+            stats.incr(Statistic.joins);
+            stats.set(Statistic.lastJoin, date);
+            stats.set(Statistic.sessionTime, 0);
+            stats.set(Statistic.online, true);
             if (!stats.isInDB()) {
-                stats.set("firstJoin", date);
+                stats.set(Statistic.firstJoin, date);
             }
             String bedServer = stats.getString("bedServer");
             if ((bedServer != null) && bedServer.equals(servername)) {

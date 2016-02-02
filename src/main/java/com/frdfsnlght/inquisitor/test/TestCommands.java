@@ -102,7 +102,7 @@ public class TestCommands extends CommandProcessor {
             StatisticsManager.addGroup(statsGroup);
 
             Statistics stats = statsGroup.getStatistics("tab");
-            stats.incr("blahs");
+            stats.incr(Statistic.BLAHS);
             stats.flush();
 
             return;

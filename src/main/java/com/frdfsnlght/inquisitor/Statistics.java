@@ -156,12 +156,12 @@ public final class Statistics {
         return stats.getDouble(name);
     }
 
-    public void set(String name, Object value) {
+    /*public void set(String name, Object value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         set(statistic, value);
-    }
+    }*/
 
     public void set(Statistic statistic, Object value) {
         if (statistic.isMapped())
@@ -203,12 +203,12 @@ public final class Statistics {
         dirty.add(name);
     }
 
-    public void set(String name, String key, Object value) {
+    /*public void set(String name, String key, Object value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         set(statistic, key, value);
-    }
+    }*/
 
     public void set(Statistic statistic, String key, Object value) {
         if (! statistic.isMapped())
@@ -255,12 +255,12 @@ public final class Statistics {
         dirty.add(name);
     }
 
-    public void add(String name, Number value) {
+    /*public void add(String name, Number value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         add(statistic, value);
-    }
+    }*/
 
     public void add(Statistic statistic, Number value) {
         if (value == null) return;
@@ -288,12 +288,12 @@ public final class Statistics {
         dirty.add(name);
     }
 
-    public void add(String name, String key, Number value) {
+    /*public void add(String name, String key, Number value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         add(statistic, key, value);
-    }
+    }*/
 
     public void add(Statistic statistic, String key, Number value) {
         if (value == null) return;
@@ -326,17 +326,17 @@ public final class Statistics {
         dirty.add(name);
     }
 
-    public void incr(String name) {
+    /*public void incr(String name) {
         add(name, 1);
-    }
+    }*/
 
     public void incr(Statistic statistic) {
         add(statistic, 1);
     }
 
-    public void incr(String name, String key) {
+    /*public void incr(String name, String key) {
         add(name, key, 1);
-    }
+    }*/
 
     public void incr(Statistic statistic, String key) {
         add(statistic, key, 1);

@@ -39,8 +39,8 @@ public class BlockListenerImpl implements Listener {
             Material type = event.getBlock().getType();
             if (player.isOnline()) {
                 Statistics stats = PlayerStats.group.getStatistics(player.getName());
-                stats.incr("totalBlocksBroken");
-                stats.incr("blocksBroken", Utils.titleCase(type.name()));
+                stats.incr(Statistic.totalBlocksBroken);
+                stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
             }
             if (type == Material.BED_BLOCK) {
                 PlayerStats.checkBeds();
@@ -55,8 +55,8 @@ public class BlockListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             Material type = event.getBlock().getType();
             Statistics stats = PlayerStats.group.getStatistics(player.getName());
-            stats.incr("totalBlocksPlaced");
-            stats.incr("blocksPlaced", Utils.titleCase(type.name()));
+            stats.incr(Statistic.totalBlocksPlaced);
+            stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
         }
     }
 
@@ -72,7 +72,7 @@ public class BlockListenerImpl implements Listener {
         if (event.getPlayer() != null) {
             Player player = event.getPlayer();
             if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
-                PlayerStats.group.getStatistics(player.getName()).incr("firesStarted");
+                PlayerStats.group.getStatistics(player.getName()).incr(Statistic.firesStarted);
             }
         }
     }

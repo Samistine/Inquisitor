@@ -134,11 +134,11 @@ public final class PlayerListenerImpl implements Listener {
             if (event.isAsynchronous()) {
                 Utils.fire(new Runnable() {
                     public void run() {
-                        PlayerStats.group.getStatistics(pName).incr("chatMessages");
+                        PlayerStats.group.getStatistics(pName).incr(Statistic.chatMessages);
                     }
                 });
             } else {
-                PlayerStats.group.getStatistics(pName).incr("chatMessages");
+                PlayerStats.group.getStatistics(pName).incr(Statistic.chatMessages);
             }
         }
     }
@@ -152,8 +152,8 @@ public final class PlayerListenerImpl implements Listener {
             Material type = itemstack.getType();
 
             Statistics stats = PlayerStats.group.getStatistics(player.getName());
-            stats.add("totalItemsDropped", amount);
-            stats.add("itemsDropped", Utils.titleCase(type.name()), amount);
+            stats.add(Statistic.totalItemsDropped, amount);
+            stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
         }
     }
 
@@ -167,8 +167,8 @@ public final class PlayerListenerImpl implements Listener {
             Material type = itemstack.getType();
 
             Statistics stats = PlayerStats.group.getStatistics(pName);
-            stats.add("totalItemsPickedUp", amount);
-            stats.add("itemsPickedUp", Utils.titleCase(type.name()), amount);
+            stats.add(Statistic.totalItemsPickedUp, amount);
+            stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
         }
     }
 
@@ -178,7 +178,7 @@ public final class PlayerListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr("portalsCrossed");
+            PlayerStats.group.getStatistics(pName).incr(Statistic.portalsCrossed);
         }
     }
 
@@ -194,17 +194,17 @@ public final class PlayerListenerImpl implements Listener {
             switch (itemTypeInHand) {
                 case BUCKET:
                     if (event.getRightClicked() instanceof Cow) {
-                        stats.incr("cowsMilked");
+                        stats.incr(Statistic.cowsMilked);
                     }
                     break;
                 case BOWL:
                     if (event.getRightClicked() instanceof MushroomCow) {
-                        stats.incr("mooshroomsMilked");
+                        stats.incr(Statistic.mooshroomsMilked);
                     }
                     break;
                 case INK_SACK:
                     if (event.getRightClicked() instanceof Sheep) {
-                        stats.incr("sheepDyed");
+                        stats.incr(Statistic.sheepDyed);
                     }
                     break;
             }
@@ -218,7 +218,7 @@ public final class PlayerListenerImpl implements Listener {
             String pName = player.getName();
             int amount = event.getAmount();
 
-            PlayerStats.group.getStatistics(pName).add("lifetimeExperience", amount);
+            PlayerStats.group.getStatistics(pName).add(Statistic.lifetimeExperience, amount);
         }
     }
 
@@ -229,8 +229,8 @@ public final class PlayerListenerImpl implements Listener {
             String pName = player.getName();
             int amount = event.getExpLevelCost();
 
-            PlayerStats.group.getStatistics(pName).incr("itemsEnchanted");
-            PlayerStats.group.getStatistics(pName).add("itemEnchantmentLevels", amount);
+            PlayerStats.group.getStatistics(pName).incr(Statistic.itemsEnchanted);
+            PlayerStats.group.getStatistics(pName).add(Statistic.itemEnchantmentLevels, amount);
         }
     }
 
@@ -250,10 +250,10 @@ public final class PlayerListenerImpl implements Listener {
             String pName = player.getName();
             switch (event.getEntity().getType()) {//needs work
                 case SHEEP:
-                    PlayerStats.group.getStatistics(pName).incr("sheepSheared");
+                    PlayerStats.group.getStatistics(pName).incr(Statistic.sheepSheared);
                     break;
                 case MUSHROOM_COW:
-                    PlayerStats.group.getStatistics(pName).incr("mooshroomSheared");
+                    PlayerStats.group.getStatistics(pName).incr(Statistic.mooshroomsSheared);
                     break;
             }
         }
@@ -266,7 +266,7 @@ public final class PlayerListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
                 String pName = player.getName();
 
-                PlayerStats.group.getStatistics(pName).incr("fishCaught");
+                PlayerStats.group.getStatistics(pName).incr(Statistic.fishCaught);
             }
         }
     }
@@ -278,7 +278,7 @@ public final class PlayerListenerImpl implements Listener {
             EntityType hatchingType = event.getHatchingType();
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr("eggsThrown", Utils.normalizeEntityTypeName(hatchingType));
+            PlayerStats.group.getStatistics(pName).incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
         }
     }
 
@@ -293,19 +293,19 @@ public final class PlayerListenerImpl implements Listener {
                     switch (event.getBlockClicked().getType()) {
                         case WATER:
                         case STATIONARY_WATER:
-                            PlayerStats.group.getStatistics(player.getName()).incr("waterBucketsFilled");
+                            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.waterBucketsFilled);
                             break;
                         case LAVA:
                         case STATIONARY_LAVA:
-                            PlayerStats.group.getStatistics(player.getName()).incr("lavaBucketsFilled");
+                            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.lavaBucketsFilled);
                             break;
                     }
                     break;
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr("waterBucketsFilled");
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(Statistic.waterBucketsFilled);
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr("lavaBucketsFilled");
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(Statistic.lavaBucketsFilled);
                     break;
             }
         }
@@ -318,10 +318,10 @@ public final class PlayerListenerImpl implements Listener {
             Material bucket = event.getBucket();
             switch (bucket) {
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr("waterBucketsEmptied");
+                    PlayerStats.group.getStatistics(player.getName()).incr(Statistic.waterBucketsEmptied);
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr("lavaBucketsEmptied");
+                    PlayerStats.group.getStatistics(player.getName()).incr(Statistic.lavaBucketsEmptied);
                     break;
             }
         }
@@ -338,8 +338,8 @@ public final class PlayerListenerImpl implements Listener {
                 Material material = event.getRecipe().getResult().getType();
 
                 Statistics stats = PlayerStats.group.getStatistics(pName);
-                stats.add("totalItemsCrafted", amount);
-                stats.add("itemsCrafted", Utils.titleCase(material.name()), amount);
+                stats.add(Statistic.totalItemsCrafted, amount);
+                stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
             }
         }
     }

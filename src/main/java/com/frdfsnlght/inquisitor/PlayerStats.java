@@ -74,7 +74,7 @@ public final class PlayerStats {
     protected static final Set<String> bedOwners = Collections.synchronizedSet(new HashSet<String>());
     private static final Set<String> ignoredPlayerJoins = new HashSet<String>();
     private static final Set<String> kickedPlayers = new HashSet<String>();
-    
+
     protected static final Map<String, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<String, PlayerState>());
 
     private static final Map<Integer, String> playerLoginTasks = Collections.synchronizedMap(new HashMap<Integer, String>());
@@ -422,6 +422,7 @@ public final class PlayerStats {
         final Statistics stats = group.getStatistics(player.getName());
 
         try {
+            double totalTime = stats.getDouble("totalTime");
             String traveling = stats.getString("biomeTimes");
             String[] split = traveling.split("\\r?\\n");
             List<Double> values = new ArrayList<Double>();
@@ -431,23 +432,24 @@ public final class PlayerStats {
                     values.add(Double.parseDouble(oneMoreSplit[1]));
                 }
             }
-            Double totalTime = 0.00;
+            Double newTotalTime = 0.00;
             for (Double value : values) {
-                totalTime = totalTime + value;
+                newTotalTime = newTotalTime + value;
             }
             //System.out.println(TimeUnit.SECONDS.toDays(totalTime.intValue()));
-            if (totalTime > 1) {
-                stats.set("totalTime", totalTime);
+            if (totalTime < newTotalTime) {
+                System.out.println("Looks like there was an issue with a player in Inquisitor. We set his play time based off biomeTimes");
+                stats.set(Statistic.totalTime, newTotalTime);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (!kickedPlayers.remove(player.getName())) {
-            stats.incr("quits");
-            stats.set("lastQuit", new Date());
+            stats.incr(Statistic.quits);
+            stats.set(Statistic.lastQuit, new Date());
         }
-        stats.set("online", false);
+        stats.set(Statistic.online, false);
         Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
             public void run() {
                 stats.flushSync();
@@ -477,9 +479,9 @@ public final class PlayerStats {
         }
 
         Statistics stats = group.getStatistics(player.getName());
-        stats.incr("kicks");
-        stats.set("lastKick", new Date());
-        stats.set("lastKickMessage", message);
+        stats.incr(Statistic.kicks);
+        stats.set(Statistic.lastKick, new Date());
+        stats.set(Statistic.lastKickMessage, message);
         kickedPlayers.add(player.getName());
     }
 
@@ -487,10 +489,10 @@ public final class PlayerStats {
         Utils.debug("onPlayerDeath '%s'", player.getName());
 
         final Statistics stats = group.getStatistics(player.getName());
-        stats.incr("deaths");
-        stats.set("lastDeath", new Date());
-        stats.set("lastDeathMessage", message);
-        stats.incr("deathCauses", Utils.titleCase(cause.name()));
+        stats.incr(Statistic.deaths);
+        stats.set(Statistic.lastDeath, new Date());
+        stats.set(Statistic.lastDeathMessage, message);
+        stats.incr(Statistic.deathCauses, Utils.titleCase(cause.name()));
         Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
             public void run() {
                 stats.flushSync();
@@ -563,10 +565,10 @@ public final class PlayerStats {
 
         String newModeName = Utils.titleCase(newMode.name());
         if (state.lastMode == newMode) {
-            stats.add("travelDistances", newModeName, distance);
-            stats.add("totalDistanceTraveled", distance);
+            stats.add(Statistic.travelDistances, newModeName, distance);
+            stats.add(Statistic.totalDistanceTraveled, distance);
             if (distance >= 1) {
-                stats.add("travelTimes", newModeName, elapsed);
+                stats.add(Statistic.travelTimes, newModeName, elapsed);
             }
         } else {
             state.lastMode = newMode;
@@ -575,16 +577,16 @@ public final class PlayerStats {
 //		if (block.getY() < 255 && block.getLightFromSky() < 6) {
         if (block.getY() < 65 && isInside(block.getLocation(), 2)) {
             if (state.lastBiome == null) {
-                stats.add("biomeDistances", "Underground", distance);
-                stats.add("biomeTimes", "Underground", elapsed);
+                stats.add(Statistic.biomeDistances, "Underground", distance);
+                stats.add(Statistic.biomeTimes, "Underground", elapsed);
             } else {
                 state.lastBiome = null;
             }
         } else {
             if (state.lastBiome == block.getBiome()) {
                 String biomeName = Utils.titleCase(state.lastBiome.name());
-                stats.add("biomeDistances", biomeName, distance);
-                stats.add("biomeTimes", biomeName, elapsed);
+                stats.add(Statistic.biomeDistances, biomeName, distance);
+                stats.add(Statistic.biomeTimes, biomeName, elapsed);
             } else {
                 state.lastBiome = block.getBiome();
             }
@@ -619,7 +621,7 @@ public final class PlayerStats {
     public static void onPlayerEnterBed(Player player) {
         bedOwners.add(player.getName());
         Statistics stats = group.getStatistics(player.getName());
-        stats.incr("timesSlept");
+        stats.incr(Statistic.timesSlept);
     }
 
     public static void checkBeds() {
@@ -639,9 +641,9 @@ public final class PlayerStats {
                 Utils.debug("player '%s' no longer has a bed", name);
 
                 Statistics stats = group.getStatistics(player.getName());
-                stats.set("bedServer", null);
-                stats.set("bedWorld", null);
-                stats.set("bedCoords", null);
+                stats.set(Statistic.bedServer, null);
+                stats.set(Statistic.bedWorld, null);
+                stats.set(Statistic.bedCoords, null);
                 stats.flush();
                 if (!player.isOnline()) {
                     group.removeStatistics(stats);
@@ -758,51 +760,51 @@ public final class PlayerStats {
             return;
         }
 
-        stats.set("displayName", player.getDisplayName());
+        stats.set(Statistic.displayName, player.getDisplayName());
 
-        stats.set("address", player.getAddress().getAddress().getHostAddress());
-        stats.set("inventory", encodeItemStacks(player.getInventory().getContents()));
-        stats.set("armor", encodeItemStacks(player.getInventory().getArmorContents()));
-        stats.set("ender", encodeItemStacks(player.getEnderChest().getContents()));
-        stats.set("heldItemSlot", player.getInventory().getHeldItemSlot());
-        stats.set("health", player.getHealth());
-        stats.set("remainingAir", player.getRemainingAir());
-        stats.set("fireTicks", player.getFireTicks());
-        stats.set("foodLevel", player.getFoodLevel());
-        stats.set("exhaustion", player.getExhaustion());
-        stats.set("saturation", player.getSaturation());
-        stats.set("gameMode", player.getGameMode().toString());
-        stats.set("level", player.getLevel());
-        stats.set("exp", player.getExp());
-        stats.set("totalExperience", player.getTotalExperience());
-        stats.set("potionEffects", encodePotionEffects(player.getActivePotionEffects()));
+        stats.set(Statistic.address, player.getAddress().getAddress().getHostAddress());
+        stats.set(Statistic.inventory, encodeItemStacks(player.getInventory().getContents()));
+        stats.set(Statistic.armor, encodeItemStacks(player.getInventory().getArmorContents()));
+        stats.set(Statistic.ender, encodeItemStacks(player.getEnderChest().getContents()));
+        stats.set(Statistic.heldItemSlot, player.getInventory().getHeldItemSlot());
+        stats.set(Statistic.health, player.getHealth());
+        stats.set(Statistic.remainingAir, player.getRemainingAir());
+        stats.set(Statistic.fireTicks, player.getFireTicks());
+        stats.set(Statistic.foodLevel, player.getFoodLevel());
+        stats.set(Statistic.exhaustion, player.getExhaustion());
+        stats.set(Statistic.saturation, player.getSaturation());
+        stats.set(Statistic.gameMode, player.getGameMode().toString());
+        stats.set(Statistic.level, player.getLevel());
+        stats.set(Statistic.exp, player.getExp());
+        stats.set(Statistic.totalExperience, player.getTotalExperience());
+        stats.set(Statistic.potionEffects, encodePotionEffects(player.getActivePotionEffects()));
 
-        stats.set("server", Global.plugin.getServer().getServerName());
-        stats.set("world", player.getWorld().getName());
-        stats.set("coords", encodeCoords(player.getLocation()));
+        stats.set(Statistic.server, Global.plugin.getServer().getServerName());
+        stats.set(Statistic.world, player.getWorld().getName());
+        stats.set(Statistic.coords, encodeCoords(player.getLocation()));
 
         if (Global.enabled) {
-            stats.set("groups", Permissions.getGroups(player));
-            stats.set("money", Economy.getBalanace(player));
+            stats.set(Statistic.groups, Permissions.getGroups(player));
+            stats.set(Statistic.money, Economy.getBalanace(player));
         }
 
         if ((!DB.getShared()) || bedOwners.contains(player.getName())) {
             if ((player.getBedSpawnLocation() == null) || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
-                stats.set("bedServer", null);
-                stats.set("bedWorld", null);
-                stats.set("bedCoords", null);
+                stats.set(Statistic.bedServer, null);
+                stats.set(Statistic.bedWorld, null);
+                stats.set(Statistic.bedCoords, null);
             } else {
-                stats.set("bedServer", Global.plugin.getServer().getServerName());
-                stats.set("bedWorld", player.getBedSpawnLocation().getWorld().getName());
-                stats.set("bedCoords", encodeCoords(player.getBedSpawnLocation()));
+                stats.set(Statistic.bedServer, Global.plugin.getServer().getServerName());
+                stats.set(Statistic.bedWorld, player.getBedSpawnLocation().getWorld().getName());
+                stats.set(Statistic.bedCoords, encodeCoords(player.getBedSpawnLocation()));
             }
         }
 
         PlayerState state = playerStates.get(player.getName());
         if (state != null) {
             float sessionTime = (float) (System.currentTimeMillis() - state.joinTime) / 1000f;
-            stats.set("sessionTime", sessionTime);
-            stats.set("totalTime", state.totalTimeBase + sessionTime);
+            stats.set(Statistic.sessionTime, sessionTime);
+            stats.set(Statistic.totalTime, state.totalTimeBase + sessionTime);
         }
     }
 
