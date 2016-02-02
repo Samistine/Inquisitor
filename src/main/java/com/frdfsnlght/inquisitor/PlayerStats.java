@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.EnumSet;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -107,102 +108,7 @@ public final class PlayerStats {
                     }
                 });
 
-        group.addStatistic(Statistic.displayName);
-        group.addStatistic(Statistic.uuid);
-
-        group.addStatistic(Statistic.address);
-        group.addStatistic(Statistic.inventory);
-        group.addStatistic(Statistic.armor);
-        group.addStatistic(Statistic.ender);
-        group.addStatistic(Statistic.heldItemSlot);
-        group.addStatistic(Statistic.health);
-        group.addStatistic(Statistic.remainingAir);
-        group.addStatistic(Statistic.fireTicks);
-        group.addStatistic(Statistic.foodLevel);
-        group.addStatistic(Statistic.exhaustion);
-        group.addStatistic(Statistic.saturation);
-        group.addStatistic(Statistic.gameMode);
-        group.addStatistic(Statistic.level);
-        group.addStatistic(Statistic.exp);
-        group.addStatistic(Statistic.totalExperience);
-        group.addStatistic(Statistic.potionEffects);
-        group.addStatistic(Statistic.online);
-
-        group.addStatistic(Statistic.server);
-        group.addStatistic(Statistic.world);
-        group.addStatistic(Statistic.coords);
-
-        group.addStatistic(Statistic.groups);
-        group.addStatistic(Statistic.money);
-
-        group.addStatistic(Statistic.bedServer);
-        group.addStatistic(Statistic.bedWorld);
-        group.addStatistic(Statistic.bedCoords);
-
-        group.addStatistic(Statistic.joins);
-        group.addStatistic(Statistic.firstJoin);
-        group.addStatistic(Statistic.lastJoin);
-        group.addStatistic(Statistic.quits);
-        group.addStatistic(Statistic.lastQuit);
-        group.addStatistic(Statistic.kicks);
-        group.addStatistic(Statistic.lastKick);
-        group.addStatistic(Statistic.lastKickMessage);
-        group.addStatistic(Statistic.deaths);
-        group.addStatistic(Statistic.deathCauses);
-        group.addStatistic(Statistic.lastDeath);
-        group.addStatistic(Statistic.lastDeathMessage);
-        group.addStatistic(Statistic.totalPlayersKilled);
-        group.addStatistic(Statistic.playersKilled);
-        group.addStatistic(Statistic.playersKilledByWeapon);
-
-        group.addStatistic(Statistic.lastPlayerKill);
-        group.addStatistic(Statistic.lastPlayerKilled);
-        group.addStatistic(Statistic.totalMobsKilled);
-        group.addStatistic(Statistic.mobsKilled);
-        group.addStatistic(Statistic.mobsKilledByWeapon);
-        group.addStatistic(Statistic.lastMobKill);
-        group.addStatistic(Statistic.lastMobKilled);
-
-        group.addStatistic(Statistic.totalBlocksBroken);
-        group.addStatistic(Statistic.blocksBroken);
-        group.addStatistic(Statistic.totalBlocksPlaced);
-        group.addStatistic(Statistic.blocksPlaced);
-        group.addStatistic(Statistic.animalsTamed);
-        group.addStatistic(Statistic.totalDistanceTraveled);
-        group.addStatistic(Statistic.travelDistances);
-        group.addStatistic(Statistic.biomeDistances);
-        group.addStatistic(Statistic.travelTimes);
-        group.addStatistic(Statistic.biomeTimes);
-        group.addStatistic(Statistic.totalItemsDropped);
-        group.addStatistic(Statistic.itemsDropped);
-        group.addStatistic(Statistic.totalItemsPickedUp);
-        group.addStatistic(Statistic.itemsPickedUp);
-        group.addStatistic(Statistic.totalItemsCrafted);
-        group.addStatistic(Statistic.itemsCrafted);
-        group.addStatistic(Statistic.eggsThrown);
-        group.addStatistic(Statistic.foodEaten);
-
-        group.addStatistic(Statistic.timesSlept);
-        group.addStatistic(Statistic.arrowsShot);
-        group.addStatistic(Statistic.firesStarted);
-        group.addStatistic(Statistic.fishCaught);
-        group.addStatistic(Statistic.sheepSheared);
-        group.addStatistic(Statistic.chatMessages);
-        group.addStatistic(Statistic.portalsCrossed);
-        group.addStatistic(Statistic.waterBucketsFilled);
-        group.addStatistic(Statistic.waterBucketsEmptied);
-        group.addStatistic(Statistic.lavaBucketsFilled);
-        group.addStatistic(Statistic.lavaBucketsEmptied);
-        group.addStatistic(Statistic.cowsMilked);
-        group.addStatistic(Statistic.mooshroomsMilked);
-        group.addStatistic(Statistic.mooshroomsSheared);
-        group.addStatistic(Statistic.sheepDyed);
-        group.addStatistic(Statistic.lifetimeExperience);
-        group.addStatistic(Statistic.itemsEnchanted);
-        group.addStatistic(Statistic.itemEnchantmentLevels);
-
-        group.addStatistic(Statistic.sessionTime);
-        group.addStatistic(Statistic.totalTime);
+        EnumSet.range(Statistic.displayName, Statistic.totalTime).forEach(group::addStatistic);
 
         group.addListener(new BeforeFlushListener() {
             public void beforeFlush(Statistics stats) {
