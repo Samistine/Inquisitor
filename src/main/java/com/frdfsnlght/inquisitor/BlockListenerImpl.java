@@ -69,11 +69,9 @@ public class BlockListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getPlayer() != null) {
-            Player player = event.getPlayer();
-            if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.group.getStatistics(player.getName()).incr(Statistic.firesStarted);
-            }
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.firesStarted);
         }
     }
 

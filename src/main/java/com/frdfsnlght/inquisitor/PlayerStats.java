@@ -287,6 +287,9 @@ public final class PlayerStats {
 
     public static boolean isStatsPlayer(Player player) {
 
+        if (player == null) {
+            return false;
+        }
         if (player.getGameMode() == null) {
             return false;
         }
