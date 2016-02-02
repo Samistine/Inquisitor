@@ -5,6 +5,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.api.TravelMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class PlayerState {
     float totalTimeBase;
     Location lastLocation;
     long lastTime;
-    PlayerStats.TravelMode lastMode;
+    TravelMode lastMode;
     Biome lastBiome;
 
     PlayerState(float totalTimeBase) {

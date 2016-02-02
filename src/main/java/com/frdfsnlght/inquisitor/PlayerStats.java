@@ -20,6 +20,7 @@ import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.Statistic.Type;
 import com.frdfsnlght.inquisitor.StatisticsGroup.BeforeFlushListener;
 import com.frdfsnlght.inquisitor.StatisticsManager.StatisticsManagerListener;
+import com.frdfsnlght.inquisitor.api.TravelMode;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -958,11 +959,6 @@ public final class PlayerStats {
         public void onPlayerStatsStarted();
 
         public void onPlayerStatsStopping();
-    }
-
-    protected static enum TravelMode {
-
-        WALKING, SPRINTING, SNEAKING, FLYING, SWIMMING, RIDING, RIDING_MINECART, RIDING_PIG, RIDING_BOAT, RIDING_HORSE;
     }
 
 }
