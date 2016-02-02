@@ -162,9 +162,7 @@ public final class PlayerStats {
             started = true;
             Utils.info("player stats collection started");
 
-            for (PlayerStatsListener listener : listeners) {
-                listener.onPlayerStatsStarted();
-            }
+            listeners.forEach(PlayerStatsListener::onPlayerStatsStarted);
 
         } catch (Exception e) {
             Utils.warning("player stats collection cannot be started: %s", e.getMessage());
@@ -175,9 +173,7 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        for (PlayerStatsListener listener : listeners) {
-            listener.onPlayerStatsStopping();
-        }
+        listeners.forEach(PlayerStatsListener::onPlayerStatsStopping);
         if (bedCheckTask != -1) {
             Global.plugin.getServer().getScheduler().cancelTask(bedCheckTask);
         }
