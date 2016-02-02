@@ -35,7 +35,7 @@ public class BlockListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
             if (player.isOnline()) {
                 Statistics stats = PlayerStats.group.getStatistics(player.getName());
@@ -52,7 +52,7 @@ public class BlockListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
             Statistics stats = PlayerStats.group.getStatistics(player.getName());
             stats.incr(Statistic.totalBlocksPlaced);
@@ -71,7 +71,7 @@ public class BlockListenerImpl implements Listener {
     public void onBlockIgnite(BlockIgniteEvent event) {
         if (event.getPlayer() != null) {
             Player player = event.getPlayer();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player)) {
                 PlayerStats.group.getStatistics(player.getName()).incr(Statistic.firesStarted);
             }
         }

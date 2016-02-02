@@ -62,11 +62,7 @@ public class PlayerJoinRunnable extends BukkitRunnable {
 
             Utils.debug("totalTime: " + stats.getFloat("totalTime"));
 
-            Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-                public void run() {
-                    stats.flushSync();
-                }
-            });
+            stats.flushSync();
         } catch (Exception ex) {
             Utils.severe("OnPlayerJoin Exception message: " + ex.getMessage());
             StringWriter sw = new StringWriter();

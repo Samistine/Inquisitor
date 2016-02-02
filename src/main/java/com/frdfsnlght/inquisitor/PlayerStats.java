@@ -77,7 +77,6 @@ public final class PlayerStats {
 
     protected static final Map<String, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<String, PlayerState>());
 
-    private static final Map<Integer, String> playerLoginTasks = Collections.synchronizedMap(new HashMap<Integer, String>());
     private static boolean started = false;
     private static int bedCheckTask = -1;
 
@@ -322,33 +321,8 @@ public final class PlayerStats {
         Utils.debug("onPlayerJoin '%s'", pname);
 
         BukkitRunnable onJoin = new PlayerJoinRunnable(puuidst, pname, date, servername);
-        playerLoginTasks.put(onJoin.runTaskAsynchronously(Global.plugin).getTaskId(), puuidst);
+        onJoin.run();
 
-    }
-
-    /**
-     *
-     * @param uuid
-     * @return false if the player is still logging in
-     */
-    public static boolean hasNoPendingLogin(UUID uuid) {
-        BukkitScheduler scheduler = Global.plugin.getServer().getScheduler();
-        synchronized (playerLoginTasks) {
-            Iterator iterator = playerLoginTasks.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Integer, String> entry = (Map.Entry) iterator.next();
-                if (scheduler.isQueued(entry.getKey()) || scheduler.isCurrentlyRunning(entry.getKey())) { //This task is still running
-                    if (entry.getValue().equals(uuid.toString())) { //Check if its the task for our player
-                        Global.plugin.getLogger().severe("ATTEMPTED TO GET/MODIFY STATS WHILE THE PLAYER's STATS WERE BEING LOADED");
-                        //System.out.println(Arrays.toString(Thread.currentThread().getStackTrace()));
-                        return false;
-                    }
-                } else {
-                    iterator.remove();
-                }
-            }
-        }
-        return true;
     }
 
     /*    public static void onPlayerJoin(Player player) {
@@ -450,11 +424,7 @@ public final class PlayerStats {
             stats.set(Statistic.lastQuit, new Date());
         }
         stats.set(Statistic.online, false);
-        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-            public void run() {
-                stats.flushSync();
-            }
-        });
+        stats.flushSync();
 
         group.removeStatistics(player.getName());
         playerStates.remove(player.getName());
@@ -493,11 +463,7 @@ public final class PlayerStats {
         stats.set(Statistic.lastDeath, new Date());
         stats.set(Statistic.lastDeathMessage, message);
         stats.incr(Statistic.deathCauses, Utils.titleCase(cause.name()));
-        Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-            public void run() {
-                stats.flushSync();
-            }
-        });
+        stats.flushSync();
 
         onPlayerMove(player, player.getLocation());
         PlayerState state = playerStates.get(player.getName());
