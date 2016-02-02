@@ -75,8 +75,6 @@ public final class PlayerStats {
     private static final Set<String> ignoredPlayerJoins = new HashSet<String>();
     private static final Set<UUID> kickedPlayers = new HashSet<UUID>();
 
-    protected static final Map<UUID, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<UUID, PlayerState>());
-
     private static boolean started = false;
     private static int bedCheckTask = -1;
 
@@ -281,7 +279,7 @@ public final class PlayerStats {
         bedOwners.clear();
         ignoredPlayerJoins.clear();
         kickedPlayers.clear();
-        playerStates.clear();
+        PlayerState.getPlayerStates().clear();
         Utils.info("player stats collection stopped");
     }
 
@@ -350,7 +348,7 @@ public final class PlayerStats {
             if ((bedServer != null) && bedServer.equals(servername)) {
                 bedOwners.add(puuid);
             }
-            playerStates.put(puuid, new PlayerState(stats.getFloat("totalTime")));
+            PlayerState.getPlayerStates().put(puuid, new PlayerState(stats.getFloat("totalTime")));
 
             Utils.debug("totalTime: " + stats.getFloat("totalTime"));
 
@@ -466,7 +464,7 @@ public final class PlayerStats {
         stats.flushSync();
 
         group.removeStatistics(player.getName());
-        playerStates.remove(player.getUniqueId());
+        PlayerState.getPlayerStates().remove(player.getUniqueId());
 
     }
 
@@ -505,7 +503,7 @@ public final class PlayerStats {
         stats.flushSync();
 
         onPlayerMove(player, player.getLocation());
-        PlayerState state = playerStates.get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
         if (state != null) {
             state.reset();
         }
@@ -515,7 +513,7 @@ public final class PlayerStats {
         // Utils.debug("onPlayerMove '%s'", player.getName());
 
         Statistics stats = group.getStatistics(player.getName());
-        PlayerState state = playerStates.get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
         if (state == null) {
             return;
         }
@@ -615,7 +613,7 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        PlayerState state = playerStates.get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
         if (state != null) {
             onPlayerMove(player, player.getLocation());
             state.lastLocation = to;
@@ -805,7 +803,7 @@ public final class PlayerStats {
             }
         }
 
-        PlayerState state = playerStates.get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
         if (state != null) {
             float sessionTime = (float) (System.currentTimeMillis() - state.joinTime) / 1000f;
             stats.set(Statistic.sessionTime, sessionTime);
@@ -965,30 +963,6 @@ public final class PlayerStats {
     protected static enum TravelMode {
 
         WALKING, SPRINTING, SNEAKING, FLYING, SWIMMING, RIDING, RIDING_MINECART, RIDING_PIG, RIDING_BOAT, RIDING_HORSE;
-    }
-    
-    private static class PlayerState {
-
-        long joinTime;
-        float totalTimeBase;
-        Location lastLocation;
-        long lastTime;
-        PlayerStats.TravelMode lastMode;
-        Biome lastBiome;
-
-        PlayerState(float totalTimeBase) {
-            this.joinTime = System.currentTimeMillis();
-            this.totalTimeBase = totalTimeBase;
-            reset();
-        }
-
-        final void reset() {
-            lastLocation = null;
-            lastTime = 0;
-            lastMode = null;
-            lastBiome = null;
-        }
-
     }
 
 }
