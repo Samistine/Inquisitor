@@ -18,6 +18,7 @@ package com.frdfsnlght.inquisitor;
 import java.util.Date;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -42,8 +43,11 @@ public final class EntityListenerImpl implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (PlayerStats.isStatsPlayer(player)) {
-                Statistics stats = PlayerStats.group.getStatistics(player.getName());
-                stats.add(Statistic.travelDistances, "Falling", event.getEntity().getFallDistance());
+                String pName = player.getName();
+                float fallDistance = event.getEntity().getFallDistance();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.add(Statistic.travelDistances, "Falling", fallDistance);
             }
         }
     }
@@ -105,7 +109,10 @@ public final class EntityListenerImpl implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.group.getStatistics(player.getName()).incr(Statistic.arrowsShot);
+                String pName = player.getName();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.arrowsShot);
             }
         }
     }
@@ -115,7 +122,11 @@ public final class EntityListenerImpl implements Listener {
         if (event.getOwner() instanceof Player) {
             Player player = (Player) event.getOwner();
             if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.group.getStatistics(player.getName()).incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(event.getEntityType()));
+                String pName = player.getName();
+                EntityType entityType = event.getEntityType();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
             }
         }
     }
@@ -130,7 +141,10 @@ public final class EntityListenerImpl implements Listener {
                 }
                 Material food = player.getItemInHand().getType();
                 if (food.isEdible()) {
-                    PlayerStats.group.getStatistics(player.getName()).incr(Statistic.foodEaten, Utils.titleCase(food.name()));
+                    String pName = player.getName();
+
+                    Statistics stats = PlayerStats.group.getStatistics(pName);
+                    stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
                 }
             }
         }

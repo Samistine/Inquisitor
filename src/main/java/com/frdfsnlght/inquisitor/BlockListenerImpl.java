@@ -38,7 +38,9 @@ public class BlockListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
             if (player.isOnline()) {
-                Statistics stats = PlayerStats.group.getStatistics(player.getName());
+                String pName = player.getName();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
                 stats.incr(Statistic.totalBlocksBroken);
                 stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
             }
@@ -53,8 +55,10 @@ public class BlockListenerImpl implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             Material type = event.getBlock().getType();
-            Statistics stats = PlayerStats.group.getStatistics(player.getName());
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
             stats.incr(Statistic.totalBlocksPlaced);
             stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
         }
@@ -71,7 +75,10 @@ public class BlockListenerImpl implements Listener {
     public void onBlockIgnite(BlockIgniteEvent event) {
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.firesStarted);
+            String pName = player.getName();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.firesStarted);
         }
     }
 

@@ -129,8 +129,9 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChatAsync(AsyncPlayerChatEvent event) {
-        if (PlayerStats.isStatsPlayer(event.getPlayer())) {
-            final String pName = event.getPlayer().getName();
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            final String pName = player.getName();
             if (event.isAsynchronous()) {
                 Utils.fire(new Runnable() {
                     public void run() {
@@ -147,11 +148,12 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             ItemStack itemstack = event.getItemDrop().getItemStack();
             int amount = itemstack.getAmount();
             Material type = itemstack.getType();
 
-            Statistics stats = PlayerStats.group.getStatistics(player.getName());
+            Statistics stats = PlayerStats.group.getStatistics(pName);
             stats.add(Statistic.totalItemsDropped, amount);
             stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
         }
@@ -178,7 +180,8 @@ public final class PlayerListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr(Statistic.portalsCrossed);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.portalsCrossed);
         }
     }
 
@@ -188,22 +191,22 @@ public final class PlayerListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
             Material itemTypeInHand = player.getItemInHand().getType();
-            Entity interactedWith = event.getRightClicked();//TODO: Not thread safe variable
+            EntityType rightClickedType = event.getRightClicked().getType();//TODO: Not thread safe variable
 
             Statistics stats = PlayerStats.group.getStatistics(pName);
             switch (itemTypeInHand) {
                 case BUCKET:
-                    if (event.getRightClicked() instanceof Cow) {
+                    if (rightClickedType == EntityType.COW) {
                         stats.incr(Statistic.cowsMilked);
                     }
                     break;
                 case BOWL:
-                    if (event.getRightClicked() instanceof MushroomCow) {
+                    if (rightClickedType == EntityType.MUSHROOM_COW) {
                         stats.incr(Statistic.mooshroomsMilked);
                     }
                     break;
                 case INK_SACK:
-                    if (event.getRightClicked() instanceof Sheep) {
+                    if (rightClickedType == EntityType.SHEEP) {
                         stats.incr(Statistic.sheepDyed);
                     }
                     break;
@@ -218,7 +221,8 @@ public final class PlayerListenerImpl implements Listener {
             String pName = player.getName();
             int amount = event.getAmount();
 
-            PlayerStats.group.getStatistics(pName).add(Statistic.lifetimeExperience, amount);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.add(Statistic.lifetimeExperience, amount);
         }
     }
 
@@ -229,8 +233,9 @@ public final class PlayerListenerImpl implements Listener {
             String pName = player.getName();
             int amount = event.getExpLevelCost();
 
-            PlayerStats.group.getStatistics(pName).incr(Statistic.itemsEnchanted);
-            PlayerStats.group.getStatistics(pName).add(Statistic.itemEnchantmentLevels, amount);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.itemsEnchanted);
+            stats.add(Statistic.itemEnchantmentLevels, amount);
         }
     }
 
@@ -248,12 +253,15 @@ public final class PlayerListenerImpl implements Listener {
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
-            switch (event.getEntity().getType()) {//needs work
+            EntityType type = event.getEntity().getType();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            switch (type) {
                 case SHEEP:
-                    PlayerStats.group.getStatistics(pName).incr(Statistic.sheepSheared);
+                    stats.incr(Statistic.sheepSheared);
                     break;
                 case MUSHROOM_COW:
-                    PlayerStats.group.getStatistics(pName).incr(Statistic.mooshroomsSheared);
+                    stats.incr(Statistic.mooshroomsSheared);
                     break;
             }
         }
@@ -266,7 +274,8 @@ public final class PlayerListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player)) {
                 String pName = player.getName();
 
-                PlayerStats.group.getStatistics(pName).incr(Statistic.fishCaught);
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.fishCaught);
             }
         }
     }
@@ -278,7 +287,8 @@ public final class PlayerListenerImpl implements Listener {
             EntityType hatchingType = event.getHatchingType();
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
         }
     }
 
@@ -315,13 +325,16 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {//needs work
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             Material bucket = event.getBucket();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
             switch (bucket) {
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr(Statistic.waterBucketsEmptied);
+                    stats.incr(Statistic.waterBucketsEmptied);
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr(Statistic.lavaBucketsEmptied);
+                    stats.incr(Statistic.lavaBucketsEmptied);
                     break;
             }
         }
