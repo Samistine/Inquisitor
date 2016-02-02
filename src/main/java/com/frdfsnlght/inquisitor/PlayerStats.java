@@ -20,6 +20,8 @@ import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.Statistic.Type;
 import com.frdfsnlght.inquisitor.StatisticsGroup.BeforeFlushListener;
 import com.frdfsnlght.inquisitor.StatisticsManager.StatisticsManagerListener;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,6 +46,7 @@ import java.util.regex.PatternSyntaxException;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
@@ -320,8 +323,44 @@ public final class PlayerStats {
         }
         Utils.debug("onPlayerJoin '%s'", pname);
 
-        BukkitRunnable onJoin = new PlayerJoinRunnable(puuidst, pname, date, servername);
-        onJoin.run();
+        try {
+            //Very simply update statement that will allow players to add their UUIDs to the db during the
+            // conversion process, then once a name change happens it will update it based on the uuid matching.
+            StringBuilder sql = new StringBuilder();
+            sql.append("UPDATE ").append(DB.tableName(group.getName())).append(" SET `");
+            sql.append(group.getKeyName()).append("`=?, `uuid`=? WHERE `");
+            sql.append(group.getKeyName()).append("`=? OR `uuid`=?");
+            PreparedStatement stmt = DB.prepare(sql.toString());
+            stmt.setString(1, pname);
+            stmt.setString(2, puuidst);
+            stmt.setString(3, pname);
+            stmt.setString(4, puuidst);
+            stmt.execute();
+
+            final Statistics stats = group.getStatistics(pname);
+            stats.set(Statistic.uuid, puuidst);
+            stats.incr(Statistic.joins);
+            stats.set(Statistic.lastJoin, date);
+            stats.set(Statistic.sessionTime, 0);
+            stats.set(Statistic.online, true);
+            if (!stats.isInDB()) {
+                stats.set(Statistic.firstJoin, date);
+            }
+            String bedServer = stats.getString("bedServer");
+            if ((bedServer != null) && bedServer.equals(servername)) {
+                bedOwners.add(pname);
+            }
+            playerStates.put(pname, new PlayerState(stats.getFloat("totalTime")));
+
+            Utils.debug("totalTime: " + stats.getFloat("totalTime"));
+
+            stats.flushSync();
+        } catch (Exception ex) {
+            Utils.severe("OnPlayerJoin Exception message: " + ex.getMessage());
+            StringWriter sw = new StringWriter();
+            ex.printStackTrace(new PrintWriter(sw));
+            Utils.severe("Stack Trace: " + sw.toString());
+        }
 
     }
 
@@ -926,6 +965,30 @@ public final class PlayerStats {
     protected static enum TravelMode {
 
         WALKING, SPRINTING, SNEAKING, FLYING, SWIMMING, RIDING, RIDING_MINECART, RIDING_PIG, RIDING_BOAT, RIDING_HORSE;
+    }
+    
+    private static class PlayerState {
+
+        long joinTime;
+        float totalTimeBase;
+        Location lastLocation;
+        long lastTime;
+        PlayerStats.TravelMode lastMode;
+        Biome lastBiome;
+
+        PlayerState(float totalTimeBase) {
+            this.joinTime = System.currentTimeMillis();
+            this.totalTimeBase = totalTimeBase;
+            reset();
+        }
+
+        final void reset() {
+            lastLocation = null;
+            lastTime = 0;
+            lastMode = null;
+            lastBiome = null;
+        }
+
     }
 
 }
