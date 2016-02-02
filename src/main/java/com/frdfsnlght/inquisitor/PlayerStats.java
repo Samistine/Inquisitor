@@ -567,29 +567,6 @@ public final class PlayerStats {
         return stats.getStats();
     }
 
-    /*
-     * public static com.frdfsnlght.inquisitor.api.Location getLocation(String
-     * playerName) { boolean isOnline =
-     * Global.plugin.getServer().getPlayer(playerName) != null; Statistics stats
-     * = group.getStatistics(playerName); String server =
-     * stats.getString("server"); String world = stats.getString("world");
-     * double[] coords = decodeCoords(stats.getString("coords"));
-     * com.frdfsnlght.inquisitor.api.Location location = null; if ((server !=
-     * null) && (world != null) && (coords != null)) location = new
-     * com.frdfsnlght.inquisitor.api.Location(server, world, coords); if (!
-     * isOnline) group.removeStatistics(stats); return location; }
-     * 
-     * public static com.frdfsnlght.inquisitor.api.Location
-     * getBedLocation(String playerName) { boolean isOnline =
-     * Global.plugin.getServer().getPlayer(playerName) != null; Statistics stats
-     * = group.getStatistics(playerName); String server =
-     * stats.getString("bedServer"); String world = stats.getString("bedWorld");
-     * double[] coords = decodeCoords(stats.getString("bedCoords"));
-     * com.frdfsnlght.inquisitor.api.Location location = null; if ((server !=
-     * null) && (world != null) && (coords != null)) location = new
-     * com.frdfsnlght.inquisitor.api.Location(server, world, coords); if (!
-     * isOnline) group.removeStatistics(stats); return location; }
-     */
     public static void ignorePlayerJoin(String name) {
         ignoredPlayerJoins.add(name);
         Utils.debug("will ignore future join/kick/quit for player '%s'", name);
