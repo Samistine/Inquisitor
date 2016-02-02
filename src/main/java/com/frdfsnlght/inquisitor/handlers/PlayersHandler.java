@@ -17,6 +17,7 @@ package com.frdfsnlght.inquisitor.handlers;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.PlayerStats;
+import com.frdfsnlght.inquisitor.Statistic;
 import com.frdfsnlght.inquisitor.TypeMap;
 import com.frdfsnlght.inquisitor.Utils;
 import com.frdfsnlght.inquisitor.webserver.WebRequest;
@@ -28,8 +29,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -141,7 +144,7 @@ public final class PlayersHandler extends TemplateHandler {
 
             List<TypeMap> players = new ArrayList<TypeMap>(pageSize);
             while (rs.next()) {
-                TypeMap player = PlayerStats.group.loadStatistics(rs, columns);
+                TypeMap player = PlayerStats.group.loadStatistics(rs, getFromName(columns));
                 player.set("name", rs.getString("name"));
                 players.add(player);
             }
@@ -176,4 +179,7 @@ public final class PlayersHandler extends TemplateHandler {
         }
     }
 
+    public static Set<Statistic> getFromName(List<String> names) {
+        return names.stream().map(Statistic::getFromName).filter(stat -> stat != null).collect(Collectors.toSet());
+    }
 }

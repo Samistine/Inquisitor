@@ -39,7 +39,7 @@ public final class Statistics {
 
     private boolean inDB = false;
     private TypeMap stats = new TypeMap();
-    private Set<String> dirty = new HashSet<String>();
+    private Set<Statistic> dirty = new HashSet<Statistic>();
     private long lastFlushed = 0;
     private boolean valid = true;
 
@@ -100,16 +100,16 @@ public final class Statistics {
                 case DOUBLE:
                     stats.set(statistic.getName(), 0);
             }
-        dirty.add(statistic.getName());
+        dirty.add(statistic);
     }
 
     public void removeStatistic(Statistic statistic) {
         if (! stats.containsKey(statistic.getName())) return;
         stats.remove(statistic.getName());
-        dirty.remove(statistic.getName());
+        dirty.remove(statistic);
     }
 
-    public Collection<String> getDirty() {
+    public Collection<Statistic> getDirty() {
         return dirty;
     }
 
@@ -200,7 +200,7 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " can not be set");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
     /*public void set(String name, String key, Object value) {
@@ -252,7 +252,7 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be set");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
     /*public void add(String name, Number value) {
@@ -285,7 +285,7 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be added");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
     /*public void add(String name, String key, Number value) {
@@ -323,7 +323,7 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be added");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
     /*public void incr(String name) {
@@ -363,19 +363,20 @@ public final class Statistics {
         if (dirty.isEmpty()) return null;
         Map<String,Object> jobData = new HashMap<String,Object>();
         TypeMap mappedObjects = null;
-        for (String statName : dirty) {
-            Statistic statistic = group.getStatistic(statName);
+        for (Statistic statistic : dirty) {
             if (statistic == null) continue;
             if (statistic.isMapped()) {
                 if (mappedObjects == null) {
                     mappedObjects = new TypeMap();
-                    for (String sName : stats.keySet()) {
-                        Statistic s = group.getStatistic(sName);
-                        if (! s.isMapped()) continue;
-                        mappedObjects.set(sName, stats.get(sName));
+                    for (String sName : stats.keySet()) { 
+                        Statistic s = Statistic.getFromName(sName);
+                        if (s.isMapped()) {
+                            mappedObjects.set(sName, stats.get(sName));
+                        }
                     }
                 }
-            } else
+            } else {
+                String statName = statistic.getName();
                 switch (statistic.getType()) {
                     case STRING:
                         jobData.put(statName, stats.getString(statName));
@@ -409,6 +410,7 @@ public final class Statistics {
                         break;
                     default:
                         throw new UnsupportedOperationException(statistic + " cannot be flushed");
+                }
             }
         }
         if (mappedObjects != null) {

@@ -57,15 +57,15 @@ public final class PlayerHandler extends TemplateHandler {
     }
 
     private TypeMap getPlayer(String name) {
-        Set<String> statNames = PlayerStats.group.getStatisticsNames();
+        Set<Statistic> stats = PlayerStats.group.getStatistics();
         PreparedStatement stmt = null;
         ResultSet rs = null;
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT `").append(Statistic.MappedObjectsColumn).append('`');
-            for (String statName : statNames) {
-                if (PlayerStats.group.getStatistic(statName).isMapped()) continue;
-                sql.append(",`").append(statName).append('`');
+            for (Statistic stat : stats) {
+                if (stat.isMapped()) continue;
+                sql.append(",`").append(stat.getName()).append('`');
             }
             sql.append(" FROM ").append(DB.tableName(PlayerStats.group.getName()));
             sql.append(" WHERE `name`=?");
@@ -73,7 +73,7 @@ public final class PlayerHandler extends TemplateHandler {
             stmt.setString(1, name);
             rs = stmt.executeQuery();
             if (! rs.next()) return null;
-            TypeMap player = PlayerStats.group.loadStatistics(rs, statNames);
+            TypeMap player = PlayerStats.group.loadStatistics(rs, stats);
             if (player == null) return null;
             player.set("name", name);
             return player;

@@ -504,8 +504,7 @@ public final class WebServer {
     public static Set<String> getPlayerColumns(boolean restricted) {
         Set<String> columns = new HashSet<String>();
         List<String> restrictedColumns = getPlayersRestrictColumnsAsList();
-        for (String statName : PlayerStats.group.getStatisticsNames()) {
-            Statistic stat = PlayerStats.group.getStatistic(statName);
+        for (Statistic stat : PlayerStats.group.getStatistics()) {
             if (stat.isMapped()) continue;
             switch (stat.getType()) {
                 case STRING:
@@ -517,8 +516,8 @@ public final class WebServer {
                 case LONG:
                 case FLOAT:
                 case DOUBLE:
-                    if (restricted || (! restrictedColumns.contains(statName)))
-                        columns.add(statName);
+                    if (restricted || (! restrictedColumns.contains(stat.getName())))
+                        columns.add(stat.getName());
                     break;
             }
         }

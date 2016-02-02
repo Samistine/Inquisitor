@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,7 +49,8 @@ public final class StatisticsGroup {
 
     private long lastDelete = 0;
 
-    private final Map<String, Statistic> statistics = new HashMap<String, Statistic>();
+    private final EnumSet<Statistic> statistics = EnumSet.noneOf(Statistic.class);
+
     private final Map<Object, Statistics> stats = new HashMap<Object, Statistics>();
 
     private List<BeforeFlushListener> beforeFlushListeners = new ArrayList<BeforeFlushListener>();
@@ -151,10 +153,10 @@ public final class StatisticsGroup {
 
     public void addStatistic(Statistic statistic) {
         synchronized (statistics) {
-            if (statistics.containsKey(statistic.getName())) {
+            if (statistics.contains(statistic)) {
                 throw new IllegalArgumentException(statistic + " already exists in " + this);
             }
-            statistics.put(statistic.getName(), statistic);
+            statistics.add(statistic);
         }
         statistic.validate(this);
         for (Statistics s : stats.values()) {
@@ -164,28 +166,27 @@ public final class StatisticsGroup {
 
     public void removeStatistic(Statistic statistic) {
         synchronized (statistics) {
-            if (!statistics.containsKey(statistic.getName())) {
+            if (!statistics.contains(statistic)) {
                 return;
             }
-            statistics.remove(statistic.getName());
+            statistics.remove(statistic);
         }
         for (Statistics s : stats.values()) {
             s.removeStatistic(statistic);
         }
     }
 
-    public Collection<Statistic> getStatistics() {
+    public Set<Statistic> getStatistics() {
         synchronized (statistics) {
-            return new HashSet<Statistic>(statistics.values());
+            return new HashSet<Statistic>(statistics);
         }
     }
 
-    public Statistic getStatistic(String name) {
-        synchronized (statistics) {
-            return statistics.get(name);
-        }
-    }
-
+//    public Statistic getStatistic(String name) {
+//        synchronized (statistics) {
+//            return statistics.get(name);
+//        }
+//    }
     public Collection<Statistics> getCachedStatistics() {
         return stats.values();
     }
@@ -221,8 +222,8 @@ public final class StatisticsGroup {
             sql.append("SELECT ");
             synchronized (statistics) {
                 boolean addedMapped = false;
-                for (String statName : statistics.keySet()) {
-                    if (statistics.get(statName).isMapped()) {
+                for (Statistic stat : statistics) {
+                    if (stat.isMapped()) {
                         if (!addedMapped) {
                             addedMapped = true;
                             sql.append('`')
@@ -230,7 +231,7 @@ public final class StatisticsGroup {
                                     .append("`,");
                         }
                     } else {
-                        sql.append('`').append(statName).append("`,");
+                        sql.append('`').append(stat.getName()).append("`,");
                     }
                 }
             }
@@ -277,26 +278,20 @@ public final class StatisticsGroup {
         return s;
     }
 
-    public Set<String> getStatisticsNames() {
-        synchronized (statistics) {
-            return new HashSet<String>(statistics.keySet());
-        }
-    }
-
     public TypeMap loadStatistics(ResultSet rs) throws SQLException {
-        return loadStatistics(rs, getStatisticsNames());
+        return loadStatistics(rs, new HashSet<>(statistics));
     }
 
-    public TypeMap loadStatistics(ResultSet rs, Collection<String> statNames) throws SQLException {
+    public TypeMap loadStatistics(ResultSet rs, Collection<Statistic> stats) throws SQLException {
         TypeMap values = new TypeMap();
         TypeMap mappedObjects = null;
         Utils.debug("Entering loadStatistics(ResultSet rs, Collection<String> statNames)");
-        for (String statName : statNames) {
-            Utils.debug("Loading statistic %s", statName);
-            Statistic stat = getStatistic(statName);
+        for (Statistic stat : stats) {
+            Utils.debug("Loading statistic %s", stat);
             if (stat == null) {
                 continue;
             }
+            String statName = stat.getName();
             if (stat.isMapped()) {
                 Utils.debug("stat.isMapped == true");
                 if (mappedObjects == null) {
@@ -510,7 +505,7 @@ public final class StatisticsGroup {
             }
 
             synchronized (statistics) {
-                for (Statistic statistic : statistics.values()) {
+                for (Statistic statistic : statistics) {
                     statistic.validate(this);
                 }
             }

@@ -221,7 +221,17 @@ public enum Statistic {
             group.validateColumn(name, type, size, def, getOldNames());
     }
 
+    public static Statistic getFromName(String name) {
+        for (Statistic value : values()) {
+            if (value.getName().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     public enum Type {
+
         STRING("varchar"),
         BOOLEAN("tinyint"),
         OBJECT("longtext"),
