@@ -241,17 +241,21 @@ public class Utils {
         return Global.plugin.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run, ticks);
     }
 
-    public static int worker(Runnable run) {
-        if (! Global.enabled) return -1;
-        return Global.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(Global.plugin, run);
+    /**
+     * Runs task async in order of submission.
+     * <br>
+     * @param run 
+     */
+    public static void worker(Runnable run) {
+        run.run();
     }
 
-    // delay is millis
-    public static int workerDelayed(Runnable run, long delay) {
-        if (! Global.enabled) return -1;
-        long ticks = delay / 50;
-        return Global.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(Global.plugin, run, ticks);
-    }
+//    // delay is millis
+//    public static int workerDelayed(Runnable run, long delay) {
+//        if (! Global.enabled) return -1;
+//        long ticks = delay / 50;
+//        return Global.plugin.getServer().getScheduler().scheduleAsyncDelayedTask(Global.plugin, run, ticks);
+//    }
 
     public static String normalizeEntityTypeName(EntityType type) {
         switch (type) {
