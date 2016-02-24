@@ -47,7 +47,7 @@ public class TestCommands extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "enchant");
         cmds.add(getPrefix(ctx) + GROUP + "stats");
         return cmds;

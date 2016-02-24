@@ -37,14 +37,14 @@ import java.util.Set;
  */
 public final class StatisticsManager {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
-    private static final Set<String> RESTART_OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
+    private static final Set<String> RESTART_OPTIONS = new HashSet<>();
     private static final Options options;
 
-    private static final Set<StatisticsManagerListener> listeners = new HashSet<StatisticsManagerListener>();
+    private static final Set<StatisticsManagerListener> listeners = new HashSet<>();
 
-    private static final Map<String,StatisticsGroup> groups = new HashMap<String,StatisticsGroup>();
-    private static final List<Job> jobs = new ArrayList<Job>();
+    private static final Map<String,StatisticsGroup> groups = new HashMap<>();
+    private static final List<Job> jobs = new ArrayList<>();
 
     private static Thread jobThread;
     private static boolean started = false;
@@ -196,7 +196,7 @@ public final class StatisticsManager {
     }
 
     public static Collection<String> getJobsSnapshot() {
-        Collection<String> snaps = new ArrayList<String>();
+        Collection<String> snaps = new ArrayList<>();
         synchronized (jobs) {
             for (Job job : jobs) {
                 snaps.add(job.toString());
@@ -370,7 +370,7 @@ public final class StatisticsManager {
         void commit() {
             PreparedStatement stmt = null;
             StringBuilder sql = new StringBuilder();
-            List<String> cols = new ArrayList<String>(data.keySet());
+            List<String> cols = new ArrayList<>(data.keySet());
             try {
                 if (keyColumn == null) {
                     // insert

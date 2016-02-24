@@ -38,11 +38,11 @@ import javax.sql.rowset.serial.SerialClob;
  */
 public final class DB {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
-    private static final Set<String> RESTART_OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
+    private static final Set<String> RESTART_OPTIONS = new HashSet<>();
     private static final Options options;
 
-    private static final Set<DBListener> listeners = new HashSet<DBListener>();
+    private static final Set<DBListener> listeners = new HashSet<>();
 
     static {
         OPTIONS.add("debug");
@@ -393,7 +393,7 @@ public final class DB {
                     }
                     stmt1 = prepare("SELECT " + sb.toString() + " FROM " + tableName("players"));
                     rs = stmt1.executeQuery();
-                    Map<Integer, Object> data = new HashMap<Integer, Object>();
+                    Map<Integer, Object> data = new HashMap<>();
                     while (rs.next()) {
                         int id = rs.getInt("id");
                         TypeMap mappedObjects = new TypeMap();

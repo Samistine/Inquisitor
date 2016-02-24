@@ -39,7 +39,7 @@ public final class Statistics {
 
     private boolean inDB = false;
     private TypeMap stats = new TypeMap();
-    private Set<Statistic> dirty = new HashSet<Statistic>();
+    private Set<Statistic> dirty = new HashSet<>();
     private long lastFlushed = 0;
     private boolean valid = true;
 
@@ -361,7 +361,7 @@ public final class Statistics {
     private Job _flush() {
         group.fireBeforeFlush(this);
         if (dirty.isEmpty()) return null;
-        Map<String,Object> jobData = new HashMap<String,Object>();
+        Map<String,Object> jobData = new HashMap<>();
         TypeMap mappedObjects = null;
         for (Statistic statistic : dirty) {
             if (statistic == null) continue;

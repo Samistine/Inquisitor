@@ -46,7 +46,7 @@ public class WebResponse {
     private String statusMessage = "OK";
 
     private boolean headersSent = false;
-    private Map<String,String> headers = new HashMap<String,String>();
+    private Map<String,String> headers = new HashMap<>();
 
     private boolean contentSent = false;
     private String contentType = "text/html";

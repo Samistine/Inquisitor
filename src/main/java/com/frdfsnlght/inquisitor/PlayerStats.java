@@ -63,19 +63,19 @@ import org.bukkit.potion.PotionEffect;
  */
 public final class PlayerStats {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
-    private static final Set<String> RESTART_OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
+    private static final Set<String> RESTART_OPTIONS = new HashSet<>();
     private static final Options options;
 
-    private static final Set<PlayerStatsListener> listeners = new HashSet<PlayerStatsListener>();
+    private static final Set<PlayerStatsListener> listeners = new HashSet<>();
 
     private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("#.###", new DecimalFormatSymbols(Locale.US));
 
     public static final StatisticsGroup group = new StatisticsGroup("players", "name", Type.STRING, 30);
 
     protected static final Set<UUID> bedOwners = Collections.synchronizedSet(new HashSet<UUID>());
-    private static final Set<String> ignoredPlayerJoins = new HashSet<String>();
-    private static final Set<UUID> kickedPlayers = new HashSet<UUID>();
+    private static final Set<String> ignoredPlayerJoins = new HashSet<>();
+    private static final Set<UUID> kickedPlayers = new HashSet<>();
 
     private static boolean started = false;
     private static int bedCheckTask = -1;
@@ -339,7 +339,7 @@ public final class PlayerStats {
             double totalTime = stats.getDouble("totalTime");
             String traveling = stats.getString("biomeTimes");
             String[] split = traveling.split("\\r?\\n");
-            List<Double> values = new ArrayList<Double>();
+            List<Double> values = new ArrayList<>();
             for (String s : split) {
                 if (s.contains(": ")) {
                     String[] oneMoreSplit = s.split(": ");
@@ -531,7 +531,7 @@ public final class PlayerStats {
     }
 
     public static void checkBeds() {
-        for (UUID uuid : new HashSet<UUID>(bedOwners)) {
+        for (UUID uuid : new HashSet<>(bedOwners)) {
             OfflinePlayer player = Global.plugin.getServer().getOfflinePlayer(uuid);
             if (player == null) {
                 player = Global.plugin.getServer().getPlayer(uuid);
@@ -695,7 +695,7 @@ public final class PlayerStats {
         if (stacks == null) {
             return null;
         }
-        List<TypeMap> stackMaps = new ArrayList<TypeMap>();
+        List<TypeMap> stackMaps = new ArrayList<>();
         for (int slot = 0; slot < stacks.length; slot++) {
             ItemStack stack = stacks[slot];
             if (stack == null) {
@@ -730,7 +730,7 @@ public final class PlayerStats {
         if (effects == null) {
             return null;
         }
-        List<TypeMap> peMaps = new ArrayList<TypeMap>();
+        List<TypeMap> peMaps = new ArrayList<>();
         for (PotionEffect effect : effects) {
             if (effect == null) {
                 continue;

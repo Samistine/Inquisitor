@@ -55,7 +55,7 @@ public final class FindPlayersHandler extends APIHandler {
             stmt = conn.prepareStatement(sql.toString());
             stmt.setString(1, "%" + playerName + "%");
             rs = stmt.executeQuery();
-            List<String> names = new ArrayList<String>();
+            List<String> names = new ArrayList<>();
             while (rs.next())
                 names.add(rs.getString("name"));
             sendSuccess(req, res, names);

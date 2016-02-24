@@ -38,7 +38,7 @@ public final class Global {
     public static String pluginVersion;
     public static boolean started = false;
 
-    public static final List<CommandProcessor> commands = new ArrayList<CommandProcessor>();
+    public static final List<CommandProcessor> commands = new ArrayList<>();
 
     static {
         commands.add(new HelpCommand());

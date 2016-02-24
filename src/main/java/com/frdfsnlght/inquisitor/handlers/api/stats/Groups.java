@@ -59,7 +59,7 @@ public class Groups extends APIHandler {
             }
             System.out.println(stmt.toString());
             rs = stmt.executeQuery();
-            List<TypeMap> names = new ArrayList<TypeMap>();
+            List<TypeMap> names = new ArrayList<>();
             while (rs.next()) {
                 names.add(playerProfile(rs));
             }

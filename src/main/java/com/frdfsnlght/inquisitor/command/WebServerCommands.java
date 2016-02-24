@@ -39,7 +39,7 @@ public class WebServerCommands  extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "status");
         cmds.add(getPrefix(ctx) + GROUP + "enable");
         cmds.add(getPrefix(ctx) + GROUP + "disable");

@@ -41,7 +41,7 @@ public final class GlobalCommands extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         if (ctx.isOp()) {
             cmds.add(getPrefix(ctx) + "status");
             cmds.add(getPrefix(ctx) + "get <option>|*");

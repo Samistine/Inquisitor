@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public final class Config {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
     private static final Options options;
     private static TypeMap config = null;
 
