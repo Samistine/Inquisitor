@@ -155,7 +155,7 @@ public class Inquisitor extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] rawArgs) {
         // Rebuild quoted arguments
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         boolean inQuotes = false;
         StringBuilder argBuffer = null;
         for (String arg : rawArgs) {
@@ -197,7 +197,7 @@ public class Inquisitor extends JavaPlugin {
         }
 
         // Find the matching commands
-        List<CommandProcessor> cps = new ArrayList<CommandProcessor>();
+        List<CommandProcessor> cps = new ArrayList<>();
         for (CommandProcessor cp : Global.commands) {
             if (!cp.matches(ctx, cmd, args)) {
                 continue;

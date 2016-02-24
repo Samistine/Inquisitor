@@ -202,11 +202,11 @@ public enum Statistic {
     public Set<String> getOldNames() {
         switch (this) {
             case mooshroomsMilked:
-                return new HashSet<String>(Arrays.asList("mushroomCowsMilked"));
+                return new HashSet<>(Arrays.asList("mushroomCowsMilked"));
             case totalPlayersKilled:
-                return new HashSet<String>(Arrays.asList("playerKills"));
+                return new HashSet<>(Arrays.asList("playerKills"));
             case totalMobsKilled:
-                return new HashSet<String>(Arrays.asList("mobKills"));
+                return new HashSet<>(Arrays.asList("mobKills"));
             default:
                 return null;
         }

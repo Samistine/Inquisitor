@@ -46,7 +46,7 @@ public final class Options {
     }
 
     public void getOptions(Context ctx, String option) throws OptionsException, PermissionsException {
-        List<String> options = new ArrayList<String>();
+        List<String> options = new ArrayList<>();
         String opt = resolveOption(option);
         if (opt != null)
             options.add(opt);
@@ -146,7 +146,7 @@ public final class Options {
             Class rCls = m.getReturnType();
             m = cls.getMethod(setMethodName, rCls);
             if (rCls.isArray()) {
-                List<String> values = new ArrayList<String>();
+                List<String> values = new ArrayList<>();
                 for (StringTokenizer token = new StringTokenizer(value, ","); token.hasMoreTokens(); ) {
                     String v = token.nextToken();
                     if ((v == null) || v.equals("")) continue;
