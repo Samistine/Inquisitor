@@ -58,13 +58,13 @@ import java.util.StringTokenizer;
  */
 public final class WebServer {
 
-    private static final Set<String> OPTIONS = new HashSet<>();
-    private static final Set<String> RESTART_OPTIONS = new HashSet<>();
+    private static final Set<String> OPTIONS = new HashSet<String>();
+    private static final Set<String> RESTART_OPTIONS = new HashSet<String>();
     private static final Options options;
 
     private static final long WORKER_TIMEOUT = 10000;
 
-    public static final List<WebRoute> ROUTES = new ArrayList<>();
+    public static final List<WebRoute> ROUTES = new ArrayList<WebRoute>();
 
     private static final String[] DEFAULT_PLAYERSCOLUMNS = new String[] {
             "level",
@@ -95,7 +95,7 @@ public final class WebServer {
     private static boolean started = false;
     private static ServerSocket serverSocket = null;
     private static Thread serverThread = null;
-    private static final List<WebWorker> workerThreads = new ArrayList<>();
+    private static final List<WebWorker> workerThreads = new ArrayList<WebWorker>();
 
     public static File webRoot;
 
@@ -335,7 +335,7 @@ public final class WebServer {
         if (s == null)
             setPlayersColumnsFromList(null);
         else {
-            List<String> list = new ArrayList<>(Arrays.asList(s));
+            List<String> list = new ArrayList<String>(Arrays.asList(s));
             setPlayersColumnsFromList(list);
         }
     }
@@ -344,7 +344,7 @@ public final class WebServer {
         if (s == null) return;
         List<String> list = getPlayersColumnsAsList();
         if (list == null)
-            list = new ArrayList<>();
+            list = new ArrayList<String>();
         if (list.contains(s)) return;
         list.add(s);
         Collections.sort(list);
@@ -362,8 +362,8 @@ public final class WebServer {
 
     private static List<String> getPlayersColumnsAsList() {
         String v = Config.getStringDirect("webServer.playersColumns");
-        if (v == null) return new ArrayList<>(Arrays.asList(DEFAULT_PLAYERSCOLUMNS));
-        List<String> list = new ArrayList<>();
+        if (v == null) return new ArrayList<String>(Arrays.asList(DEFAULT_PLAYERSCOLUMNS));
+        List<String> list = new ArrayList<String>();
         for (StringTokenizer st = new StringTokenizer(v, ","); st.hasMoreTokens(); )
             list.add(st.nextToken());
         return list;
@@ -420,7 +420,7 @@ public final class WebServer {
         if (s == null)
             setPlayersRestrictColumnsFromList(null);
         else {
-            List<String> list = new ArrayList<>(Arrays.asList(s));
+            List<String> list = new ArrayList<String>(Arrays.asList(s));
             setPlayersRestrictColumnsFromList(list);
         }
     }
@@ -429,7 +429,7 @@ public final class WebServer {
         if (s == null) return;
         List<String> list = getPlayersRestrictColumnsAsList();
         if (list == null)
-            list = new ArrayList<>();
+            list = new ArrayList<String>();
         if (list.contains(s)) return;
         list.add(s);
         Collections.sort(list);
@@ -447,8 +447,8 @@ public final class WebServer {
 
     public static List<String> getPlayersRestrictColumnsAsList() {
         String v = Config.getStringDirect("webServer.playersRestrictColumns");
-        if (v == null) return new ArrayList<>(Arrays.asList(DEFAULT_RESTRICTCOLUMNS));
-        List<String> list = new ArrayList<>();
+        if (v == null) return new ArrayList<String>(Arrays.asList(DEFAULT_RESTRICTCOLUMNS));
+        List<String> list = new ArrayList<String>();
         for (StringTokenizer st = new StringTokenizer(v, ","); st.hasMoreTokens(); )
             list.add(st.nextToken());
         return list;
@@ -502,7 +502,7 @@ public final class WebServer {
     /* End options */
 
     public static Set<String> getPlayerColumns(boolean restricted) {
-        Set<String> columns = new HashSet<>();
+        Set<String> columns = new HashSet<String>();
         List<String> restrictedColumns = getPlayersRestrictColumnsAsList();
         for (Statistic stat : PlayerStats.group.getStatistics()) {
             if (stat.isMapped()) continue;

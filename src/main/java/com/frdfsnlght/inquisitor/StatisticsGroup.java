@@ -51,9 +51,9 @@ public final class StatisticsGroup {
 
     private final EnumSet<Statistic> statistics = EnumSet.noneOf(Statistic.class);
 
-    private final Map<Object, Statistics> stats = new HashMap<>();
+    private final Map<Object, Statistics> stats = new HashMap<Object, Statistics>();
 
-    private List<BeforeFlushListener> beforeFlushListeners = new ArrayList<>();
+    private List<BeforeFlushListener> beforeFlushListeners = new ArrayList<BeforeFlushListener>();
 
     public StatisticsGroup(String name, String keyName, Type keyType, int keySize) {
         if (!name.matches("^\\w+$")) {
@@ -134,7 +134,7 @@ public final class StatisticsGroup {
 
     public int purge() {
         int count = 0;
-        for (Object key : new HashSet<>(stats.keySet())) {
+        for (Object key : new HashSet<Object>(stats.keySet())) {
             Statistics s = stats.get(key);
             if (s.purge()) {
                 count++;
@@ -178,7 +178,7 @@ public final class StatisticsGroup {
 
     public Set<Statistic> getStatistics() {
         synchronized (statistics) {
-            return new HashSet<>(statistics);
+            return new HashSet<Statistic>(statistics);
         }
     }
 

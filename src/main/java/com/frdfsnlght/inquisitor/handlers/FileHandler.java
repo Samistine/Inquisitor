@@ -36,7 +36,7 @@ import java.util.Map;
 
 public final class FileHandler extends WebHandler {
 
-    public static final Map<String,String> MIME_TYPES = new HashMap<>();
+    public static final Map<String,String> MIME_TYPES = new HashMap<String,String>();
     
     private static final long CACHE_REFRESH = 3600 * 72; //Cache static files for 72 hours
 

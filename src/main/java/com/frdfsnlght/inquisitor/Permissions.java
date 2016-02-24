@@ -168,12 +168,12 @@ public final class Permissions {
     public static Set<String> getGroups(Player player) {
         try {
             if (vaultAvailable()) {
-                return new HashSet<>(Arrays.asList(vaultPlugin.getPlayerGroups(player)));
+                return new HashSet<String>(Arrays.asList(vaultPlugin.getPlayerGroups(player)));
             }
         } catch (Exception ex) {
             Utils.warning("Vault threw an exception getting player groups: %s", ex.getMessage());
         }
-        return new HashSet<>();
+        return new HashSet<String>();
     }
 
 }

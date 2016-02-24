@@ -32,7 +32,7 @@ import java.util.List;
 
 public final class RouteHandler extends WebHandler {
 
-    private List<WebRoute> routes = new ArrayList<>();
+    private List<WebRoute> routes = new ArrayList<WebRoute>();
 
     public void add(WebRoute route) {
         routes.add(route);

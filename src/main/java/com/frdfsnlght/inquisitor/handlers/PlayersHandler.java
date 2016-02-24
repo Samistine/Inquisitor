@@ -89,7 +89,7 @@ public final class PlayersHandler extends TemplateHandler {
 
         Set<String> allColumns = WebServer.getPlayerColumns(false);
 
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new ArrayList<String>();
         if (columnsStr == null)
             columns.addAll(Arrays.asList(defColumns));
         else
@@ -142,7 +142,7 @@ public final class PlayersHandler extends TemplateHandler {
                 stmt.setString(1, "%" + playerName + "%");
             rs = stmt.executeQuery();
 
-            List<TypeMap> players = new ArrayList<>(pageSize);
+            List<TypeMap> players = new ArrayList<TypeMap>(pageSize);
             while (rs.next()) {
                 TypeMap player = PlayerStats.group.loadStatistics(rs, getFromName(columns));
                 player.set("name", rs.getString("name"));
@@ -161,7 +161,7 @@ public final class PlayersHandler extends TemplateHandler {
             data.put("firstPlayerOffset", limitOffset);
             data.put("playerName", playerName);
 
-            List<String> hideColumns = new ArrayList<>();
+            List<String> hideColumns = new ArrayList<String>();
             for (String col : allColumns)
                 if (! columns.contains(col)) hideColumns.add(col);
             data.put("hideColumns", hideColumns);
