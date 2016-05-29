@@ -49,6 +49,7 @@ public final class PlayerHandler extends TemplateHandler {
 
         TypeMap player = getPlayer(playerName);
         if (player == null) {
+            res.setStatus(404, "Not found");
             renderTemplate(req, res, "resources/playerNotFound.ftl", data);
             return;
         }
