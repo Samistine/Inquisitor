@@ -113,9 +113,7 @@ public final class DB {
         if (db == null) {
             return;
         }
-        for (DBListener listener : listeners) {
-            listener.onDBDisconnecting();
-        }
+        listeners.forEach(listener -> listener.onDBDisconnecting());
         try {
             db.close();
         } catch (SQLException se) {
@@ -224,9 +222,7 @@ public final class DB {
             if (!didUpdates) {
                 doUpdates();
             }
-            for (DBListener listener : listeners) {
-                listener.onDBConnected();
-            }
+            listeners.forEach(listener -> listener.onDBConnected());
         }
         return db;
     }

@@ -28,8 +28,8 @@ import java.io.IOException;
 
 public final class ErrorHandler extends WebHandler {
 
-    private int status;
-    private String message;
+    private final int status;
+    private final String message;
 
     public ErrorHandler(int status, String message) {
         this.status = status;
