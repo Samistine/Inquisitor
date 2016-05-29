@@ -59,6 +59,7 @@ public final class DB {
 
         options = new Options(DB.class, OPTIONS, "inq.db",
                 new OptionsListener() {
+                    @Override
                     public void onOptionSet(Context ctx, String name, String value) {
                         ctx.sendLog("database option '%s' set to '%s'", name, value);
                         if (RESTART_OPTIONS.contains(name)) {
@@ -68,6 +69,7 @@ public final class DB {
                         }
                     }
 
+                    @Override
                     public String getOptionPermission(Context ctx, String name) {
                         return name;
                     }
@@ -270,16 +272,17 @@ public final class DB {
     }
 
     public static boolean tableExists(String name) throws SQLException {
-        PreparedStatement stmt = prepare("SHOW TABLES LIKE ?");
-        String prefix = getPrefix();
-        if (prefix != null) {
-            name = prefix + name;
+        boolean exists;
+        try (PreparedStatement stmt = prepare("SHOW TABLES LIKE ?")) {
+            String prefix = getPrefix();
+            if (prefix != null) {
+                name = prefix + name;
+            }
+            stmt.setString(1, name);
+            try (ResultSet rs = stmt.executeQuery()) {
+                exists = rs.next();
+            }
         }
-        stmt.setString(1, name);
-        ResultSet rs = stmt.executeQuery();
-        boolean exists = rs.next();
-        rs.close();
-        stmt.close();
         return exists;
     }
 
@@ -288,20 +291,21 @@ public final class DB {
             return false;
         }
         Utils.debug("dropping table '%s'", name);
-        PreparedStatement stmt = prepare("DROP TABLE " + tableName(name));
-        stmt.executeUpdate();
-        stmt.close();
+        try (PreparedStatement stmt = prepare("DROP TABLE " + tableName(name))) {
+            stmt.executeUpdate();
+        }
         return true;
     }
 
     public static boolean columnExists(String tableName, String columnName) throws SQLException {
-        PreparedStatement stmt = prepare("SHOW COLUMNS FROM "
-                + tableName(tableName) + " LIKE ?");
-        stmt.setString(1, columnName);
-        ResultSet rs = stmt.executeQuery();
-        boolean exists = rs.next();
-        rs.close();
-        stmt.close();
+        boolean exists;
+        try (PreparedStatement stmt = prepare("SHOW COLUMNS FROM "
+                + tableName(tableName) + " LIKE ?")) {
+            stmt.setString(1, columnName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                exists = rs.next();
+            }
+        }
         return exists;
     }
 
@@ -310,10 +314,10 @@ public final class DB {
             return false;
         }
         Utils.debug("adding column '%s' to table '%s'", columnName, tableName);
-        PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
-                + " ADD `" + columnName + "` " + columnDef);
-        stmt.executeUpdate();
-        stmt.close();
+        try (PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
+                + " ADD `" + columnName + "` " + columnDef)) {
+            stmt.executeUpdate();
+        }
         return true;
     }
 
@@ -323,10 +327,10 @@ public final class DB {
         }
         Utils.debug("dropping column '%s' from table '%s'", columnName,
                 tableName);
-        PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
-                + " DROP `" + columnName + "`");
-        stmt.executeUpdate();
-        stmt.close();
+        try (PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
+                + " DROP `" + columnName + "`")) {
+            stmt.executeUpdate();
+        }
         return true;
     }
 
@@ -348,8 +352,7 @@ public final class DB {
         try {
             dropTable("versions");
             if (tableExists("players")) {
-                for (int i = 0; i < updates.length; i++) {
-                    String[] data = updates[i];
+                for (String[] data : updates) {
                     if (addColumn("players", data[1], data[2] + " DEFAULT 0")) {
                         stmt1 = prepare("SELECT id," + data[0] + " FROM "
                                 + tableName("players"));
@@ -382,10 +385,9 @@ public final class DB {
                     StringBuilder sb = new StringBuilder();
                     sb.append("`id`");
                     for (Statistic stat : PlayerStats.group.getStatistics()) {
-                        if (!stat.isMapped()) {
-                            continue;
+                        if (stat.isMapped()) {
+                            sb.append(",`").append(stat.getName()).append('`');
                         }
-                        sb.append(",`").append(stat.getName()).append('`');
                     }
                     stmt1 = prepare("SELECT " + sb.toString() + " FROM " + tableName("players"));
                     rs = stmt1.executeQuery();

@@ -57,6 +57,7 @@ public final class StatisticsManager {
         RESTART_OPTIONS.add("flushCheckInterval");
 
         options = new Options(StatisticsManager.class, OPTIONS, "inq.stats", new OptionsListener() {
+            @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("statistics option '%s' set to '%s'", name, value);
                 if (RESTART_OPTIONS.contains(name)) {
@@ -66,16 +67,19 @@ public final class StatisticsManager {
                 }
             }
 
+            @Override
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }
         });
 
         DB.addListener(new DBListener() {
+            @Override
             public void onDBConnected() {
                 start();
             }
 
+            @Override
             public void onDBDisconnecting() {
                 stop();
             }
@@ -102,20 +106,15 @@ public final class StatisticsManager {
                 throw new Exception("database is not connected");
             }
 
-            for (StatisticsGroup group : groups.values()) {
-                group.validate();
-            }
+            groups.values().forEach(group -> group.validate());
+
             int purged = purge();
             Utils.info("purged %s invalid cached statistics instances", purged);
 
             scheduleFlushCheck();
 
             started = true;
-            jobThread = new Thread(new Runnable() {
-                public void run() {
-                    background();
-                }
-            });
+            jobThread = new Thread(StatisticsManager::background);
             jobThread.setDaemon(true);
             jobThread.setName("Statistics updater");
             jobThread.start();
@@ -134,9 +133,7 @@ public final class StatisticsManager {
         if (!started) {
             return;
         }
-        for (StatisticsManagerListener listener : listeners) {
-            listener.onStatisticsManagerStopping();
-        }
+        listeners.forEach(listener -> listener.onStatisticsManagerStopping());
         if (flushCheckTask != -1) {
             Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
         }
@@ -222,27 +219,19 @@ public final class StatisticsManager {
     }
 
     public static void flushAll() {
-        for (StatisticsGroup group : groups.values()) {
-            group.flushAll();
-        }
+        groups.values().forEach(group -> group.flushAll());
     }
 
     public static void flushAllSync() {
-        for (StatisticsGroup group : groups.values()) {
-            group.flushAllSync();
-        }
+        groups.values().forEach(group -> group.flushAllSync());
     }
 
     public static void flush() {
-        for (StatisticsGroup group : groups.values()) {
-            group.flush();
-        }
+        groups.values().forEach(group -> group.flush());
     }
 
     public static void delete() {
-        for (StatisticsGroup group : groups.values()) {
-            group.delete();
-        }
+        groups.values().forEach(group -> group.delete());
     }
 
     public static void submitJob(Job job) {
@@ -293,13 +282,10 @@ public final class StatisticsManager {
         if (flushCheckTask != -1) {
             Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
         }
-        flushCheckTask = Utils.fireDelayed(new Runnable() {
-            public void run() {
-                flush();
-                delete();
-                scheduleFlushCheck();
-            }
-         ;
+        flushCheckTask = Utils.fireDelayed(() -> {
+            flush();
+            delete();
+            scheduleFlushCheck();
         }, getFlushCheckInterval());
     }
 

@@ -212,7 +212,7 @@ public final class JSON {
                     case 't': str.append("\t"); break;
                     case 'u':
                         stripChars(sb, pos, 1);
-                        String hex = stripChars(sb, pos, 4).toString();
+                        String hex = stripChars(sb, pos, 4);
                         if (! hex.matches("^[a-f0-9]{4}$"))
                             throw new IllegalArgumentException("expected hexidecimal digits in JSON at " + pos[0]);
                         str.append(Character.toChars(Integer.parseInt(hex, 16)));
