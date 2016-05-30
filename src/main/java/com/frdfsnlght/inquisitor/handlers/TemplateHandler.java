@@ -34,8 +34,6 @@ import java.util.Date;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public class TemplateHandler extends WebHandler {
 
     protected static final String VIEW_EXTENSION = "html";

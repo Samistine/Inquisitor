@@ -26,8 +26,6 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public abstract class APIHandler extends WebHandler {
 
     protected void sendFailure(WebRequest req, WebResponse res, String error) throws IOException {

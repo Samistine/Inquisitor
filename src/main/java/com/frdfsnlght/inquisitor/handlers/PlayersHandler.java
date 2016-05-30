@@ -17,6 +17,7 @@ package com.frdfsnlght.inquisitor.handlers;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.PlayerStats;
+import com.frdfsnlght.inquisitor.Statistic;
 import com.frdfsnlght.inquisitor.TypeMap;
 import com.frdfsnlght.inquisitor.Utils;
 import com.frdfsnlght.inquisitor.webserver.WebRequest;
@@ -28,15 +29,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class PlayersHandler extends TemplateHandler {
 
     /*
@@ -86,7 +87,7 @@ public final class PlayersHandler extends TemplateHandler {
 
         Set<String> allColumns = WebServer.getPlayerColumns(false);
 
-        List<String> columns = new ArrayList<String>();
+        List<String> columns = new ArrayList<>();
         if (columnsStr == null)
             columns.addAll(Arrays.asList(defColumns));
         else
@@ -139,9 +140,9 @@ public final class PlayersHandler extends TemplateHandler {
                 stmt.setString(1, "%" + playerName + "%");
             rs = stmt.executeQuery();
 
-            List<TypeMap> players = new ArrayList<TypeMap>(pageSize);
+            List<TypeMap> players = new ArrayList<>(pageSize);
             while (rs.next()) {
-                TypeMap player = PlayerStats.group.loadStatistics(rs, columns);
+                TypeMap player = PlayerStats.group.loadStatistics(rs, getFromName(columns));
                 player.set("name", rs.getString("name"));
                 players.add(player);
             }
@@ -158,7 +159,7 @@ public final class PlayersHandler extends TemplateHandler {
             data.put("firstPlayerOffset", limitOffset);
             data.put("playerName", playerName);
 
-            List<String> hideColumns = new ArrayList<String>();
+            List<String> hideColumns = new ArrayList<>();
             for (String col : allColumns)
                 if (! columns.contains(col)) hideColumns.add(col);
             data.put("hideColumns", hideColumns);
@@ -176,4 +177,7 @@ public final class PlayersHandler extends TemplateHandler {
         }
     }
 
+    public static Set<Statistic> getFromName(List<String> names) {
+        return names.stream().map(Statistic::getFromName).filter(stat -> stat != null).collect(Collectors.toSet());
+    }
 }

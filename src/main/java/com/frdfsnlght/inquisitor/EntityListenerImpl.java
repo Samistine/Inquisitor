@@ -18,6 +18,7 @@ package com.frdfsnlght.inquisitor;
 import java.util.Date;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -41,9 +42,12 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
-                Statistics stats = PlayerStats.group.getStatistics(player.getName());
-                stats.add("travelDistances", "Falling", event.getEntity().getFallDistance());
+            if (PlayerStats.isStatsPlayer(player)) {
+                String pName = player.getName();
+                float fallDistance = event.getEntity().getFallDistance();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.add(Statistic.travelDistances, "Falling", fallDistance);
             }
         }
     }
@@ -67,7 +71,7 @@ public final class EntityListenerImpl implements Listener {
         }
 
         Player player = (Player) killerEnt;
-        if (!PlayerStats.isStatsPlayer(player) || !PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (!PlayerStats.isStatsPlayer(player)) {
             return;
         }
 
@@ -84,19 +88,19 @@ public final class EntityListenerImpl implements Listener {
         if (deadEnt instanceof Player) {
             String deadName = ((Player) deadEnt).getName();
             Utils.debug("onPlayerKill '%s'", killerName);
-            stats.incr("totalPlayersKilled");
-            stats.set("lastPlayerKill", new Date());
-            stats.set("lastPlayerKilled", deadName);
-            stats.incr("playersKilled", deadName);
-            stats.incr("playersKilledByWeapon", weaponName);
+            stats.incr(Statistic.totalPlayersKilled);
+            stats.set(Statistic.lastPlayerKill, new Date());
+            stats.set(Statistic.lastPlayerKilled, deadName);
+            stats.incr(Statistic.playersKilled, deadName);
+            stats.incr(Statistic.playersKilledByWeapon, weaponName);
         } else {
             String deadName = Utils.normalizeEntityTypeName(deadEnt.getType());
             Utils.debug("onMobKill '%s'", killerName);
-            stats.incr("totalMobsKilled");
-            stats.set("lastMobKill", new Date());
-            stats.set("lastMobKilled", deadName);
-            stats.incr("mobsKilled", deadName);
-            stats.incr("mobsKilledByWeapon", weaponName);
+            stats.incr(Statistic.totalMobsKilled);
+            stats.set(Statistic.lastMobKill, new Date());
+            stats.set(Statistic.lastMobKilled, deadName);
+            stats.incr(Statistic.mobsKilled, deadName);
+            stats.incr(Statistic.mobsKilledByWeapon, weaponName);
         }
     }
 
@@ -104,8 +108,11 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
-                PlayerStats.group.getStatistics(player.getName()).incr("arrowsShot");
+            if (PlayerStats.isStatsPlayer(player)) {
+                String pName = player.getName();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.arrowsShot);
             }
         }
     }
@@ -114,8 +121,12 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityTame(EntityTameEvent event) {
         if (event.getOwner() instanceof Player) {
             Player player = (Player) event.getOwner();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
-                PlayerStats.group.getStatistics(player.getName()).incr("animalsTamed", Utils.normalizeEntityTypeName(event.getEntityType()));
+            if (PlayerStats.isStatsPlayer(player)) {
+                String pName = player.getName();
+                EntityType entityType = event.getEntityType();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
             }
         }
     }
@@ -124,13 +135,16 @@ public final class EntityListenerImpl implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player)) {
                 if (event.getFoodLevel() <= player.getFoodLevel()) {
                     return;
                 }
                 Material food = player.getItemInHand().getType();
                 if (food.isEdible()) {
-                    PlayerStats.group.getStatistics(player.getName()).incr("foodEaten", Utils.titleCase(food.name()));
+                    String pName = player.getName();
+
+                    Statistics stats = PlayerStats.group.getStatistics(pName);
+                    stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
                 }
             }
         }

@@ -28,7 +28,7 @@ import java.util.Set;
  */
 public final class Config {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
     private static final Options options;
     private static TypeMap config = null;
 
@@ -36,9 +36,11 @@ public final class Config {
         OPTIONS.add("debug");
 
         options = new Options(Config.class, OPTIONS, "inq", new OptionsListener() {
+            @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("global option '%s' set to '%s'", name, value);
             }
+            @Override
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }

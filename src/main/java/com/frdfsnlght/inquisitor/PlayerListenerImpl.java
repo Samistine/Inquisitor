@@ -64,7 +64,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.onPlayerJoin(player);
         }
     }
@@ -72,7 +72,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.onPlayerQuit(player);
         }
     }
@@ -80,7 +80,7 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String message = ChatColor.stripColor(event.getLeaveMessage());
             PlayerStats.onPlayerKick(player, message);
         }
@@ -95,7 +95,7 @@ public final class PlayerListenerImpl implements Listener {
             return;
         }
         EntityDamageEvent.DamageCause damageCause = damageEvent.getCause();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.onPlayerDeath(player, message, damageCause);
         }
     }
@@ -112,7 +112,7 @@ public final class PlayerListenerImpl implements Listener {
                 return;
             }
             Location to = event.getTo();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player)) {
                 PlayerStats.onPlayerMove(player, to);
             }
         }
@@ -122,23 +122,24 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         Player player = event.getPlayer();
         Location to = event.getTo();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.onPlayerTeleport(player, to);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChatAsync(AsyncPlayerChatEvent event) {
-        if (PlayerStats.isStatsPlayer(event.getPlayer()) && PlayerStats.hasNoPendingLogin(event.getPlayer().getUniqueId())) {
-            final String pName = event.getPlayer().getName();
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            final String pName = player.getName();
             if (event.isAsynchronous()) {
                 Utils.fire(new Runnable() {
                     public void run() {
-                        PlayerStats.group.getStatistics(pName).incr("chatMessages");
+                        PlayerStats.group.getStatistics(pName).incr(Statistic.chatMessages);
                     }
                 });
             } else {
-                PlayerStats.group.getStatistics(pName).incr("chatMessages");
+                PlayerStats.group.getStatistics(pName).incr(Statistic.chatMessages);
             }
         }
     }
@@ -146,65 +147,67 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             ItemStack itemstack = event.getItemDrop().getItemStack();
             int amount = itemstack.getAmount();
             Material type = itemstack.getType();
 
-            Statistics stats = PlayerStats.group.getStatistics(player.getName());
-            stats.add("totalItemsDropped", amount);
-            stats.add("itemsDropped", Utils.titleCase(type.name()), amount);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.add(Statistic.totalItemsDropped, amount);
+            stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
             ItemStack itemstack = event.getItem().getItemStack();
             int amount = itemstack.getAmount();
             Material type = itemstack.getType();
 
             Statistics stats = PlayerStats.group.getStatistics(pName);
-            stats.add("totalItemsPickedUp", amount);
-            stats.add("itemsPickedUp", Utils.titleCase(type.name()), amount);
+            stats.add(Statistic.totalItemsPickedUp, amount);
+            stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr("portalsCrossed");
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.portalsCrossed);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(event.getPlayer().getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
             Material itemTypeInHand = player.getItemInHand().getType();
-            Entity interactedWith = event.getRightClicked();//TODO: Not thread safe variable
+            EntityType rightClickedType = event.getRightClicked().getType();//TODO: Not thread safe variable
 
             Statistics stats = PlayerStats.group.getStatistics(pName);
             switch (itemTypeInHand) {
                 case BUCKET:
-                    if (event.getRightClicked() instanceof Cow) {
-                        stats.incr("cowsMilked");
+                    if (rightClickedType == EntityType.COW) {
+                        stats.incr(Statistic.cowsMilked);
                     }
                     break;
                 case BOWL:
-                    if (event.getRightClicked() instanceof MushroomCow) {
-                        stats.incr("mooshroomsMilked");
+                    if (rightClickedType == EntityType.MUSHROOM_COW) {
+                        stats.incr(Statistic.mooshroomsMilked);
                     }
                     break;
                 case INK_SACK:
-                    if (event.getRightClicked() instanceof Sheep) {
-                        stats.incr("sheepDyed");
+                    if (rightClickedType == EntityType.SHEEP) {
+                        stats.incr(Statistic.sheepDyed);
                     }
                     break;
             }
@@ -214,30 +217,32 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerExp(PlayerExpChangeEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
             int amount = event.getAmount();
 
-            PlayerStats.group.getStatistics(pName).add("lifetimeExperience", amount);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.add(Statistic.lifetimeExperience, amount);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
             int amount = event.getExpLevelCost();
 
-            PlayerStats.group.getStatistics(pName).incr("itemsEnchanted");
-            PlayerStats.group.getStatistics(pName).add("itemEnchantmentLevels", amount);
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.itemsEnchanted);
+            stats.add(Statistic.itemEnchantmentLevels, amount);
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
 
             PlayerStats.onPlayerEnterBed(player);//Needs work
         }
@@ -246,14 +251,17 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             String pName = player.getName();
-            switch (event.getEntity().getType()) {//needs work
+            EntityType type = event.getEntity().getType();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            switch (type) {
                 case SHEEP:
-                    PlayerStats.group.getStatistics(pName).incr("sheepSheared");
+                    stats.incr(Statistic.sheepSheared);
                     break;
                 case MUSHROOM_COW:
-                    PlayerStats.group.getStatistics(pName).incr("mooshroomSheared");
+                    stats.incr(Statistic.mooshroomsSheared);
                     break;
             }
         }
@@ -263,10 +271,11 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerFishEvent(PlayerFishEvent event) {
         Player player = event.getPlayer();
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player)) {
                 String pName = player.getName();
 
-                PlayerStats.group.getStatistics(pName).incr("fishCaught");
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.fishCaught);
             }
         }
     }
@@ -274,11 +283,12 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEggThrow(PlayerEggThrowEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             EntityType hatchingType = event.getHatchingType();
             String pName = player.getName();
 
-            PlayerStats.group.getStatistics(pName).incr("eggsThrown", Utils.normalizeEntityTypeName(hatchingType));
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
         }
     }
 
@@ -286,26 +296,26 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {//needs work
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             Material bucket = event.getBucket();
             switch (bucket) {
                 case BUCKET:
                     switch (event.getBlockClicked().getType()) {
                         case WATER:
                         case STATIONARY_WATER:
-                            PlayerStats.group.getStatistics(player.getName()).incr("waterBucketsFilled");
+                            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.waterBucketsFilled);
                             break;
                         case LAVA:
                         case STATIONARY_LAVA:
-                            PlayerStats.group.getStatistics(player.getName()).incr("lavaBucketsFilled");
+                            PlayerStats.group.getStatistics(player.getName()).incr(Statistic.lavaBucketsFilled);
                             break;
                     }
                     break;
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr("waterBucketsFilled");
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(Statistic.waterBucketsFilled);
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr("lavaBucketsFilled");
+                    PlayerStats.group.getStatistics(event.getPlayer().getName()).incr(Statistic.lavaBucketsFilled);
                     break;
             }
         }
@@ -314,14 +324,17 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {//needs work
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             Material bucket = event.getBucket();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
             switch (bucket) {
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr("waterBucketsEmptied");
+                    stats.incr(Statistic.waterBucketsEmptied);
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(player.getName()).incr("lavaBucketsEmptied");
+                    stats.incr(Statistic.lavaBucketsEmptied);
                     break;
             }
         }
@@ -332,14 +345,14 @@ public final class PlayerListenerImpl implements Listener {
     public void onCraftItem(CraftItemEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+            if (PlayerStats.isStatsPlayer(player)) {
                 String pName = player.getName();
                 int amount = event.getRecipe().getResult().getAmount();
                 Material material = event.getRecipe().getResult().getType();
 
                 Statistics stats = PlayerStats.group.getStatistics(pName);
-                stats.add("totalItemsCrafted", amount);
-                stats.add("itemsCrafted", Utils.titleCase(material.name()), amount);
+                stats.add(Statistic.totalItemsCrafted, amount);
+                stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
             }
         }
     }

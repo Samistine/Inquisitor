@@ -39,7 +39,7 @@ public class HelpCommand extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "[page]");
         return cmds;
     }
@@ -47,7 +47,7 @@ public class HelpCommand extends CommandProcessor {
     @Override
     public void process(Context ctx, Command cmd, List<String> args)  throws InquisitorException {
         args.remove(0);
-        List<String> help = new ArrayList<String>();
+        List<String> help = new ArrayList<>();
         for (CommandProcessor cp : Global.commands) {
             List<String> usage = cp.getUsage(ctx);
             if ((usage == null) || usage.isEmpty()) continue;

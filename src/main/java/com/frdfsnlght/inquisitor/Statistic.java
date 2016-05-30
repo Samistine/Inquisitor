@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,51 +25,147 @@ import java.util.Set;
  */
 
 
-public final class Statistic {
+public enum Statistic {
+    
+    displayName("displayName", Type.STRING, 255),
+    uuid("uuid", Type.STRING, 36),
+    //
+    address("address", Type.STRING, 40),
+    inventory("inventory", Type.OBJECT),
+    armor("armor", Type.OBJECT),
+    ender("ender", Type.OBJECT),
+    heldItemSlot("heldItemSlot", Type.INTEGER),
+    health("health", Type.INTEGER),
+    remainingAir("remainingAir", Type.INTEGER),
+    fireTicks("fireTicks", Type.INTEGER),
+    foodLevel("foodLevel", Type.INTEGER),
+    exhaustion("exhaustion", Type.FLOAT),
+    saturation("saturation", Type.FLOAT),
+    gameMode("gameMode", Type.STRING, 15),
+    level("level", Type.INTEGER),
+    exp("exp", Type.FLOAT),
+    totalExperience("totalExperience", Type.INTEGER),
+    potionEffects("potionEffects", Type.OBJECT),
+    online("online", Type.BOOLEAN),
+    //
+    server("server", Type.STRING, 50),
+    world("world", Type.STRING, 50),
+    coords("coords", Type.STRING, 100),
+    //
+    groups("groups", Type.OBJECT),
+    money("money", Type.DOUBLE),
+    //
+    bedServer("bedServer", Type.STRING, 50),
+    bedWorld("bedWorld", Type.STRING, 50),
+    bedCoords("bedCoords", Type.STRING, 100),
+    //
+    joins("joins", Type.INTEGER),
+    firstJoin("firstJoin", Type.TIMESTAMP),
+    lastJoin("lastJoin", Type.TIMESTAMP),
+    quits("quits", Type.INTEGER),
+    lastQuit("lastQuit", Type.TIMESTAMP),
+    kicks("kicks", Type.INTEGER),
+    lastKick("lastKick", Type.TIMESTAMP),
+    lastKickMessage("lastKickMessage", Type.STRING, 255),
+    deaths("deaths", Type.INTEGER),
+    deathCauses("deathCauses", Type.INTEGER, true),
+    lastDeath("lastDeath", Type.TIMESTAMP),
+    lastDeathMessage("lastDeathMessage", Type.STRING, 255),
+    totalPlayersKilled("totalPlayersKilled", Type.INTEGER),
+    playersKilled("playersKilled", Type.INTEGER, true),
+    playersKilledByWeapon("playersKilledByWeapon", Type.INTEGER, true),
+    //
+    lastPlayerKill("lastPlayerKill", Type.TIMESTAMP),
+    lastPlayerKilled("lastPlayerKilled", Type.STRING, 30),
+    totalMobsKilled("totalMobsKilled", Type.INTEGER),
+    mobsKilled("mobsKilled", Type.INTEGER, true),
+    mobsKilledByWeapon("mobsKilledByWeapon", Type.INTEGER, true),
+    lastMobKill("lastMobKill", Type.TIMESTAMP),
+    lastMobKilled("lastMobKilled", Type.STRING, 30),
+    //
+    totalBlocksBroken("totalBlocksBroken", Type.INTEGER),
+    blocksBroken("blocksBroken", Type.INTEGER, true),
+    totalBlocksPlaced("totalBlocksPlaced", Type.INTEGER),
+    blocksPlaced("blocksPlaced", Type.INTEGER, true),
+    animalsTamed("animalsTamed", Type.INTEGER, true),
+    totalDistanceTraveled("totalDistanceTraveled", Type.FLOAT),
+    travelDistances("travelDistances", Type.FLOAT, true),
+    biomeDistances("biomeDistances", Type.FLOAT, true),
+    travelTimes("travelTimes", Type.ELAPSED_TIME, true),
+    biomeTimes("biomeTimes", Type.ELAPSED_TIME, true),
+    totalItemsDropped("totalItemsDropped", Type.INTEGER),
+    itemsDropped("itemsDropped", Type.INTEGER, true),
+    totalItemsPickedUp("totalItemsPickedUp", Type.INTEGER),
+    itemsPickedUp("itemsPickedUp", Type.INTEGER, true),
+    totalItemsCrafted("totalItemsCrafted", Type.INTEGER),
+    itemsCrafted("itemsCrafted", Type.INTEGER, true),
+    eggsThrown("eggsThrown", Type.INTEGER, true),
+    foodEaten("foodEaten", Type.INTEGER, true),
+    //
+    timesSlept("timesSlept", Type.INTEGER),
+    arrowsShot("arrowsShot", Type.INTEGER),
+    firesStarted("firesStarted", Type.INTEGER),
+    fishCaught("fishCaught", Type.INTEGER),
+    sheepSheared("sheepSheared", Type.INTEGER),
+    chatMessages("chatMessages", Type.INTEGER),
+    portalsCrossed("portalsCrossed", Type.INTEGER),
+    waterBucketsFilled("waterBucketsFilled", Type.INTEGER),
+    waterBucketsEmptied("waterBucketsEmptied", Type.INTEGER),
+    lavaBucketsFilled("lavaBucketsFilled", Type.INTEGER),
+    lavaBucketsEmptied("lavaBucketsEmptied", Type.INTEGER),
+    cowsMilked("cowsMilked", Type.INTEGER),
+    mooshroomsMilked("mooshroomsMilked", Type.INTEGER),
+    mooshroomsSheared("mooshroomsSheared", Type.INTEGER),
+    sheepDyed("sheepDyed", Type.INTEGER),
+    lifetimeExperience("lifetimeExperience", Type.INTEGER),
+    itemsEnchanted("itemsEnchanted", Type.INTEGER),
+    itemEnchantmentLevels("itemEnchantmentLevels", Type.INTEGER),
+    //
+    sessionTime("sessionTime", Type.ELAPSED_TIME),
+    totalTime("totalTime", Type.ELAPSED_TIME),
+    
+    BLAHS("blahs", Type.INTEGER, false);
 
     public static final String MappedObjectsColumn = "mapped";
 
-    private String name;
-    private Type type;
-    private boolean mapped;
-    private int size;   // for STRING
-    private String def; // for STRING
-    private StatisticsGroup group = null;
-    private Set<String> oldNames = new HashSet<String>();
+    private final String name;
+    private final Type type;
+    private final boolean mapped;
+    private final int size;   // for STRING
+    private final String def; // for STRING
 
-    public Statistic(String name, Type type) {
+    private Statistic(String name, Type type) {
         this(name, type, false, -1, null);
     }
 
-    public Statistic(String name, Type type, int size) {
+    private Statistic(String name, Type type, int size) {
         this(name, type, false, size, null);
     }
 
-    public Statistic(String name, Type type, int size, String def) {
+    private Statistic(String name, Type type, int size, String def) {
         this(name, type, false, size, def);
     }
 
-    public Statistic(String name, Type type, boolean mapped) {
+    private Statistic(String name, Type type, boolean mapped) {
         this(name, type, mapped, -1, null);
     }
 
-    public Statistic(String name, Type type, boolean mapped, int size, String def) {
+    private Statistic(String name, Type type, boolean mapped, int size, String def) {
         if (! name.matches("^\\w+$"))
             throw new IllegalArgumentException("'" + name + "' is not a valid statistic name");
         if (mapped) {
             size = -1;
             def = null;
-        } else
-            switch (type) {
-                case STRING:
-                    if (size < 1)
-                        throw new IllegalArgumentException("size must be at least 1");
-                    break;
-                default:
-                    size = -1;
-                    def = null;
-                    break;
+        } else {
+            if (type == Type.STRING) {
+                if (size < 1) {
+                    throw new IllegalArgumentException("size must be at least 1");
+                }
+            } else {
+                size = -1;
+                def = null;
             }
+        }
 
         this.name = name;
         this.type = type;
@@ -102,28 +199,39 @@ public final class Statistic {
         return def;
     }
 
-    public void setGroup(StatisticsGroup group) {
-        this.group = group;
+    public Set<String> getOldNames() {
+        switch (this) {
+            case mooshroomsMilked:
+                return new HashSet<>(Arrays.asList("mushroomCowsMilked"));
+            case totalPlayersKilled:
+                return new HashSet<>(Arrays.asList("playerKills"));
+            case totalMobsKilled:
+                return new HashSet<>(Arrays.asList("mobKills"));
+            default:
+                return null;
+        }
     }
 
-    public StatisticsGroup getGroup() {
-        return group;
-    }
-
-    public void addOldName(String oldName) {
-        oldNames.add(oldName);
-    }
-
-    public void validate() {
+    public void validate(StatisticsGroup group) {
         if (group == null)
             throw new IllegalStateException(this + " group has not been set");
         if (mapped)
             group.validateColumn(MappedObjectsColumn, Type.OBJECT, -1, null, null);
         else
-            group.validateColumn(name, type, size, def, oldNames);
+            group.validateColumn(name, type, size, def, getOldNames());
     }
 
-    public enum Type {
+    public static Statistic getFromName(String name) {
+        for (Statistic value : values()) {
+            if (value.getName().equalsIgnoreCase(name)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public static enum Type {
+
         STRING("varchar"),
         BOOLEAN("tinyint"),
         OBJECT("longtext"),

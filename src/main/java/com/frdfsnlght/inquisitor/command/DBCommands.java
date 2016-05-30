@@ -27,7 +27,7 @@ import org.bukkit.command.Command;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class DBCommands  extends CommandProcessor {
+public class DBCommands extends CommandProcessor {
 
     private static final String GROUP = "db ";
 
@@ -39,7 +39,7 @@ public class DBCommands  extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "status");
         cmds.add(getPrefix(ctx) + GROUP + "get <option>|*");
         cmds.add(getPrefix(ctx) + GROUP + "set <option> <value>");

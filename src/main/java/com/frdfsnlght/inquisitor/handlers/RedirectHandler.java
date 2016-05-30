@@ -24,12 +24,10 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public class RedirectHandler extends WebHandler {
 
-    private String url;
-    private int status;
+    private final String url;
+    private final int status;
 
     public RedirectHandler(String url, int status) {
         this.url = url;

@@ -34,6 +34,7 @@ public final class WebWorker implements Runnable {
         socket = null;
     }
 
+    @Override
     public void run() {
         run = true;
         while (run) {

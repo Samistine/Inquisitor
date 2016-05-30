@@ -28,8 +28,7 @@ public abstract class CommandProcessor {
 
     public boolean matches(Context ctx, Command cmd, List<String> args) {
         if (! cmd.getName().toLowerCase().equals("inq")) return false;
-        if (args.isEmpty()) return false;
-        return true;
+        return !args.isEmpty();
     }
 
     protected String getPrefix(Context ctx) {

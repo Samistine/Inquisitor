@@ -31,8 +31,6 @@ import java.sql.SQLException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class PlayerSearchHandler extends TemplateHandler {
 
     @Override

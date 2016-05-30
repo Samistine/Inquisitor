@@ -47,7 +47,7 @@ public class TestCommands extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "enchant");
         cmds.add(getPrefix(ctx) + GROUP + "stats");
         return cmds;
@@ -97,12 +97,12 @@ public class TestCommands extends CommandProcessor {
                 StatisticsManager.removeGroup(statsGroup);
             if (statsGroup == null) {
                 statsGroup = new StatisticsGroup("stats", "name", Type.STRING, 30);
-                statsGroup.addStatistic(new Statistic("blahs", Type.INTEGER, false));
+                statsGroup.addStatistic(Statistic.BLAHS);
             }
             StatisticsManager.addGroup(statsGroup);
 
             Statistics stats = statsGroup.getStatistics("tab");
-            stats.incr("blahs");
+            stats.incr(Statistic.BLAHS);
             stats.flush();
 
             return;
@@ -113,7 +113,7 @@ public class TestCommands extends CommandProcessor {
 
     private StatisticsGroup statsGroup = null;
 
-    private enum Enchantments {
+    private static enum Enchantments {
 
         PROTECTION_ENVIRONMENTAL(Enchantment.PROTECTION_ENVIRONMENTAL),
         PROTECTION_FIRE(Enchantment.PROTECTION_FIRE),

@@ -91,12 +91,12 @@ public class Inquisitor extends JavaPlugin {
             try {
                 URL u = (new File(Global.plugin.getDataFolder(), "freemarker.jar")).toURI().toURL();
                 method.invoke(classLoader, u);
-            } catch (IllegalAccessException iae) {
-            } catch (InvocationTargetException ite) {
-            } catch (MalformedURLException mue) {
+            } catch (IllegalAccessException | InvocationTargetException | MalformedURLException ex) {
+                ex.printStackTrace();
             }
 
         } catch (NoSuchMethodException nsme) {
+            nsme.printStackTrace();
         }
 
         Config.load(ctx);
@@ -155,7 +155,7 @@ public class Inquisitor extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] rawArgs) {
         // Rebuild quoted arguments
-        List<String> args = new ArrayList<String>();
+        List<String> args = new ArrayList<>();
         boolean inQuotes = false;
         StringBuilder argBuffer = null;
         for (String arg : rawArgs) {
@@ -197,12 +197,11 @@ public class Inquisitor extends JavaPlugin {
         }
 
         // Find the matching commands
-        List<CommandProcessor> cps = new ArrayList<CommandProcessor>();
+        List<CommandProcessor> cps = new ArrayList<>();
         for (CommandProcessor cp : Global.commands) {
-            if (!cp.matches(ctx, cmd, args)) {
-                continue;
+            if (cp.matches(ctx, cmd, args)) {
+                cps.add(cp);
             }
-            cps.add(cp);
         }
         // Execute the matching command
         try {

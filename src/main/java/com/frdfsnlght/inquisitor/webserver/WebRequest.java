@@ -59,7 +59,7 @@ public final class WebRequest {
     private String queryString;
     private TypeMap parameters = new TypeMap();
     private WebHandler handler;
-    private Map<String,String> headers = new HashMap<String,String>();
+    private Map<String,String> headers = new HashMap<>();
 
     public WebRequest(InputStream is, WebResponse response) throws IOException {
         this.response = response;

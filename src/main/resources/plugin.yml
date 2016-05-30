@@ -1,6 +1,6 @@
 name: Inquisitor
 main: com.frdfsnlght.inquisitor.Inquisitor
-version: 2.28_SamistineThreaded.13.1
+version: 2.28_SamistineThreaded.14
 authors: [snarfattack, frdfsnlght, Samistine]
 website: http://code.google.com/p/inquisitor-mc/
 description: Collects player statistics, stores them in a database, and optionally serves them through a built-in web server.

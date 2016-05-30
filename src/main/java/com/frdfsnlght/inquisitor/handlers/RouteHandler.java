@@ -28,11 +28,9 @@ import java.util.List;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class RouteHandler extends WebHandler {
 
-    private List<WebRoute> routes = new ArrayList<WebRoute>();
+    private final List<WebRoute> routes = new ArrayList<>();
 
     public void add(WebRoute route) {
         routes.add(route);

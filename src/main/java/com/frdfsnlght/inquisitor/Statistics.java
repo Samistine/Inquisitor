@@ -39,7 +39,7 @@ public final class Statistics {
 
     private boolean inDB = false;
     private TypeMap stats = new TypeMap();
-    private Set<String> dirty = new HashSet<String>();
+    private Set<Statistic> dirty = new HashSet<>();
     private long lastFlushed = 0;
     private boolean valid = true;
 
@@ -100,16 +100,16 @@ public final class Statistics {
                 case DOUBLE:
                     stats.set(statistic.getName(), 0);
             }
-        dirty.add(statistic.getName());
+        dirty.add(statistic);
     }
 
     public void removeStatistic(Statistic statistic) {
         if (! stats.containsKey(statistic.getName())) return;
         stats.remove(statistic.getName());
-        dirty.remove(statistic.getName());
+        dirty.remove(statistic);
     }
 
-    public Collection<String> getDirty() {
+    public Collection<Statistic> getDirty() {
         return dirty;
     }
 
@@ -156,16 +156,14 @@ public final class Statistics {
         return stats.getDouble(name);
     }
 
-    public void set(String name, Object value) {
+    /*public void set(String name, Object value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         set(statistic, value);
-    }
+    }*/
 
     public void set(Statistic statistic, Object value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
         String name = statistic.getName();
@@ -202,19 +200,17 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " can not be set");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
-    public void set(String name, String key, Object value) {
+    /*public void set(String name, String key, Object value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         set(statistic, key, value);
-    }
+    }*/
 
     public void set(Statistic statistic, String key, Object value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (! statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
         String name = statistic.getName();
@@ -256,19 +252,17 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be set");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
-    public void add(String name, Number value) {
+    /*public void add(String name, Number value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         add(statistic, value);
-    }
+    }*/
 
     public void add(Statistic statistic, Number value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (value == null) return;
         if (statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
@@ -291,19 +285,17 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be added");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
-    public void add(String name, String key, Number value) {
+    /*public void add(String name, String key, Number value) {
         Statistic statistic = group.getStatistic(name);
         if (statistic == null)
             throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
         add(statistic, key, value);
-    }
+    }*/
 
     public void add(Statistic statistic, String key, Number value) {
-        if (group != statistic.getGroup())
-            throw new IllegalArgumentException(statistic + " does not belong to " + group);
         if (value == null) return;
         if (! statistic.isMapped())
             throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
@@ -331,20 +323,20 @@ public final class Statistics {
             default:
                 throw new UnsupportedOperationException(statistic.getType() + " cannot be added");
         }
-        dirty.add(name);
+        dirty.add(statistic);
     }
 
-    public void incr(String name) {
+    /*public void incr(String name) {
         add(name, 1);
-    }
+    }*/
 
     public void incr(Statistic statistic) {
         add(statistic, 1);
     }
 
-    public void incr(String name, String key) {
+    /*public void incr(String name, String key) {
         add(name, key, 1);
-    }
+    }*/
 
     public void incr(Statistic statistic, String key) {
         add(statistic, key, 1);
@@ -369,21 +361,22 @@ public final class Statistics {
     private Job _flush() {
         group.fireBeforeFlush(this);
         if (dirty.isEmpty()) return null;
-        Map<String,Object> jobData = new HashMap<String,Object>();
+        Map<String,Object> jobData = new HashMap<>();
         TypeMap mappedObjects = null;
-        for (String statName : dirty) {
-            Statistic statistic = group.getStatistic(statName);
+        for (Statistic statistic : dirty) {
             if (statistic == null) continue;
             if (statistic.isMapped()) {
                 if (mappedObjects == null) {
                     mappedObjects = new TypeMap();
-                    for (String sName : stats.keySet()) {
-                        Statistic s = group.getStatistic(sName);
-                        if (! s.isMapped()) continue;
-                        mappedObjects.set(sName, stats.get(sName));
+                    for (String sName : stats.keySet()) { 
+                        Statistic s = Statistic.getFromName(sName);
+                        if (s.isMapped()) {
+                            mappedObjects.set(sName, stats.get(sName));
+                        }
                     }
                 }
-            } else
+            } else {
+                String statName = statistic.getName();
                 switch (statistic.getType()) {
                     case STRING:
                         jobData.put(statName, stats.getString(statName));
@@ -417,6 +410,7 @@ public final class Statistics {
                         break;
                     default:
                         throw new UnsupportedOperationException(statistic + " cannot be flushed");
+                }
             }
         }
         if (mappedObjects != null) {

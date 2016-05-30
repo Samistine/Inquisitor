@@ -58,13 +58,13 @@ import java.util.StringTokenizer;
  */
 public final class WebServer {
 
-    private static final Set<String> OPTIONS = new HashSet<String>();
-    private static final Set<String> RESTART_OPTIONS = new HashSet<String>();
+    private static final Set<String> OPTIONS = new HashSet<>();
+    private static final Set<String> RESTART_OPTIONS = new HashSet<>();
     private static final Options options;
 
     private static final long WORKER_TIMEOUT = 10000;
 
-    public static final List<WebRoute> ROUTES = new ArrayList<WebRoute>();
+    public static final List<WebRoute> ROUTES = new ArrayList<>();
 
     private static final String[] DEFAULT_PLAYERSCOLUMNS = new String[] {
             "level",
@@ -95,7 +95,7 @@ public final class WebServer {
     private static boolean started = false;
     private static ServerSocket serverSocket = null;
     private static Thread serverThread = null;
-    private static final List<WebWorker> workerThreads = new ArrayList<WebWorker>();
+    private static final List<WebWorker> workerThreads = new ArrayList<>();
 
     public static File webRoot;
 
@@ -115,6 +115,7 @@ public final class WebServer {
         RESTART_OPTIONS.add("workers");
 
         options = new Options(WebServer.class, OPTIONS, "inq.webserver", new OptionsListener() {
+            @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("web server option '%s' set to '%s'", name, value);
                 if (RESTART_OPTIONS.contains(name)) {
@@ -123,15 +124,18 @@ public final class WebServer {
                     start();
                 }
             }
+            @Override
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }
         });
 
         PlayerStats.addListener(new PlayerStatsListener() {
+            @Override
             public void onPlayerStatsStarted() {
                 start();
             }
+            @Override
             public void onPlayerStatsStopping() {
                 stop();
             }
@@ -211,6 +215,7 @@ public final class WebServer {
             }
 
         serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 Socket socket;
                 while (started) {
@@ -251,8 +256,7 @@ public final class WebServer {
         serverThread.interrupt();
         serverThread = null;
         synchronized (workerThreads) {
-            for (WebWorker worker : workerThreads)
-                worker.stop();
+            workerThreads.forEach(WebWorker::stop);
             workerThreads.clear();
         }
         if (serverSocket != null) {
@@ -274,7 +278,7 @@ public final class WebServer {
     public static boolean getEnabled() {
         return Config.getBooleanDirect("webServer.enabled", false);
     }
-
+ 
     public static void setEnabled(boolean b) {
         Config.setPropertyDirect("webServer.enabled", b);
         stop();
@@ -335,7 +339,7 @@ public final class WebServer {
         if (s == null)
             setPlayersColumnsFromList(null);
         else {
-            List<String> list = new ArrayList<String>(Arrays.asList(s));
+            List<String> list = new ArrayList<>(Arrays.asList(s));
             setPlayersColumnsFromList(list);
         }
     }
@@ -344,7 +348,7 @@ public final class WebServer {
         if (s == null) return;
         List<String> list = getPlayersColumnsAsList();
         if (list == null)
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         if (list.contains(s)) return;
         list.add(s);
         Collections.sort(list);
@@ -362,8 +366,8 @@ public final class WebServer {
 
     private static List<String> getPlayersColumnsAsList() {
         String v = Config.getStringDirect("webServer.playersColumns");
-        if (v == null) return new ArrayList<String>(Arrays.asList(DEFAULT_PLAYERSCOLUMNS));
-        List<String> list = new ArrayList<String>();
+        if (v == null) return new ArrayList<>(Arrays.asList(DEFAULT_PLAYERSCOLUMNS));
+        List<String> list = new ArrayList<>();
         for (StringTokenizer st = new StringTokenizer(v, ","); st.hasMoreTokens(); )
             list.add(st.nextToken());
         return list;
@@ -420,7 +424,7 @@ public final class WebServer {
         if (s == null)
             setPlayersRestrictColumnsFromList(null);
         else {
-            List<String> list = new ArrayList<String>(Arrays.asList(s));
+            List<String> list = new ArrayList<>(Arrays.asList(s));
             setPlayersRestrictColumnsFromList(list);
         }
     }
@@ -429,7 +433,7 @@ public final class WebServer {
         if (s == null) return;
         List<String> list = getPlayersRestrictColumnsAsList();
         if (list == null)
-            list = new ArrayList<String>();
+            list = new ArrayList<>();
         if (list.contains(s)) return;
         list.add(s);
         Collections.sort(list);
@@ -447,8 +451,8 @@ public final class WebServer {
 
     public static List<String> getPlayersRestrictColumnsAsList() {
         String v = Config.getStringDirect("webServer.playersRestrictColumns");
-        if (v == null) return new ArrayList<String>(Arrays.asList(DEFAULT_RESTRICTCOLUMNS));
-        List<String> list = new ArrayList<String>();
+        if (v == null) return new ArrayList<>(Arrays.asList(DEFAULT_RESTRICTCOLUMNS));
+        List<String> list = new ArrayList<>();
         for (StringTokenizer st = new StringTokenizer(v, ","); st.hasMoreTokens(); )
             list.add(st.nextToken());
         return list;
@@ -502,10 +506,9 @@ public final class WebServer {
     /* End options */
 
     public static Set<String> getPlayerColumns(boolean restricted) {
-        Set<String> columns = new HashSet<String>();
+        Set<String> columns = new HashSet<>();
         List<String> restrictedColumns = getPlayersRestrictColumnsAsList();
-        for (String statName : PlayerStats.group.getStatisticsNames()) {
-            Statistic stat = PlayerStats.group.getStatistic(statName);
+        for (Statistic stat : PlayerStats.group.getStatistics()) {
             if (stat.isMapped()) continue;
             switch (stat.getType()) {
                 case STRING:
@@ -517,8 +520,8 @@ public final class WebServer {
                 case LONG:
                 case FLOAT:
                 case DOUBLE:
-                    if (restricted || (! restrictedColumns.contains(statName)))
-                        columns.add(statName);
+                    if (restricted || (! restrictedColumns.contains(stat.getName())))
+                        columns.add(stat.getName());
                     break;
             }
         }

@@ -5,6 +5,11 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.api.TravelMode;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 
@@ -14,11 +19,17 @@ import org.bukkit.block.Biome;
  */
 public class PlayerState {
 
+    private static final Map<UUID, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<UUID, PlayerState>());
+
+    public static Map<UUID, PlayerState> getPlayerStates() {
+        return playerStates;
+    }
+
     long joinTime;
     float totalTimeBase;
     Location lastLocation;
     long lastTime;
-    PlayerStats.TravelMode lastMode;
+    TravelMode lastMode;
     Biome lastBiome;
 
     PlayerState(float totalTimeBase) {

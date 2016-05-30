@@ -36,7 +36,7 @@ import java.util.Map;
 
 public final class FileHandler extends WebHandler {
 
-    public static final Map<String,String> MIME_TYPES = new HashMap<String,String>();
+    public static final Map<String,String> MIME_TYPES = new HashMap<>();
     
     private static final long CACHE_REFRESH = 3600 * 72; //Cache static files for 72 hours
 
@@ -88,9 +88,7 @@ public final class FileHandler extends WebHandler {
         byte[] buffer = new byte[buf.capacity()];
         buf.get(buffer, 0, buffer.length);
 
-        String contentType = MIME_TYPES.get(extension);
-        if (contentType == null)
-            contentType = "application/octet-stream";
+        String contentType = MIME_TYPES.getOrDefault(extension, "application/octet-stream");
 
         res.setContentType(contentType);
         res.setContentLength(buffer.length);

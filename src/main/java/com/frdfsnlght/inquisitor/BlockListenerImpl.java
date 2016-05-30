@@ -35,12 +35,14 @@ public class BlockListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
             if (player.isOnline()) {
-                Statistics stats = PlayerStats.group.getStatistics(player.getName());
-                stats.incr("totalBlocksBroken");
-                stats.incr("blocksBroken", Utils.titleCase(type.name()));
+                String pName = player.getName();
+
+                Statistics stats = PlayerStats.group.getStatistics(pName);
+                stats.incr(Statistic.totalBlocksBroken);
+                stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
             }
             if (type == Material.BED_BLOCK) {
                 PlayerStats.checkBeds();
@@ -52,11 +54,13 @@ public class BlockListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
+        if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
             Material type = event.getBlock().getType();
-            Statistics stats = PlayerStats.group.getStatistics(player.getName());
-            stats.incr("totalBlocksPlaced");
-            stats.incr("blocksPlaced", Utils.titleCase(type.name()));
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.totalBlocksPlaced);
+            stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
         }
     }
 
@@ -69,11 +73,12 @@ public class BlockListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        if (event.getPlayer() != null) {
-            Player player = event.getPlayer();
-            if (PlayerStats.isStatsPlayer(player) && PlayerStats.hasNoPendingLogin(player.getUniqueId())) {
-                PlayerStats.group.getStatistics(player.getName()).incr("firesStarted");
-            }
+        Player player = event.getPlayer();
+        if (PlayerStats.isStatsPlayer(player)) {
+            String pName = player.getName();
+
+            Statistics stats = PlayerStats.group.getStatistics(pName);
+            stats.incr(Statistic.firesStarted);
         }
     }
 

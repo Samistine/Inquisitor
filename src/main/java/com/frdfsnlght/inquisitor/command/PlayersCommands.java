@@ -38,7 +38,7 @@ public class PlayersCommands  extends CommandProcessor {
 
     @Override
     public List<String> getUsage(Context ctx) {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.add(getPrefix(ctx) + GROUP + "get <option>|*");
         cmds.add(getPrefix(ctx) + GROUP + "set <option> <value>");
 
