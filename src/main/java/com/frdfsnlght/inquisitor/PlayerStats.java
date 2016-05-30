@@ -805,11 +805,9 @@ public final class PlayerStats {
             return;
         }
 
-        bedCheckTask = Utils.fireDelayed(new Runnable() {
-            public void run() {
-                checkBeds();
-                scheduleBedCheck();
-            }
+        bedCheckTask = Utils.fireDelayed(() -> {
+            checkBeds();
+            scheduleBedCheck();
         }, getBedCheckInterval());
     }
 

@@ -31,8 +31,6 @@ import java.util.List;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class FindPlayersHandler extends APIHandler {
 
     @Override

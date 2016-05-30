@@ -24,8 +24,6 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public class RedirectHandler extends WebHandler {
 
     private final String url;

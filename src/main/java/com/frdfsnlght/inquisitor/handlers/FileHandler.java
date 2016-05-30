@@ -88,9 +88,7 @@ public final class FileHandler extends WebHandler {
         byte[] buffer = new byte[buf.capacity()];
         buf.get(buffer, 0, buffer.length);
 
-        String contentType = MIME_TYPES.get(extension);
-        if (contentType == null)
-            contentType = "application/octet-stream";
+        String contentType = MIME_TYPES.getOrDefault(extension, "application/octet-stream");
 
         res.setContentType(contentType);
         res.setContentLength(buffer.length);

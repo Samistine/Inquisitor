@@ -113,7 +113,7 @@ public class TestCommands extends CommandProcessor {
 
     private StatisticsGroup statsGroup = null;
 
-    private enum Enchantments {
+    private static enum Enchantments {
 
         PROTECTION_ENVIRONMENTAL(Enchantment.PROTECTION_ENVIRONMENTAL),
         PROTECTION_FIRE(Enchantment.PROTECTION_FIRE),

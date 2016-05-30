@@ -27,7 +27,7 @@ import org.bukkit.command.Command;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class DBCommands  extends CommandProcessor {
+public class DBCommands extends CommandProcessor {
 
     private static final String GROUP = "db ";
 

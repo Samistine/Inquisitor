@@ -230,7 +230,7 @@ public enum Statistic {
         return null;
     }
 
-    public enum Type {
+    public static enum Type {
 
         STRING("varchar"),
         BOOLEAN("tinyint"),

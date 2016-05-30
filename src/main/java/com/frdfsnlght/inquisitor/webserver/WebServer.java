@@ -115,6 +115,7 @@ public final class WebServer {
         RESTART_OPTIONS.add("workers");
 
         options = new Options(WebServer.class, OPTIONS, "inq.webserver", new OptionsListener() {
+            @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("web server option '%s' set to '%s'", name, value);
                 if (RESTART_OPTIONS.contains(name)) {
@@ -123,15 +124,18 @@ public final class WebServer {
                     start();
                 }
             }
+            @Override
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }
         });
 
         PlayerStats.addListener(new PlayerStatsListener() {
+            @Override
             public void onPlayerStatsStarted() {
                 start();
             }
+            @Override
             public void onPlayerStatsStopping() {
                 stop();
             }
@@ -211,6 +215,7 @@ public final class WebServer {
             }
 
         serverThread = new Thread(new Runnable() {
+            @Override
             public void run() {
                 Socket socket;
                 while (started) {
@@ -251,8 +256,7 @@ public final class WebServer {
         serverThread.interrupt();
         serverThread = null;
         synchronized (workerThreads) {
-            for (WebWorker worker : workerThreads)
-                worker.stop();
+            workerThreads.forEach(WebWorker::stop);
             workerThreads.clear();
         }
         if (serverSocket != null) {
@@ -274,7 +278,7 @@ public final class WebServer {
     public static boolean getEnabled() {
         return Config.getBooleanDirect("webServer.enabled", false);
     }
-
+ 
     public static void setEnabled(boolean b) {
         Config.setPropertyDirect("webServer.enabled", b);
         stop();

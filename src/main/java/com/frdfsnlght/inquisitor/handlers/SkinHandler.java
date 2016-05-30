@@ -32,8 +32,6 @@ import java.util.Date;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class SkinHandler extends TemplateHandler {
 
     private static final String CACHE_DIR = "web-cache";

@@ -322,8 +322,7 @@ public final class StatisticsGroup {
                                 DB.decodeFromJSON(rs.getClob(statName)));
                         break;
                     case TIMESTAMP:
-                        values.set(statName,
-                                DB.decodeTimestamp(rs.getTimestamp(statName)));
+                        values.set(statName, DB.decodeTimestamp(rs.getTimestamp(statName)));
                         break;
                     case INTEGER:
                         values.set(statName, rs.getInt(statName));

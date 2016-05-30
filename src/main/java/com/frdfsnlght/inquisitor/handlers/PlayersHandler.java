@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class PlayersHandler extends TemplateHandler {
 
     /*
