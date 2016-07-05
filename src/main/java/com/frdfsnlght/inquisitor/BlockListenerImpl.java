@@ -16,7 +16,6 @@
 package com.frdfsnlght.inquisitor;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -34,29 +33,27 @@ public class BlockListenerImpl implements Listener {
     // broken by player only
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
+        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-                String pName = player.getName();
 
-                Statistics stats = PlayerStats.group.getStatistics(pName);
-                stats.incr(Statistic.totalBlocksBroken);
-                stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
-            if (type == Material.BED_BLOCK) {
-                PlayerStats.checkBeds();
-            }
+            Statistics stats = PlayerStats.group.getStatistics(player);
+            stats.incr(Statistic.totalBlocksBroken);
+            stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
+        }
+        if (event.getBlock().getType() == Material.BED_BLOCK) {
+            PlayerStats.checkBeds();
         }
     }
 
     // placed by player only
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        Player player = event.getPlayer();
+        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            String pName = player.getName();
             Material type = event.getBlock().getType();
 
-            Statistics stats = PlayerStats.group.getStatistics(pName);
+            Statistics stats = PlayerStats.group.getStatistics(player);
             stats.incr(Statistic.totalBlocksPlaced);
             stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
         }
@@ -71,11 +68,10 @@ public class BlockListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
-        Player player = event.getPlayer();
+        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            String pName = player.getName();
 
-            Statistics stats = PlayerStats.group.getStatistics(pName);
+            Statistics stats = PlayerStats.group.getStatistics(player);
             stats.incr(Statistic.firesStarted);
         }
     }

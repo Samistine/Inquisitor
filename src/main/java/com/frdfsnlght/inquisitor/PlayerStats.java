@@ -94,19 +94,19 @@ public final class PlayerStats {
 
         options = new Options(PlayerStats.class, OPTIONS, "inq.players",
                 new OptionsListener() {
-                    public void onOptionSet(Context ctx, String name, String value) {
-                        ctx.sendLog("player stats option '%s' set to '%s'", name, value);
-                        if (RESTART_OPTIONS.contains(name)) {
-                            Config.save(ctx);
-                            stop();
-                            start();
-                        }
-                    }
+            public void onOptionSet(Context ctx, String name, String value) {
+                ctx.sendLog("player stats option '%s' set to '%s'", name, value);
+                if (RESTART_OPTIONS.contains(name)) {
+                    Config.save(ctx);
+                    stop();
+                    start();
+                }
+            }
 
-                    public String getOptionPermission(Context ctx, String name) {
-                        return name;
-                    }
-                });
+            public String getOptionPermission(Context ctx, String name) {
+                return name;
+            }
+        });
 
         EnumSet.range(Statistic.displayName, Statistic.totalTime).forEach(group::addStatistic);
 
@@ -186,7 +186,7 @@ public final class PlayerStats {
         Utils.info("player stats collection stopped");
     }
 
-    public static boolean isStatsPlayer(Player player) {
+    public static boolean isStatsPlayer(PlayerSnapshot player) {
 
         if (player == null) {
             return false;
@@ -213,16 +213,13 @@ public final class PlayerStats {
         return !invalidPlayerNamePattern.matcher(player.getName()).matches();
     }
 
-    public static void onPlayerJoin(final Player player) {
-        UUID puuid = player.getUniqueId();
-        String pname = player.getName();
-        Date date = new Date();
+    public static void onPlayerJoin(PlayerSnapshot player) {
         String servername = Global.plugin.getServer().getServerName();
-        if (ignoredPlayerJoins.contains(pname)) {
-            Utils.debug("ignored join for player '%s'", pname);
+        if (ignoredPlayerJoins.contains(player.getName())) {
+            Utils.debug("ignored join for player '%s'", player.getName());
             return;
         }
-        Utils.debug("onPlayerJoin '%s'", pname);
+        Utils.debug("onPlayerJoin '%s'", player.getName());
 
         try {
             //Very simply update statement that will allow players to add their UUIDs to the db during the
@@ -232,26 +229,26 @@ public final class PlayerStats {
             sql.append(group.getKeyName()).append("`=?, `uuid`=? WHERE `");
             sql.append(group.getKeyName()).append("`=? OR `uuid`=?");
             PreparedStatement stmt = DB.prepare(sql.toString());
-            stmt.setString(1, pname);
-            stmt.setString(2, puuid.toString());
-            stmt.setString(3, pname);
-            stmt.setString(4, puuid.toString());
+            stmt.setString(1, player.getName());
+            stmt.setString(2, player.getUUID().toString());
+            stmt.setString(3, player.getName());
+            stmt.setString(4, player.getUUID().toString());
             stmt.execute();
 
-            final Statistics stats = group.getStatistics(pname);
-            stats.set(Statistic.uuid, puuid.toString());
+            final Statistics stats = group.getStatistics(player.getName());
+            stats.set(Statistic.uuid, player.getUUID().toString());
             stats.incr(Statistic.joins);
-            stats.set(Statistic.lastJoin, date);
+            stats.set(Statistic.lastJoin, player.getDate());
             stats.set(Statistic.sessionTime, 0);
             stats.set(Statistic.online, true);
             if (!stats.isInDB()) {
-                stats.set(Statistic.firstJoin, date);
+                stats.set(Statistic.firstJoin, player.getDate());
             }
             String bedServer = stats.getString("bedServer");
             if ((bedServer != null) && bedServer.equals(servername)) {
-                bedOwners.add(puuid);
+                bedOwners.add(player.getUUID());
             }
-            PlayerState.getPlayerStates().put(puuid, new PlayerState(stats.getFloat("totalTime")));
+            PlayerState.getPlayerStates().put(player.getUUID(), new PlayerState(stats.getFloat("totalTime")));
 
             Utils.debug("totalTime: " + stats.getFloat("totalTime"));
 
@@ -292,7 +289,7 @@ public final class PlayerStats {
      });
      }*/
 
-    /*	public static void onPlayerQuit(final Player player) {
+ /*	public static void onPlayerQuit(final Player player) {
      Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
 			
      String pname = player.getName();
@@ -327,7 +324,7 @@ public final class PlayerStats {
      }
      });
      }*/
-    public static void onPlayerQuit(Player player) {
+    public static void onPlayerQuit(PlayerSnapshot player) {
         Utils.debug("onPlayerQuit '%s'", player.getName());
         if (ignoredPlayerJoins.remove(player.getName())) {
             Utils.debug("ignored quit for player '%s'", player.getName());
@@ -359,19 +356,19 @@ public final class PlayerStats {
             e.printStackTrace();
         }
 
-        if (!kickedPlayers.remove(player.getUniqueId())) {
+        if (!kickedPlayers.remove(player.getUUID())) {
             stats.incr(Statistic.quits);
-            stats.set(Statistic.lastQuit, new Date());
+            stats.set(Statistic.lastQuit, player.getDate());
         }
         stats.set(Statistic.online, false);
         stats.flushSync();
 
         group.removeStatistics(player.getName());
-        PlayerState.getPlayerStates().remove(player.getUniqueId());
+        PlayerState.getPlayerStates().remove(player.getUUID());
 
     }
 
-    public static void onPlayerKick(Player player, String message) {
+    public static void onPlayerKick(PlayerSnapshot player, String message) {
         if (ignoredPlayerJoins.contains(player.getName())) {
             Utils.debug("ignored kick for player '%s'", player.getName());
             return;
@@ -390,33 +387,33 @@ public final class PlayerStats {
 
         Statistics stats = group.getStatistics(player.getName());
         stats.incr(Statistic.kicks);
-        stats.set(Statistic.lastKick, new Date());
+        stats.set(Statistic.lastKick, player.getDate());
         stats.set(Statistic.lastKickMessage, message);
-        kickedPlayers.add(player.getUniqueId());
+        kickedPlayers.add(player.getUUID());
     }
 
-    public static void onPlayerDeath(Player player, String message, EntityDamageEvent.DamageCause cause) {
+    public static void onPlayerDeath(PlayerSnapshot player, String message, EntityDamageEvent.DamageCause cause) {
         Utils.debug("onPlayerDeath '%s'", player.getName());
 
         final Statistics stats = group.getStatistics(player.getName());
         stats.incr(Statistic.deaths);
-        stats.set(Statistic.lastDeath, new Date());
+        stats.set(Statistic.lastDeath, player.getDate());
         stats.set(Statistic.lastDeathMessage, message);
         stats.incr(Statistic.deathCauses, Utils.titleCase(cause.name()));
         stats.flushSync();
 
         onPlayerMove(player, player.getLocation());
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state != null) {
             state.reset();
         }
     }
 
-    public static void onPlayerMove(Player player, Location to) {
-        // Utils.debug("onPlayerMove '%s'", player.getName());
+    public static void onPlayerMove(PlayerSnapshot player, Location to) {
+        Utils.debug("onPlayerMove '%s'", player.getName());
 
         Statistics stats = group.getStatistics(player.getName());
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state == null) {
             return;
         }
@@ -488,14 +485,12 @@ public final class PlayerStats {
             } else {
                 state.lastBiome = null;
             }
+        } else if (state.lastBiome == block.getBiome()) {
+            String biomeName = Utils.titleCase(state.lastBiome.name());
+            stats.add(Statistic.biomeDistances, biomeName, distance);
+            stats.add(Statistic.biomeTimes, biomeName, elapsed);
         } else {
-            if (state.lastBiome == block.getBiome()) {
-                String biomeName = Utils.titleCase(state.lastBiome.name());
-                stats.add(Statistic.biomeDistances, biomeName, distance);
-                stats.add(Statistic.biomeTimes, biomeName, elapsed);
-            } else {
-                state.lastBiome = block.getBiome();
-            }
+            state.lastBiome = block.getBiome();
         }
     }
 
@@ -512,11 +507,11 @@ public final class PlayerStats {
         return false;
     }
 
-    public static void onPlayerTeleport(Player player, Location to) {
+    public static void onPlayerTeleport(PlayerSnapshot player, Location to) {
         if (!started) {
             return;
         }
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
+        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state != null) {
             onPlayerMove(player, player.getLocation());
             state.lastLocation = to;
@@ -524,9 +519,9 @@ public final class PlayerStats {
         }
     }
 
-    public static void onPlayerEnterBed(Player player) {
-        bedOwners.add(player.getUniqueId());
-        Statistics stats = group.getStatistics(player.getName());
+    public static void onPlayerEnterBed(PlayerSnapshot player) {
+        bedOwners.add(player.getUUID());
+        Statistics stats = group.getStatistics(player);
         stats.incr(Statistic.timesSlept);
     }
 

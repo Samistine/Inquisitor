@@ -191,6 +191,10 @@ public final class StatisticsGroup {
         return stats.values();
     }
 
+    public Statistics getStatistics(PlayerSnapshot player) {
+        return getStatistics(player.getName());
+    }
+
     public Statistics getStatistics(Object key) {
         Statistics s = stats.get(key);
         if (s != null) {

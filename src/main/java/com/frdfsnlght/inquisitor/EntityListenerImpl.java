@@ -41,12 +41,11 @@ public final class EntityListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+            PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
             if (PlayerStats.isStatsPlayer(player)) {
-                String pName = player.getName();
                 float fallDistance = event.getEntity().getFallDistance();
 
-                Statistics stats = PlayerStats.group.getStatistics(pName);
+                Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.travelDistances, "Falling", fallDistance);
             }
         }
@@ -70,7 +69,7 @@ public final class EntityListenerImpl implements Listener {
             return;
         }
 
-        Player player = (Player) killerEnt;
+        PlayerSnapshot player = new PlayerSnapshot((Player) killerEnt);
         if (!PlayerStats.isStatsPlayer(player)) {
             return;
         }
@@ -89,7 +88,7 @@ public final class EntityListenerImpl implements Listener {
             String deadName = ((Player) deadEnt).getName();
             Utils.debug("onPlayerKill '%s'", killerName);
             stats.incr(Statistic.totalPlayersKilled);
-            stats.set(Statistic.lastPlayerKill, new Date());
+            stats.set(Statistic.lastPlayerKill, player.getDate());
             stats.set(Statistic.lastPlayerKilled, deadName);
             stats.incr(Statistic.playersKilled, deadName);
             stats.incr(Statistic.playersKilledByWeapon, weaponName);
@@ -97,7 +96,7 @@ public final class EntityListenerImpl implements Listener {
             String deadName = Utils.normalizeEntityTypeName(deadEnt.getType());
             Utils.debug("onMobKill '%s'", killerName);
             stats.incr(Statistic.totalMobsKilled);
-            stats.set(Statistic.lastMobKill, new Date());
+            stats.set(Statistic.lastMobKill, player.getDate());
             stats.set(Statistic.lastMobKilled, deadName);
             stats.incr(Statistic.mobsKilled, deadName);
             stats.incr(Statistic.mobsKilledByWeapon, weaponName);
@@ -107,11 +106,10 @@ public final class EntityListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+            PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
             if (PlayerStats.isStatsPlayer(player)) {
-                String pName = player.getName();
 
-                Statistics stats = PlayerStats.group.getStatistics(pName);
+                Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.arrowsShot);
             }
         }
@@ -120,12 +118,11 @@ public final class EntityListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityTame(EntityTameEvent event) {
         if (event.getOwner() instanceof Player) {
-            Player player = (Player) event.getOwner();
+            PlayerSnapshot player = new PlayerSnapshot((Player) event.getOwner());
             if (PlayerStats.isStatsPlayer(player)) {
-                String pName = player.getName();
                 EntityType entityType = event.getEntityType();
 
-                Statistics stats = PlayerStats.group.getStatistics(pName);
+                Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
             }
         }
@@ -134,16 +131,15 @@ public final class EntityListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
+            PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
             if (PlayerStats.isStatsPlayer(player)) {
                 if (event.getFoodLevel() <= player.getFoodLevel()) {
                     return;
                 }
                 Material food = player.getItemInHand().getType();
                 if (food.isEdible()) {
-                    String pName = player.getName();
 
-                    Statistics stats = PlayerStats.group.getStatistics(pName);
+                    Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
                 }
             }
