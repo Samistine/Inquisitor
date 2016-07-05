@@ -105,7 +105,6 @@ public final class PlayerListenerImpl implements Listener {
         // You can not short circuit this statement, each MUST be true.
         // Otherwise travel stats will not be correct
         Player player = event.getPlayer();
-        if (player.isOnline()) {
             if ((event.getFrom().getBlockX() == event.getTo().getBlockX())
                     & (event.getFrom().getBlockY() == event.getTo().getBlockY())
                     & (event.getFrom().getBlockZ() == event.getTo().getBlockZ())) {
@@ -115,7 +114,6 @@ public final class PlayerListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player)) {
                 PlayerStats.onPlayerMove(player, to);
             }
-        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
