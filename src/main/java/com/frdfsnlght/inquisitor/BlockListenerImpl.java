@@ -37,13 +37,11 @@ public class BlockListenerImpl implements Listener {
         Player player = event.getPlayer();
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-            if (player.isOnline()) {
                 String pName = player.getName();
 
                 Statistics stats = PlayerStats.group.getStatistics(pName);
                 stats.incr(Statistic.totalBlocksBroken);
                 stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
-            }
             if (type == Material.BED_BLOCK) {
                 PlayerStats.checkBeds();
             }
