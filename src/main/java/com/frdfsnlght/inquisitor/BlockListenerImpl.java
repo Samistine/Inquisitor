@@ -36,10 +36,12 @@ public class BlockListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.totalBlocksBroken);
-            stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
+            PlayerStats.pool.submit(() -> {
+                Utils.debug("onPlayerBreakBlock '%s'", player.getName());
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.totalBlocksBroken);
+                stats.incr(Statistic.blocksBroken, Utils.titleCase(type.name()));
+            });
         }
         if (event.getBlock().getType() == Material.BED_BLOCK) {
             PlayerStats.checkBeds();
@@ -52,10 +54,12 @@ public class BlockListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.totalBlocksPlaced);
-            stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
+            PlayerStats.pool.submit(() -> {
+                Utils.debug("onPlayerPlaceBlock '%s'", player.getName());
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.totalBlocksPlaced);
+                stats.incr(Statistic.blocksPlaced, Utils.titleCase(type.name()));
+            });
         }
     }
 
@@ -70,9 +74,11 @@ public class BlockListenerImpl implements Listener {
     public void onBlockIgnite(BlockIgniteEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.firesStarted);
+            PlayerStats.pool.submit(() -> {
+                Utils.debug("onPlayerStartFire '%s'", player.getName());
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.firesStarted);
+            });
         }
     }
 

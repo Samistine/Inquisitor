@@ -383,9 +383,7 @@ public final class StatisticsGroup {
     }
 
     public void flushAllSync() {
-        for (Statistics stat : stats.values()) {
-            stat.flushSync();
-        }
+        stats.values().forEach(stat -> stat.flushSync());
     }
 
     public void flush() {
@@ -397,9 +395,7 @@ public final class StatisticsGroup {
     }
 
     public void fireBeforeFlush(Statistics stats) {
-        for (BeforeFlushListener listener : beforeFlushListeners) {
-            listener.beforeFlush(stats);
-        }
+        beforeFlushListeners.forEach(listener -> listener.beforeFlush(stats));
     }
 
     public void delete() {

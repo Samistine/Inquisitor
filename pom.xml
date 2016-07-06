@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>Inquisitor</groupId>
     <artifactId>Inquisitor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>2.28_SamistineThreaded.15</version>
     <build>
         <directory>target</directory>
         <outputDirectory>target/classes</outputDirectory>

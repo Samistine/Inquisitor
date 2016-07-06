@@ -43,6 +43,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.EnumSet;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -63,6 +66,8 @@ import org.bukkit.potion.PotionEffect;
  */
 public final class PlayerStats {
 
+    public static final ExecutorService pool = Executors.newSingleThreadExecutor();
+
     private static final Set<String> OPTIONS = new HashSet<>();
     private static final Set<String> RESTART_OPTIONS = new HashSet<>();
     private static final Options options;
@@ -74,8 +79,8 @@ public final class PlayerStats {
     public static final StatisticsGroup group = new StatisticsGroup("players", "name", Type.STRING, 30);
 
     protected static final Set<UUID> bedOwners = Collections.synchronizedSet(new HashSet<UUID>());
-    private static final Set<String> ignoredPlayerJoins = new HashSet<>();
-    private static final Set<UUID> kickedPlayers = new HashSet<>();
+    private static final Set<String> ignoredPlayerJoins = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<UUID> kickedPlayers = Collections.synchronizedSet(new HashSet<>());
 
     private static boolean started = false;
     private static int bedCheckTask = -1;
@@ -221,6 +226,7 @@ public final class PlayerStats {
         }
         Utils.debug("onPlayerJoin '%s'", player.getName());
 
+        Utils.debug("onPlayerJoin-AFT '%s'", player.getName());
         try {
             //Very simply update statement that will allow players to add their UUIDs to the db during the
             // conversion process, then once a name change happens it will update it based on the uuid matching.
@@ -259,7 +265,6 @@ public final class PlayerStats {
             ex.printStackTrace(new PrintWriter(sw));
             Utils.severe("Stack Trace: " + sw.toString());
         }
-
     }
 
     /*    public static void onPlayerJoin(Player player) {
@@ -325,11 +330,13 @@ public final class PlayerStats {
      });
      }*/
     public static void onPlayerQuit(PlayerSnapshot player) {
-        Utils.debug("onPlayerQuit '%s'", player.getName());
         if (ignoredPlayerJoins.remove(player.getName())) {
             Utils.debug("ignored quit for player '%s'", player.getName());
             return;
         }
+
+        Utils.debug("onPlayerQuit '%s'", player.getName());
+
         final Statistics stats = group.getStatistics(player.getName());
 
         try {
@@ -365,7 +372,6 @@ public final class PlayerStats {
 
         group.removeStatistics(player.getName());
         PlayerState.getPlayerStates().remove(player.getUUID());
-
     }
 
     public static void onPlayerKick(PlayerSnapshot player, String message) {

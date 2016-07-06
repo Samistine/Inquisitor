@@ -50,8 +50,7 @@ public final class Statistics {
             throw new IllegalArgumentException("key cannot be null");
         this.group = group;
         this.key = key;
-        for (Statistic statistic : group.getStatistics())
-            addStatistic(statistic);
+        this.group.getStatistics().forEach(statistic -> addStatistic(statistic));
         dirty.clear();
     }
 

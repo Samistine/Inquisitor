@@ -18,12 +18,8 @@ package com.frdfsnlght.inquisitor;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Cow;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -65,7 +61,9 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.onPlayerJoin(player);
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerJoin(player);
+            });
         }
     }
 
@@ -73,7 +71,9 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.onPlayerQuit(player);
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerQuit(player);
+            });
         }
     }
 
@@ -82,7 +82,9 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             String message = ChatColor.stripColor(event.getLeaveMessage());
-            PlayerStats.onPlayerKick(player, message);
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerKick(player, message);
+            });
         }
     }
 
@@ -96,7 +98,9 @@ public final class PlayerListenerImpl implements Listener {
         }
         EntityDamageEvent.DamageCause damageCause = damageEvent.getCause();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.onPlayerDeath(player, message, damageCause);
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerDeath(player, message, damageCause);
+            });
         }
     }
 
@@ -104,15 +108,17 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         // You can not short circuit this statement, each MUST be true.
         // Otherwise travel stats will not be correct
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if ((event.getFrom().getBlockX() == event.getTo().getBlockX())
                 & (event.getFrom().getBlockY() == event.getTo().getBlockY())
                 & (event.getFrom().getBlockZ() == event.getTo().getBlockZ())) {
             return;
         }
         Location to = event.getTo();
+        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.onPlayerMove(player, to);
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerMove(player, to);
+            });
         }
     }
 
@@ -121,7 +127,11 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.onPlayerTeleport(player, to);
+            if (PlayerStats.isStatsPlayer(player)) {
+                PlayerStats.pool.submit(() -> {
+                    PlayerStats.onPlayerTeleport(player, to);
+                });
+            }
         }
     }
 
@@ -130,15 +140,9 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
 
         if (PlayerStats.isStatsPlayer(player)) {
-            if (event.isAsynchronous()) {
-                Utils.fire(new Runnable() {
-                    public void run() {
-                        PlayerStats.group.getStatistics(player).incr(Statistic.chatMessages);
-                    }
-                });
-            } else {
+            PlayerStats.pool.submit(() -> {
                 PlayerStats.group.getStatistics(player).incr(Statistic.chatMessages);
-            }
+            });
         }
     }
 
@@ -150,9 +154,11 @@ public final class PlayerListenerImpl implements Listener {
             int amount = itemstack.getAmount();
             Material type = itemstack.getType();
 
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.add(Statistic.totalItemsDropped, amount);
-            stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.add(Statistic.totalItemsDropped, amount);
+                stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
+            });
         }
     }
 
@@ -163,10 +169,11 @@ public final class PlayerListenerImpl implements Listener {
             ItemStack itemstack = event.getItem().getItemStack();
             int amount = itemstack.getAmount();
             Material type = itemstack.getType();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.add(Statistic.totalItemsPickedUp, amount);
-            stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.add(Statistic.totalItemsPickedUp, amount);
+                stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
+            });
         }
     }
 
@@ -174,9 +181,10 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerPortal(PlayerPortalEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.portalsCrossed);
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.portalsCrossed);
+            });
         }
     }
 
@@ -186,25 +194,26 @@ public final class PlayerListenerImpl implements Listener {
         if (PlayerStats.isStatsPlayer(player)) {
             Material itemTypeInHand = event.getPlayer().getItemInHand().getType();
             EntityType rightClickedType = event.getRightClicked().getType();//TODO: Not thread safe variable
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            switch (itemTypeInHand) {
-                case BUCKET:
-                    if (rightClickedType == EntityType.COW) {
-                        stats.incr(Statistic.cowsMilked);
-                    }
-                    break;
-                case BOWL:
-                    if (rightClickedType == EntityType.MUSHROOM_COW) {
-                        stats.incr(Statistic.mooshroomsMilked);
-                    }
-                    break;
-                case INK_SACK:
-                    if (rightClickedType == EntityType.SHEEP) {
-                        stats.incr(Statistic.sheepDyed);
-                    }
-                    break;
-            }
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                switch (itemTypeInHand) {
+                    case BUCKET:
+                        if (rightClickedType == EntityType.COW) {
+                            stats.incr(Statistic.cowsMilked);
+                        }
+                        break;
+                    case BOWL:
+                        if (rightClickedType == EntityType.MUSHROOM_COW) {
+                            stats.incr(Statistic.mooshroomsMilked);
+                        }
+                        break;
+                    case INK_SACK:
+                        if (rightClickedType == EntityType.SHEEP) {
+                            stats.incr(Statistic.sheepDyed);
+                        }
+                        break;
+                }
+            });
         }
     }
 
@@ -213,9 +222,10 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             int amount = event.getAmount();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.add(Statistic.lifetimeExperience, amount);
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.add(Statistic.lifetimeExperience, amount);
+            });
         }
     }
 
@@ -224,10 +234,11 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getEnchanter());
         if (PlayerStats.isStatsPlayer(player)) {
             int amount = event.getExpLevelCost();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.itemsEnchanted);
-            stats.add(Statistic.itemEnchantmentLevels, amount);
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.itemsEnchanted);
+                stats.add(Statistic.itemEnchantmentLevels, amount);
+            });
         }
     }
 
@@ -235,8 +246,9 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-
-            PlayerStats.onPlayerEnterBed(player);//Needs work
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerEnterBed(player);//Needs work
+            });
         }
     }
 
@@ -245,16 +257,17 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             EntityType type = event.getEntity().getType();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            switch (type) {
-                case SHEEP:
-                    stats.incr(Statistic.sheepSheared);
-                    break;
-                case MUSHROOM_COW:
-                    stats.incr(Statistic.mooshroomsSheared);
-                    break;
-            }
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                switch (type) {
+                    case SHEEP:
+                        stats.incr(Statistic.sheepSheared);
+                        break;
+                    case MUSHROOM_COW:
+                        stats.incr(Statistic.mooshroomsSheared);
+                        break;
+                }
+            });
         }
     }
 
@@ -263,9 +276,10 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
             if (PlayerStats.isStatsPlayer(player)) {
-
-                Statistics stats = PlayerStats.group.getStatistics(player);
-                stats.incr(Statistic.fishCaught);
+                PlayerStats.pool.submit(() -> {
+                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    stats.incr(Statistic.fishCaught);
+                });
             }
         }
     }
@@ -275,9 +289,10 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             EntityType hatchingType = event.getHatchingType();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
+            });
         }
     }
 
@@ -292,21 +307,30 @@ public final class PlayerListenerImpl implements Listener {
                     switch (event.getBlockClicked().getType()) {
                         case WATER:
                         case STATIONARY_WATER:
-                            PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
+                            PlayerStats.pool.submit(() -> {
+                                PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
+                            });
                             break;
                         case LAVA:
                         case STATIONARY_LAVA:
-                            PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
+                            PlayerStats.pool.submit(() -> {
+                                PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
+                            });
                             break;
                     }
                     break;
                 case WATER_BUCKET:
-                    PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
+                    PlayerStats.pool.submit(() -> {
+                        PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
+                    });
                     break;
                 case LAVA_BUCKET:
-                    PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
+                    PlayerStats.pool.submit(() -> {
+                        PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
+                    });
                     break;
             }
+
         }
     }
 
@@ -315,16 +339,17 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material bucket = event.getBucket();
-
-            Statistics stats = PlayerStats.group.getStatistics(player);
-            switch (bucket) {
-                case WATER_BUCKET:
-                    stats.incr(Statistic.waterBucketsEmptied);
-                    break;
-                case LAVA_BUCKET:
-                    stats.incr(Statistic.lavaBucketsEmptied);
-                    break;
-            }
+            PlayerStats.pool.submit(() -> {
+                Statistics stats = PlayerStats.group.getStatistics(player);
+                switch (bucket) {
+                    case WATER_BUCKET:
+                        stats.incr(Statistic.waterBucketsEmptied);
+                        break;
+                    case LAVA_BUCKET:
+                        stats.incr(Statistic.lavaBucketsEmptied);
+                        break;
+                }
+            });
         }
     }
 
@@ -336,10 +361,11 @@ public final class PlayerListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player)) {
                 int amount = event.getRecipe().getResult().getAmount();
                 Material material = event.getRecipe().getResult().getType();
-
-                Statistics stats = PlayerStats.group.getStatistics(player);
-                stats.add(Statistic.totalItemsCrafted, amount);
-                stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
+                PlayerStats.pool.submit(() -> {
+                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    stats.add(Statistic.totalItemsCrafted, amount);
+                    stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
+                });
             }
         }
     }

@@ -15,7 +15,6 @@
  */
 package com.frdfsnlght.inquisitor;
 
-import java.util.Date;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -42,11 +41,14 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
+
             if (PlayerStats.isStatsPlayer(player)) {
                 float fallDistance = event.getEntity().getFallDistance();
-
-                Statistics stats = PlayerStats.group.getStatistics(player);
-                stats.add(Statistic.travelDistances, "Falling", fallDistance);
+                PlayerStats.pool.submit(() -> {
+                    Utils.debug("onPlayerFall '%s'", player.getName());
+                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    stats.add(Statistic.travelDistances, "Falling", fallDistance);
+                });
             }
         }
     }
@@ -81,25 +83,31 @@ public final class EntityListenerImpl implements Listener {
         }
 
         String killerName = player.getName();
-        Statistics stats = PlayerStats.group.getStatistics(killerName);
+
         String weaponName = ((weapon == null) || (weapon == Material.AIR)) ? "None" : Utils.titleCase(weapon.toString());
 
         if (deadEnt instanceof Player) {
             String deadName = ((Player) deadEnt).getName();
-            Utils.debug("onPlayerKill '%s'", killerName);
-            stats.incr(Statistic.totalPlayersKilled);
-            stats.set(Statistic.lastPlayerKill, player.getDate());
-            stats.set(Statistic.lastPlayerKilled, deadName);
-            stats.incr(Statistic.playersKilled, deadName);
-            stats.incr(Statistic.playersKilledByWeapon, weaponName);
+            PlayerStats.pool.submit(() -> {
+                Utils.debug("onPlayerKill '%s'", killerName);
+                Statistics stats = PlayerStats.group.getStatistics(killerName);
+                stats.incr(Statistic.totalPlayersKilled);
+                stats.set(Statistic.lastPlayerKill, player.getDate());
+                stats.set(Statistic.lastPlayerKilled, deadName);
+                stats.incr(Statistic.playersKilled, deadName);
+                stats.incr(Statistic.playersKilledByWeapon, weaponName);
+            });
         } else {
             String deadName = Utils.normalizeEntityTypeName(deadEnt.getType());
-            Utils.debug("onMobKill '%s'", killerName);
-            stats.incr(Statistic.totalMobsKilled);
-            stats.set(Statistic.lastMobKill, player.getDate());
-            stats.set(Statistic.lastMobKilled, deadName);
-            stats.incr(Statistic.mobsKilled, deadName);
-            stats.incr(Statistic.mobsKilledByWeapon, weaponName);
+            PlayerStats.pool.submit(() -> {
+                Utils.debug("onMobKill '%s'", killerName);
+                Statistics stats = PlayerStats.group.getStatistics(killerName);
+                stats.incr(Statistic.totalMobsKilled);
+                stats.set(Statistic.lastMobKill, player.getDate());
+                stats.set(Statistic.lastMobKilled, deadName);
+                stats.incr(Statistic.mobsKilled, deadName);
+                stats.incr(Statistic.mobsKilledByWeapon, weaponName);
+            });
         }
     }
 
@@ -108,9 +116,11 @@ public final class EntityListenerImpl implements Listener {
         if (event.getEntity() instanceof Player) {
             PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
             if (PlayerStats.isStatsPlayer(player)) {
-
-                Statistics stats = PlayerStats.group.getStatistics(player);
-                stats.incr(Statistic.arrowsShot);
+                PlayerStats.pool.submit(() -> {
+                    Utils.debug("onPlayerBowShoot '%s'", player.getName());
+                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    stats.incr(Statistic.arrowsShot);
+                });
             }
         }
     }
@@ -121,9 +131,11 @@ public final class EntityListenerImpl implements Listener {
             PlayerSnapshot player = new PlayerSnapshot((Player) event.getOwner());
             if (PlayerStats.isStatsPlayer(player)) {
                 EntityType entityType = event.getEntityType();
-
-                Statistics stats = PlayerStats.group.getStatistics(player);
-                stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
+                PlayerStats.pool.submit(() -> {
+                    Utils.debug("onPlayerTameAnimal '%s'", player.getName());
+                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
+                });
             }
         }
     }
@@ -138,9 +150,11 @@ public final class EntityListenerImpl implements Listener {
                 }
                 Material food = player.getItemInHand().getType();
                 if (food.isEdible()) {
-
-                    Statistics stats = PlayerStats.group.getStatistics(player);
-                    stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
+                    PlayerStats.pool.submit(() -> {
+                        Utils.debug("onPlayerEat '%s'", player.getName());
+                        Statistics stats = PlayerStats.group.getStatistics(player);
+                        stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
+                    });
                 }
             }
         }
