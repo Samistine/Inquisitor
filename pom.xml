@@ -13,10 +13,12 @@
         <testSourceDirectory>src/test/java</testSourceDirectory>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>src/main/resources</directory>       
+                <filtering>true</filtering>
             </resource>
             <resource>
                 <directory>src/main/java</directory>
+                <targetPath>sourcecode</targetPath>
             </resource>
         </resources>
         <testResources>
@@ -38,6 +40,24 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.md-5</groupId>
+                <artifactId>scriptus</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>describe</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptionProperty>git_hash</descriptionProperty>
+                    <format>%s</format>
+                    <hashLength>40</hashLength>
                 </configuration>
             </plugin>
         </plugins>
