@@ -339,7 +339,7 @@ public final class PlayerStats {
 
         final Statistics stats = group.getStatistics(player.getName());
 
-        try {
+        /*try {
             double totalTime = stats.getDouble("totalTime");
             String traveling = stats.getString("biomeTimes");
             String[] split = traveling.split("\\r?\\n");
@@ -354,6 +354,7 @@ public final class PlayerStats {
             for (Double value : values) {
                 newTotalTime = newTotalTime + value;
             }
+            totalTime += stats.getFloat("sessionTime");
             //System.out.println(TimeUnit.SECONDS.toDays(totalTime.intValue()));
             if (totalTime < newTotalTime) {
                 System.out.println("Looks like there was an issue with a player in Inquisitor. We set his play time based off biomeTimes");
@@ -361,7 +362,7 @@ public final class PlayerStats {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         if (!kickedPlayers.remove(player.getUUID())) {
             stats.incr(Statistic.quits);
