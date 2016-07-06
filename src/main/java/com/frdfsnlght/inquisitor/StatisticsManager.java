@@ -283,9 +283,11 @@ public final class StatisticsManager {
             Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
         }
         flushCheckTask = Utils.fireDelayed(() -> {
-            flush();
-            delete();
-            scheduleFlushCheck();
+            PlayerStats.pool.submit(() -> {
+                flush();
+                delete();
+                scheduleFlushCheck();
+            });
         }, getFlushCheckInterval());
     }
 
