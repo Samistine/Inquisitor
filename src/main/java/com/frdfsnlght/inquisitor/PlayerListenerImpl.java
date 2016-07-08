@@ -302,38 +302,39 @@ public final class PlayerListenerImpl implements Listener {
     //TODO: Some work here is needed
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketFill(PlayerBucketFillEvent event) {//needs work
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final Material bucket = event.getBucket();
+        final Material blockClicked = event.getBlockClicked().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            Material bucket = event.getBucket();
-            switch (bucket) {
-                case BUCKET:
-                    switch (event.getBlockClicked().getType()) {
-                        case WATER:
-                        case STATIONARY_WATER:
-                            PlayerStats.pool.submit(() -> {
-                                PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
-                            });
-                            break;
-                        case LAVA:
-                        case STATIONARY_LAVA:
-                            PlayerStats.pool.submit(() -> {
-                                PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
-                            });
-                            break;
-                    }
-                    break;
-                case WATER_BUCKET:
-                    PlayerStats.pool.submit(() -> {
-                        PlayerStats.group.getStatistics(player).incr(Statistic.waterBucketsFilled);
-                    });
-                    break;
-                case LAVA_BUCKET:
-                    PlayerStats.pool.submit(() -> {
-                        PlayerStats.group.getStatistics(player).incr(Statistic.lavaBucketsFilled);
-                    });
-                    break;
-            }
-
+            PlayerStats.pool.submit(() -> {
+                final Statistics stats = PlayerStats.group.getStatistics(player);
+                switch (bucket) {
+                    case BUCKET:
+                        switch (blockClicked) {
+                            case WATER:
+                            case STATIONARY_WATER:
+                                stats.incr(Statistic.waterBucketsFilled);
+                                break;
+                            case LAVA:
+                            case STATIONARY_LAVA:
+                                stats.incr(Statistic.lavaBucketsFilled);
+                                break;
+                            default:
+                                Utils.warning("onPlayerBucketFill 1: Something went wrong here");
+                                break;
+                        }
+                        break;
+                    case WATER_BUCKET:
+                        stats.incr(Statistic.waterBucketsFilled);
+                        break;
+                    case LAVA_BUCKET:
+                        stats.incr(Statistic.lavaBucketsFilled);
+                        break;
+                    default:
+                        Utils.warning("onPlayerBucketFill 2: Something went wrong here");
+                        break;
+                }
+            });
         }
     }
 
@@ -350,6 +351,9 @@ public final class PlayerListenerImpl implements Listener {
                         break;
                     case LAVA_BUCKET:
                         stats.incr(Statistic.lavaBucketsEmptied);
+                        break;
+                    default:
+                        Utils.warning("onPlayerBucketEmpty: Something went wrong here");
                         break;
                 }
             });
