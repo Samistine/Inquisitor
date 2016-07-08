@@ -43,7 +43,7 @@ public final class StatisticsManager {
 
     private static final Set<StatisticsManagerListener> listeners = new HashSet<>();
 
-    private static final Map<String,StatisticsGroup> groups = new HashMap<>();
+    private static final Map<String, StatisticsGroup> groups = new HashMap<>();
     private static final List<Job> jobs = new ArrayList<>();
 
     private static Thread jobThread;
