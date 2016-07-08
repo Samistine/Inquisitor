@@ -129,11 +129,9 @@ public final class PlayerListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
-            if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.pool.submit(() -> {
-                    PlayerStats.onPlayerTeleport(player, to);
-                });
-            }
+            PlayerStats.pool.submit(() -> {
+                PlayerStats.onPlayerTeleport(player, to);
+            });
         }
     }
 
