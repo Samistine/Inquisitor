@@ -29,8 +29,6 @@ import java.util.TimeZone;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public class WebResponse {
 
     // Sat, 29 Oct 1994 19:43:31 GMT

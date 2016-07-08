@@ -32,8 +32,6 @@ import java.util.Map;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class WebRequest {
 
     private SimpleDateFormat[] HTTP_DATE_FORMATS = new SimpleDateFormat[] {

@@ -23,8 +23,6 @@ import java.util.Set;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public enum Statistic {
     
     displayName("displayName", Type.STRING, 255),

@@ -22,8 +22,6 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public abstract class WebHandler {
 
     public boolean matchesRequest(WebRequest request, TypeMap pathParams) {

@@ -23,8 +23,6 @@ import java.util.regex.Pattern;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class WebRoute {
 
     private WebHandler handler;
