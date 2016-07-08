@@ -102,6 +102,7 @@ public final class PlayerStats {
                 }
             }
 
+            @Override
             public String getOptionPermission(Context ctx, String name) {
                 return name;
             }
@@ -110,6 +111,7 @@ public final class PlayerStats {
         EnumSet.range(Statistic.displayName, Statistic.totalTime).forEach(group::addStatistic);
 
         group.addListener(new BeforeFlushListener() {
+            @Override
             public void beforeFlush(Statistics stats) {
                 savePlayerInfo(stats);
             }
@@ -118,10 +120,12 @@ public final class PlayerStats {
         StatisticsManager.addGroup(group);
 
         StatisticsManager.addListener(new StatisticsManagerListener() {
+            @Override
             public void onStatisticsManagerStarted() {
                 start();
             }
 
+            @Override
             public void onStatisticsManagerStopping() {
                 stop();
             }
