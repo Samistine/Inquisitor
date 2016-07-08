@@ -255,15 +255,6 @@ public class Utils {
         return Global.plugin.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run, ticks);
     }
 
-    /**
-     * Runs task async in order of submission.
-     * <br>
-     * @param run 
-     */
-    public static void worker(Runnable run) {
-        run.run();
-    }
-
 //    // delay is millis
 //    public static int workerDelayed(Runnable run, long delay) {
 //        if (! Global.enabled) return -1;
