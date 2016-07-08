@@ -91,8 +91,8 @@ public final class PlayerStats {
         RESTART_OPTIONS.add("flushInterval");
         RESTART_OPTIONS.add("bedCheckInterval");
 
-        options = new Options(PlayerStats.class, OPTIONS, "inq.players",
-                new OptionsListener() {
+        options = new Options(PlayerStats.class, OPTIONS, "inq.players", new OptionsListener() {
+            @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("player stats option '%s' set to '%s'", name, value);
                 if (RESTART_OPTIONS.contains(name)) {
@@ -153,10 +153,8 @@ public final class PlayerStats {
                 throw new Exception("statistics manager is not started");
             }
 
-            group.setFlushInterval(Config.getIntDirect("players.flushInterval",
-                    (int) group.getFlushInterval()));
-            group.setDeleteAge(Config.getIntDirect("players.deleteAge",
-                    (int) group.getDeleteAge()));
+            group.setFlushInterval(Config.getIntDirect("players.flushInterval", (int) group.getFlushInterval()));
+            group.setDeleteAge(Config.getIntDirect("players.deleteAge", (int) group.getDeleteAge()));
 
             initializeBedOwners();
             scheduleBedCheck();
@@ -190,7 +188,6 @@ public final class PlayerStats {
     }
 
     public static boolean isStatsPlayer(PlayerSnapshot player) {
-
         if (player == null) {
             return false;
         }
@@ -248,7 +245,7 @@ public final class PlayerStats {
                 stats.set(Statistic.firstJoin, player.getDate());
             }
             String bedServer = stats.getString("bedServer");
-            if ((bedServer != null) && bedServer.equals(servername)) {
+            if (bedServer != null && bedServer.equals(servername)) {
                 bedOwners.add(player.getUUID());
             }
             PlayerState.getPlayerStates().put(player.getUUID(), new PlayerState(stats.getFloat("totalTime")));
@@ -360,7 +357,6 @@ public final class PlayerStats {
         } catch (Exception e) {
             e.printStackTrace();
         }*/
-
         if (!kickedPlayers.remove(player.getUUID())) {
             stats.incr(Statistic.quits);
             stats.set(Statistic.lastQuit, player.getDate());
