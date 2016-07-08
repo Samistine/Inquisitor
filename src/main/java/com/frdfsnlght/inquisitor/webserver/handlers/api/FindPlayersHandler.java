@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.frdfsnlght.inquisitor.handlers.api;
+package com.frdfsnlght.inquisitor.webserver.handlers.api;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.Utils;

@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.frdfsnlght.inquisitor.handlers.api.stats;
+package com.frdfsnlght.inquisitor.webserver.handlers.api.stats;
 
 import com.frdfsnlght.inquisitor.DB;
 import com.frdfsnlght.inquisitor.JSON;
 import com.frdfsnlght.inquisitor.TypeMap;
 import com.frdfsnlght.inquisitor.Utils;
-import com.frdfsnlght.inquisitor.handlers.api.APIHandler;
+import com.frdfsnlght.inquisitor.webserver.handlers.api.APIHandler;
 import com.frdfsnlght.inquisitor.webserver.WebRequest;
 import com.frdfsnlght.inquisitor.webserver.WebResponse;
 import java.io.IOException;

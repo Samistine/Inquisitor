@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.frdfsnlght.inquisitor.handlers.api.stats;
+package com.frdfsnlght.inquisitor.webserver.handlers.api.stats;
 
 import com.frdfsnlght.inquisitor.TypeMap;
 import java.sql.ResultSet;
