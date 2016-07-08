@@ -238,7 +238,7 @@ public final class PlayerStats {
             stmt.setString(4, player.getUUID().toString());
             stmt.execute();
 
-            final Statistics stats = group.getStatistics(player.getName());
+            final Statistics stats = group.getStatistics(player);
             stats.set(Statistic.uuid, player.getUUID().toString());
             stats.incr(Statistic.joins);
             stats.set(Statistic.lastJoin, player.getDate());
@@ -334,7 +334,7 @@ public final class PlayerStats {
 
         Utils.debug("onPlayerQuit '%s'", player.getName());
 
-        final Statistics stats = group.getStatistics(player.getName());
+        final Statistics stats = group.getStatistics(player);
 
         /*try {
             double totalTime = stats.getDouble("totalTime");
