@@ -49,6 +49,10 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * Handles Spigot's PlayerEvents
+ *
+ * @see EntityListenerImpl
+ * @see BlockListenerImpl
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */

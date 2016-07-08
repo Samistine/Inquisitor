@@ -34,6 +34,10 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * Handles Spigot's EntityEvents
+ *
+ * @see PlayerListenerImpl
+ * @see BlockListenerImpl
  *
  * @author Thomas Bennedum <frdfsnlght@gmail.com>
  */
@@ -113,6 +117,11 @@ public final class EntityListenerImpl implements Listener {
         }
     }
 
+    /**
+     * Records arrows shot by players.
+     *
+     * @param event EntityShootBowEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {
@@ -127,6 +136,11 @@ public final class EntityListenerImpl implements Listener {
         }
     }
 
+    /**
+     * Records entities, by type, tamed by players.
+     *
+     * @param event EntityTameEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntityTame(EntityTameEvent event) {
         if (event.getOwner() instanceof Player) {
@@ -142,6 +156,13 @@ public final class EntityListenerImpl implements Listener {
         }
     }
 
+    /**
+     * Records food, by type, digested by players.
+     * <br>TODO: Remove food level changed check, for edible foods that don't
+     * change food level
+     *
+     * @param event FoodLevelChangeEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {

@@ -25,12 +25,23 @@ import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
+ * Handles Spigot's BlockEvents
+ *
+ * @see PlayerListenerImpl
+ * @see EntityListenerImpl
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
 public class BlockListenerImpl implements Listener {
 
-    // broken by player only
+    /**
+     * Records blocks broken by players.
+     * <br>
+     * If the broken block is a bed then a bed check will be
+     * performed/scheduled.
+     *
+     * @param event BlockBreakEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
@@ -48,7 +59,11 @@ public class BlockListenerImpl implements Listener {
         }
     }
 
-    // placed by player only
+    /**
+     * Records blocks placed by players.
+     *
+     * @param event BlockPlaceEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
@@ -63,6 +78,14 @@ public class BlockListenerImpl implements Listener {
         }
     }
 
+    /**
+     * Handles internal bed checking on block burn.
+     * <br>
+     * If the burning block is a bed then a bed check will be
+     * performed/scheduled.
+     *
+     * @param event BlockBurnEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockBurn(BlockBurnEvent event) {
         if (event.getBlock().getType() == Material.BED_BLOCK) {
@@ -70,6 +93,11 @@ public class BlockListenerImpl implements Listener {
         }
     }
 
+    /**
+     * Records fire starts for players.
+     *
+     * @param event BlockIgniteEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onBlockIgnite(BlockIgniteEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());

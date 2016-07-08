@@ -229,12 +229,26 @@ public class Utils {
         return sb.toString();
     }
 
+    /**
+     * Schedule a once off task to be run on the main thread as soon as possible
+     *
+     * @param run task to be executed
+     * @return Bukkit's Task id number (-1 if plugin isn't enabled or scheduling
+     * failed)
+     */
     public static int fire(Runnable run) {
         if (! Global.enabled) return -1;
         return Global.plugin.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run);
     }
 
-    // delay is millis
+    /**
+     * Schedules a once off task to be run on the main thread after a delay.
+     *
+     * @param run task to be executed
+     * @param delay delay in milliseconds
+     * @return Bukkit's Task id number (-1 if plugin isn't enabled or scheduling
+     * failed)
+     */
     public static int fireDelayed(Runnable run, long delay) {
         if (! Global.enabled) return -1;
         long ticks = delay / 50;
