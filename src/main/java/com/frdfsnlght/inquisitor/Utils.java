@@ -86,7 +86,7 @@ public class Utils {
     }
 
     public static boolean copyFileFromJar(String resPath, File dstFolder, boolean overwriteIfOlder) {
-//System.out.println(String.format("copyFileFromJar(%s, %s, %s)", resPath, dstFolder.getAbsolutePath(), overwriteIfOlder));
+        debug(String.format("copyFileFromJar(%s, %s, %s)", resPath, dstFolder.getAbsolutePath(), overwriteIfOlder));
         File dstFile;
         int pos = resPath.lastIndexOf('/');
         if (pos != -1)
@@ -94,13 +94,13 @@ public class Utils {
         else
             dstFile = new File(dstFolder, resPath);
         if (dstFile.exists()) {
-// System.out.println(dstFile + " exists");
+            debug(dstFile + " exists");
             if (! overwriteIfOlder) return false;
             try {
                 File jarFile = new File(Utils.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-//System.out.println(jarFile.lastModified() + " <= " + dstFile.lastModified());
+                debug(jarFile.lastModified() + " <= " + dstFile.lastModified());
                 if (jarFile.lastModified() <= dstFile.lastModified()) return false;
-//System.out.println(dstFile + " will overwrite");
+                debug(dstFile + " will overwrite");
             } catch (URISyntaxException e) {}
         }
         if (! dstFolder.exists())
@@ -119,7 +119,7 @@ public class Utils {
     }
 
     public static boolean installManifest(String manifestPath, File dstFolder, boolean overwriteIfOlder) {
-//System.out.println(String.format("installManifest(%s, %s, %s)", manifestPath, dstFolder.getAbsolutePath(), overwriteIfOlder));
+        debug(String.format("installManifest(%s, %s, %s)", manifestPath, dstFolder.getAbsolutePath(), overwriteIfOlder));
         boolean installed = false;
         if (! dstFolder.exists()) {
             dstFolder.mkdirs();

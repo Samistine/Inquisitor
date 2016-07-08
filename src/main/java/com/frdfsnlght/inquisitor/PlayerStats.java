@@ -222,9 +222,8 @@ public final class PlayerStats {
             Utils.debug("ignored join for player '%s'", player.getName());
             return;
         }
-        Utils.debug("onPlayerJoin '%s'", player.getName());
 
-        Utils.debug("onPlayerJoin-AFT '%s'", player.getName());
+        Utils.debug("onPlayerJoin '%s'", player.getName());
         try {
             //Very simply update statement that will allow players to add their UUIDs to the db during the
             // conversion process, then once a name change happens it will update it based on the uuid matching.
