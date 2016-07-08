@@ -706,7 +706,7 @@ public final class PlayerStats {
         if (effects == null) {
             return null;
         }
-        List<TypeMap> peMaps = new ArrayList<>();
+        List<TypeMap> peMaps = new ArrayList<>(effects.size());
         for (PotionEffect effect : effects) {
             if (effect == null) {
                 continue;
