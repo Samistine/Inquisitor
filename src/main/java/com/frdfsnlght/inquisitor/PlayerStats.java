@@ -531,31 +531,7 @@ public final class PlayerStats {
     }
 
     public static void checkBeds() {
-        for (UUID uuid : new HashSet<>(bedOwners)) {
-            OfflinePlayer player = Global.plugin.getServer().getOfflinePlayer(uuid);
-            if (player == null) {
-                player = Global.plugin.getServer().getPlayer(uuid);
-                if (player == null) {
-                    continue;
-                }
-            }
-            if (!player.hasPlayedBefore()) {
-                continue;
-            }
-            if ((player.getBedSpawnLocation() == null) || (player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK)) {
-                bedOwners.remove(uuid);
-                Utils.debug("player '%s' no longer has a bed", uuid);
-
-                Statistics stats = group.getStatistics(player.getName());
-                stats.set(Statistic.bedServer, null);
-                stats.set(Statistic.bedWorld, null);
-                stats.set(Statistic.bedCoords, null);
-                stats.flush();
-                if (!player.isOnline()) {
-                    group.removeStatistics(stats);
-                }
-            }
-        }
+        Utils.fire(new BedCheck(bedOwners));
     }
 
     public static TypeMap getPlayerStats(String playerName) {
