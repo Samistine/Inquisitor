@@ -389,7 +389,7 @@ public final class PlayerStats {
             return;
         }
 
-        Statistics stats = group.getStatistics(player.getName());
+        final Statistics stats = group.getStatistics(player.getName());
         stats.incr(Statistic.kicks);
         stats.set(Statistic.lastKick, player.getDate());
         stats.set(Statistic.lastKickMessage, message);
@@ -407,7 +407,7 @@ public final class PlayerStats {
         stats.flushSync();
 
         onPlayerMove(player, player.getLocation());
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state != null) {
             state.reset();
         }
@@ -416,8 +416,8 @@ public final class PlayerStats {
     public static void onPlayerMove(PlayerSnapshot player, Location to) {
         Utils.debug("onPlayerMove '%s'", player.getName());
 
-        Statistics stats = group.getStatistics(player.getName());
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final Statistics stats = group.getStatistics(player.getName());
+        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state == null) {
             return;
         }
@@ -515,7 +515,7 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state != null) {
             onPlayerMove(player, player.getLocation());
             state.lastLocation = to;
@@ -525,7 +525,7 @@ public final class PlayerStats {
 
     public static void onPlayerEnterBed(PlayerSnapshot player) {
         bedOwners.add(player.getUUID());
-        Statistics stats = group.getStatistics(player);
+        final Statistics stats = group.getStatistics(player);
         stats.incr(Statistic.timesSlept);
     }
 
@@ -535,7 +535,7 @@ public final class PlayerStats {
 
     public static TypeMap getPlayerStats(String playerName) {
         boolean isOnline = Global.plugin.getServer().getPlayer(playerName) != null;
-        Statistics stats = group.getStatistics(playerName);
+        final Statistics stats = group.getStatistics(playerName);
         if (!isOnline) {
             group.removeStatistics(stats);
         }

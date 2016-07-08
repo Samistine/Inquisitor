@@ -65,7 +65,7 @@ public final class PlayerListenerImpl implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerJoin(player);
@@ -75,7 +75,7 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerQuit(player);
@@ -85,7 +85,7 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerKick(PlayerKickEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             String message = ChatColor.stripColor(event.getLeaveMessage());
             PlayerStats.pool.submit(() -> {
@@ -96,13 +96,13 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getEntity());
-        String message = ChatColor.stripColor(event.getDeathMessage());
-        EntityDamageEvent damageEvent = player.getLastDamageCause();
+        final PlayerSnapshot player = new PlayerSnapshot(event.getEntity());
+        final String message = ChatColor.stripColor(event.getDeathMessage());
+        final EntityDamageEvent damageEvent = player.getLastDamageCause();
         if (damageEvent == null) {
             return;
         }
-        EntityDamageEvent.DamageCause damageCause = damageEvent.getCause();
+        final EntityDamageEvent.DamageCause damageCause = damageEvent.getCause();
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerDeath(player, message, damageCause);
@@ -119,8 +119,8 @@ public final class PlayerListenerImpl implements Listener {
                 & (event.getFrom().getBlockZ() == event.getTo().getBlockZ())) {
             return;
         }
-        Location to = event.getTo();
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerMove(player, to);
@@ -130,8 +130,8 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
-        Location to = event.getTo();
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerTeleport(player, to);
@@ -142,24 +142,23 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerChatAsync(AsyncPlayerChatEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
-
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
-                PlayerStats.group.getStatistics(player).incr(Statistic.chatMessages);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
+                stats.incr(Statistic.chatMessages);
             });
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final ItemStack itemstack = event.getItemDrop().getItemStack();
+        final int amount = itemstack.getAmount();
+        final Material type = itemstack.getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            ItemStack itemstack = event.getItemDrop().getItemStack();
-            int amount = itemstack.getAmount();
-            Material type = itemstack.getType();
-
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.totalItemsDropped, amount);
                 stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
             });
@@ -169,12 +168,12 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final ItemStack itemstack = event.getItem().getItemStack();
+        final int amount = itemstack.getAmount();
+        final Material type = itemstack.getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            ItemStack itemstack = event.getItem().getItemStack();
-            int amount = itemstack.getAmount();
-            Material type = itemstack.getType();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.totalItemsPickedUp, amount);
                 stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
             });
@@ -183,10 +182,10 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPortal(PlayerPortalEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.portalsCrossed);
             });
         }
@@ -194,12 +193,12 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final Material itemTypeInHand = event.getPlayer().getItemInHand().getType();
+        final EntityType rightClickedType = event.getRightClicked().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            Material itemTypeInHand = event.getPlayer().getItemInHand().getType();
-            EntityType rightClickedType = event.getRightClicked().getType();//TODO: Not thread safe variable
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (itemTypeInHand) {
                     case BUCKET:
                         if (rightClickedType == EntityType.COW) {
@@ -223,11 +222,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerExp(PlayerExpChangeEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final int amount = event.getAmount();
         if (PlayerStats.isStatsPlayer(player)) {
-            int amount = event.getAmount();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.lifetimeExperience, amount);
             });
         }
@@ -235,11 +234,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEnchant(EnchantItemEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getEnchanter());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getEnchanter());
+        final int amount = event.getExpLevelCost();
         if (PlayerStats.isStatsPlayer(player)) {
-            int amount = event.getExpLevelCost();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.itemsEnchanted);
                 stats.add(Statistic.itemEnchantmentLevels, amount);
             });
@@ -248,7 +247,7 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             PlayerStats.pool.submit(() -> {
                 PlayerStats.onPlayerEnterBed(player);//Needs work
@@ -258,11 +257,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerShearEntity(PlayerShearEntityEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final EntityType type = event.getEntity().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            EntityType type = event.getEntity().getType();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (type) {
                     case SHEEP:
                         stats.incr(Statistic.sheepSheared);
@@ -277,11 +276,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerFishEvent(PlayerFishEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
             if (PlayerStats.isStatsPlayer(player)) {
                 PlayerStats.pool.submit(() -> {
-                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    final Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.incr(Statistic.fishCaught);
                 });
             }
@@ -290,11 +289,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerEggThrow(PlayerEggThrowEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final EntityType hatchingType = event.getHatchingType();
         if (PlayerStats.isStatsPlayer(player)) {
-            EntityType hatchingType = event.getHatchingType();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
             });
         }
@@ -340,11 +339,11 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {//needs work
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final Material bucket = event.getBucket();
         if (PlayerStats.isStatsPlayer(player)) {
-            Material bucket = event.getBucket();
             PlayerStats.pool.submit(() -> {
-                Statistics stats = PlayerStats.group.getStatistics(player);
+                final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (bucket) {
                     case WATER_BUCKET:
                         stats.incr(Statistic.waterBucketsEmptied);
@@ -361,12 +360,12 @@ public final class PlayerListenerImpl implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onCraftItem(CraftItemEvent event) {
         if (event.getWhoClicked() instanceof Player) {
-            PlayerSnapshot player = new PlayerSnapshot((Player) event.getWhoClicked());
+            final PlayerSnapshot player = new PlayerSnapshot((Player) event.getWhoClicked());
+            final Material material = event.getRecipe().getResult().getType();
+            final int amount = event.getRecipe().getResult().getAmount();
             if (PlayerStats.isStatsPlayer(player)) {
-                int amount = event.getRecipe().getResult().getAmount();
-                Material material = event.getRecipe().getResult().getType();
                 PlayerStats.pool.submit(() -> {
-                    Statistics stats = PlayerStats.group.getStatistics(player);
+                    final Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.add(Statistic.totalItemsCrafted, amount);
                     stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
                 });

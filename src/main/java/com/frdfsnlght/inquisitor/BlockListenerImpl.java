@@ -32,7 +32,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class BlockListenerImpl implements Listener {
+public final class BlockListenerImpl implements Listener {
 
     /**
      * Records blocks broken by players.
