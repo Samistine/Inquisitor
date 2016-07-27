@@ -32,8 +32,6 @@ import java.util.Map;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class FileHandler extends WebHandler {
 
     public static final Map<String,String> MIME_TYPES = new HashMap<>();
@@ -72,6 +70,7 @@ public final class FileHandler extends WebHandler {
             return;
         }
 
+        //If client already has the same file we tell them to use it
         Date checkDate = req.getHeaderDate("if-modified-since");
         if (checkDate != null) {
             if ((checkDate.getTime() / 1000) >= (realFile.lastModified() / 1000)) {
