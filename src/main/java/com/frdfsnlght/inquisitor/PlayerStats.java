@@ -60,7 +60,7 @@ import org.bukkit.potion.PotionEffect;
  */
 public final class PlayerStats {
 
-    public static final ExecutorService pool = Executors.newSingleThreadExecutor();
+    private static final ExecutorService pool = Executors.newSingleThreadExecutor();
 
     private static final Set<String> OPTIONS = new HashSet<>();
     private static final Set<String> RESTART_OPTIONS = new HashSet<>();
@@ -799,6 +799,16 @@ public final class PlayerStats {
             } catch (SQLException se) {
             }
         }
+    }
+
+    /**
+     * Changes to the underlying data must use this method to ensure sequential
+     * updates.
+     *
+     * @param change logic to update stats.
+     */
+    public static void submitChange(Runnable change) {
+        pool.submit(change);
     }
 
     // Inner classes

@@ -47,7 +47,7 @@ public final class BlockListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 Utils.debug("onPlayerBreakBlock '%s'", player.getName());
                 Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.totalBlocksBroken);
@@ -69,7 +69,7 @@ public final class BlockListenerImpl implements Listener {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             Material type = event.getBlock().getType();
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 Utils.debug("onPlayerPlaceBlock '%s'", player.getName());
                 Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.totalBlocksPlaced);
@@ -102,7 +102,7 @@ public final class BlockListenerImpl implements Listener {
     public void onBlockIgnite(BlockIgniteEvent event) {
         PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 Utils.debug("onPlayerStartFire '%s'", player.getName());
                 Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.firesStarted);

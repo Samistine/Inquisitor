@@ -67,7 +67,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerJoin(player);
             });
         }
@@ -77,7 +77,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerQuit(player);
             });
         }
@@ -88,7 +88,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
             String message = ChatColor.stripColor(event.getLeaveMessage());
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerKick(player, message);
             });
         }
@@ -104,7 +104,7 @@ public final class PlayerListenerImpl implements Listener {
         }
         final EntityDamageEvent.DamageCause damageCause = damageEvent.getCause();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerDeath(player, message, damageCause);
             });
         }
@@ -122,7 +122,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerMove(player, to);
             });
         }
@@ -133,7 +133,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final Location to = event.getTo();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerTeleport(player, to);
             });
         }
@@ -143,7 +143,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerChatAsync(AsyncPlayerChatEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.chatMessages);
             });
@@ -157,7 +157,7 @@ public final class PlayerListenerImpl implements Listener {
         final int amount = itemstack.getAmount();
         final Material type = itemstack.getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.totalItemsDropped, amount);
                 stats.add(Statistic.itemsDropped, Utils.titleCase(type.name()), amount);
@@ -172,7 +172,7 @@ public final class PlayerListenerImpl implements Listener {
         final int amount = itemstack.getAmount();
         final Material type = itemstack.getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.totalItemsPickedUp, amount);
                 stats.add(Statistic.itemsPickedUp, Utils.titleCase(type.name()), amount);
@@ -184,7 +184,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerPortal(PlayerPortalEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.portalsCrossed);
             });
@@ -197,7 +197,7 @@ public final class PlayerListenerImpl implements Listener {
         final Material itemTypeInHand = event.getPlayer().getItemInHand().getType();
         final EntityType rightClickedType = event.getRightClicked().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (itemTypeInHand) {
                     case BUCKET:
@@ -225,7 +225,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final int amount = event.getAmount();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.add(Statistic.lifetimeExperience, amount);
             });
@@ -237,7 +237,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getEnchanter());
         final int amount = event.getExpLevelCost();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.itemsEnchanted);
                 stats.add(Statistic.itemEnchantmentLevels, amount);
@@ -249,7 +249,7 @@ public final class PlayerListenerImpl implements Listener {
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 PlayerStats.onPlayerEnterBed(player);//Needs work
             });
         }
@@ -260,7 +260,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final EntityType type = event.getEntity().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (type) {
                     case SHEEP:
@@ -279,7 +279,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
             if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.pool.submit(() -> {
+                PlayerStats.submitChange(() -> {
                     final Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.incr(Statistic.fishCaught);
                 });
@@ -292,7 +292,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final EntityType hatchingType = event.getHatchingType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 stats.incr(Statistic.eggsThrown, Utils.normalizeEntityTypeName(hatchingType));
             });
@@ -306,7 +306,7 @@ public final class PlayerListenerImpl implements Listener {
         final Material bucket = event.getBucket();
         final Material blockClicked = event.getBlockClicked().getType();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (bucket) {
                     case BUCKET:
@@ -343,7 +343,7 @@ public final class PlayerListenerImpl implements Listener {
         final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final Material bucket = event.getBucket();
         if (PlayerStats.isStatsPlayer(player)) {
-            PlayerStats.pool.submit(() -> {
+            PlayerStats.submitChange(() -> {
                 final Statistics stats = PlayerStats.group.getStatistics(player);
                 switch (bucket) {
                     case WATER_BUCKET:
@@ -368,7 +368,7 @@ public final class PlayerListenerImpl implements Listener {
             final Material material = event.getRecipe().getResult().getType();
             final int amount = event.getRecipe().getResult().getAmount();
             if (PlayerStats.isStatsPlayer(player)) {
-                PlayerStats.pool.submit(() -> {
+                PlayerStats.submitChange(() -> {
                     final Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.add(Statistic.totalItemsCrafted, amount);
                     stats.add(Statistic.itemsCrafted, Utils.titleCase(material.name()), amount);
