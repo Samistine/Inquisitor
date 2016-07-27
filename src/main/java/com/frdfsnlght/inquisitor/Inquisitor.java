@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -197,12 +198,10 @@ public class Inquisitor extends JavaPlugin {
         }
 
         // Find the matching commands
-        List<CommandProcessor> cps = new ArrayList<>();
-        for (CommandProcessor cp : Global.commands) {
-            if (cp.matches(ctx, cmd, args)) {
-                cps.add(cp);
-            }
-        }
+        List<CommandProcessor> cps = Global.commands.stream()
+                .filter(cp -> cp.matches(ctx, cmd, args))
+                .collect(Collectors.toList());
+
         // Execute the matching command
         try {
             if (cps.isEmpty()) {
