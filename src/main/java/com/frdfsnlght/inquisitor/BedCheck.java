@@ -8,6 +8,9 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 
 /**
+ * Checks for destroyed beds. If a player's bed, <b>on the server this is called
+ * on</b>, is destroyed then their <code>bedServer</code>,
+ * <code>bedWorld</code>, and <code>bedCoords</code> are removed.
  *
  * @author Samuel Seidel
  */
@@ -15,6 +18,10 @@ public final class BedCheck implements Runnable {
 
     private final Collection<UUID> bedOwners;
 
+    /**
+     *
+     * @param bedOwners players to check
+     */
     public BedCheck(Collection<UUID> bedOwners) {
         this.bedOwners = bedOwners;
     }

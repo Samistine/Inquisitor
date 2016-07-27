@@ -30,8 +30,6 @@ import java.util.Set;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class Statistics {
 
     private StatisticsGroup group;
