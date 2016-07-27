@@ -40,7 +40,7 @@ import org.bukkit.entity.EntityType;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class Utils {
+public final class Utils {
 
     public static final Logger logger = Logger.getLogger("Minecraft");
 

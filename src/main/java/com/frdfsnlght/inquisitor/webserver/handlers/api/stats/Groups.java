@@ -102,7 +102,7 @@ public class Groups extends APIHandler {
     private TypeMap playerProfile(ResultSet rs) throws SQLException {
         TypeMap profile = new TypeMap();
         profile.set("name", rs.getString("name"));
-        profile.set("groups",  JSON.decode(rs.getObject("groups").toString()));
+        profile.set("groups", JSON.decode(rs.getObject("groups").toString()));
         return profile;
     }
 
