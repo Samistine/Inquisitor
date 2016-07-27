@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -120,9 +121,7 @@ public final class StatisticsManager {
             jobThread.start();
             Utils.info("statistics manager started");
 
-            for (StatisticsManagerListener listener : listeners) {
-                listener.onStatisticsManagerStarted();
-            }
+            listeners.forEach(StatisticsManagerListener::onStatisticsManagerStarted);
 
         } catch (Exception e) {
             Utils.warning("statistics manager cannot be started: %s", e.getMessage());
@@ -193,13 +192,11 @@ public final class StatisticsManager {
     }
 
     public static Collection<String> getJobsSnapshot() {
-        Collection<String> snaps = new ArrayList<>();
         synchronized (jobs) {
-            for (Job job : jobs) {
-                snaps.add(job.toString());
-            }
+            return jobs.stream()
+                    .map(Job::toString)
+                    .collect(Collectors.toList());
         }
-        return snaps;
     }
 
     public static Statistics getStatistics(String groupName, Object key) {
@@ -211,27 +208,23 @@ public final class StatisticsManager {
     }
 
     public static int purge() {
-        int count = 0;
-        for (StatisticsGroup group : groups.values()) {
-            count += group.purge();
-        }
-        return count;
+        return groups.values().stream().mapToInt(StatisticsGroup::purge).sum();
     }
 
     public static void flushAll() {
-        groups.values().forEach(group -> group.flushAll());
+        groups.values().forEach(StatisticsGroup::flushAll);
     }
 
     public static void flushAllSync() {
-        groups.values().forEach(group -> group.flushAllSync());
+        groups.values().forEach(StatisticsGroup::flushAllSync);
     }
 
     public static void flush() {
-        groups.values().forEach(group -> group.flush());
+        groups.values().forEach(StatisticsGroup::flush);
     }
 
     public static void delete() {
-        groups.values().forEach(group -> group.delete());
+        groups.values().forEach(StatisticsGroup::delete);
     }
 
     public static void submitJob(Job job) {
