@@ -109,6 +109,9 @@ public final class Config {
     /* Begin options */
 
     public static boolean getDebug() {
+        if (config == null) {
+            return false;//Temp workaround
+        }
         return config.getBoolean("global.debug", false);
     }
 
