@@ -177,7 +177,7 @@ public final class PlayersHandler extends TemplateHandler {
         }
     }
 
-    public static Set<Statistic> getFromName(List<String> names) {
+    private Set<Statistic> getFromName(List<String> names) {
         return names.stream().map(Statistic::getFromName).filter(stat -> stat != null).collect(Collectors.toSet());
     }
 }
