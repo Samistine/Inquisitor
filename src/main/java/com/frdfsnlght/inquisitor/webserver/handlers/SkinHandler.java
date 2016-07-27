@@ -44,8 +44,10 @@ public final class SkinHandler extends TemplateHandler {
     @Override
     public void handleRequest(WebRequest req, WebResponse res) throws IOException {
         String playerName = req.getParameter("playerName", null);
-        if (playerName == null) {
-            res.setStatus(400, "Bad Request");
+
+        //Require the client to specify a player
+        if (playerName == null || playerName.isEmpty()) {
+            res.badRequest("Syntax: ^/Notch or ^/?playerName=Notch");
             return;
         }
 
@@ -58,6 +60,7 @@ public final class SkinHandler extends TemplateHandler {
             return;
         }
 
+        //If client already has the same file we tell them to use it
         Date checkDate = req.getHeaderDate("if-modified-since");
         if (checkDate != null) {
             if ((checkDate.getTime() / 1000) >= (cacheFile.lastModified() / 1000)) {

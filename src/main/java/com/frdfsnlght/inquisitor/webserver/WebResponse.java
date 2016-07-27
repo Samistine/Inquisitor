@@ -148,5 +148,13 @@ public class WebResponse {
         out.write(EOL);
         headersSent = true;
     }
+    
+    public void badRequest(String message) throws IOException {
+        setStatus(400, "Bad Request");
+        setContentType("text/plain; charset=utf-8");
+        flushHeaders();
+        getPrintStream().println("400 Bad Request");
+        getPrintStream().print(message);
+    }
 
 }
