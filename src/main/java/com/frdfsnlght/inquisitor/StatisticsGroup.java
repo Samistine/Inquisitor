@@ -104,9 +104,7 @@ public final class StatisticsGroup {
     }
 
     public void setFlushInterval(long interval) {
-        if (interval < 1) {
-            throw new IllegalArgumentException("flush interval must be greater than 0");
-        }
+        if (interval < 1) throw new IllegalArgumentException("flush interval must be greater than 0");
         flushInterval = interval;
     }
 
@@ -115,9 +113,7 @@ public final class StatisticsGroup {
     }
 
     public void setDeleteInterval(long interval) {
-        if (interval < 1) {
-            throw new IllegalArgumentException("delete interval must be greater than 0");
-        }
+        if (interval < 1) throw new IllegalArgumentException("delete interval must be greater than 0");
         deleteInterval = interval;
     }
 
@@ -126,9 +122,7 @@ public final class StatisticsGroup {
     }
 
     public void setDeleteAge(long age) {
-        if (age < 1) {
-            age = -1;
-        }
+        if (age < 1) age = -1;
         deleteAge = age;
     }
 
@@ -254,8 +248,7 @@ public final class StatisticsGroup {
                     stmt.setString(1, key.toString());
                     break;
                 default: // Added for better readability if error occurs
-                    System.out
-                            .println("MYSQL ERROR2 StatisticsGroup.getStatistics");
+                    System.out.println("MYSQL ERROR2 StatisticsGroup.getStatistics");
                     break;
             }
             rs = stmt.executeQuery();
@@ -377,13 +370,11 @@ public final class StatisticsGroup {
     }
 
     public void flushAll() {
-        for (Statistics stat : stats.values()) {
-            stat.flush();
-        }
+        stats.values().forEach(Statistics::flush);
     }
 
     public void flushAllSync() {
-        stats.values().forEach(stat -> stat.flushSync());
+        stats.values().forEach(Statistics::flushSync);
     }
 
     public void flush() {
@@ -450,9 +441,7 @@ public final class StatisticsGroup {
     }
 
     public void validate() {
-        if (!DB.isConnected()) {
-            return;
-        }
+        if (!DB.isConnected()) return;
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -480,8 +469,7 @@ public final class StatisticsGroup {
                 rs = stmt.executeQuery();
                 boolean alter = true;
                 if (rs.next()) {
-                    Matcher matcher = Pattern.compile("DEFAULT CHARSET=(\\w+)")
-                            .matcher(rs.getString(2));
+                    Matcher matcher = Pattern.compile("DEFAULT CHARSET=(\\w+)").matcher(rs.getString(2));
                     rs.close();
                     stmt.close();
                     if (matcher.find()) {
@@ -496,10 +484,7 @@ public final class StatisticsGroup {
                     stmt = DB.prepare(sql.toString());
                     stmt.executeUpdate();
                     stmt.close();
-                    Utils.info(
-                            "Altered character set and collation for statistic group '%s'.",
-                            name);
-                    stmt.close();
+                    Utils.info("Altered character set and collation for statistic group '%s'.", name);
                 }
             }
 
@@ -600,8 +585,7 @@ public final class StatisticsGroup {
                     int pos2 = Math.max(dbType.indexOf(')', pos + 1),
                             dbType.indexOf(',', pos + 1));
                     try {
-                        dbSize = Integer.parseInt(dbType.substring(pos + 1,
-                                pos2));
+                        dbSize = Integer.parseInt(dbType.substring(pos + 1, pos2));
                     } catch (NumberFormatException nfe) {
                     }
                     dbType = dbType.substring(0, pos);
