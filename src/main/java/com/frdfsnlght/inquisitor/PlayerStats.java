@@ -526,7 +526,7 @@ public final class PlayerStats {
     }
 
     public static void checkBeds() {
-        Utils.fire(new BedCheck(bedOwners));
+        Utils.fire(new BedCheck(Global.plugin.getServer(), bedOwners));
     }
 
     public static TypeMap getPlayerStats(String playerName) {

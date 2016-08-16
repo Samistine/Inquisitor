@@ -37,7 +37,7 @@ import org.bukkit.inventory.ItemStack;
  *
  * @author Samuel
  */
-public class PlayerSnapshot {
+public class PlayerSnapshot implements InquisitorPlayer {
 
     private final Date date;
 
@@ -70,10 +70,12 @@ public class PlayerSnapshot {
         this.date = new Date();
     }
 
+    @Override
     public UUID getUUID() {
         return uuid;
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -191,7 +191,7 @@ public final class StatisticsGroup {
         return stats.values();
     }
 
-    public Statistics getStatistics(PlayerSnapshot player) {
+    public Statistics getStatistics(InquisitorPlayer player) {
         return getStatistics(player.getName());
     }
 

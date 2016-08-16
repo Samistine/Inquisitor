@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 
 /**
  * Checks for destroyed beds. If a player's bed, <b>on the server this is called
@@ -16,13 +17,16 @@ import org.bukkit.OfflinePlayer;
  */
 public final class BedCheck implements Runnable {
 
+    private final Server server;
     private final Collection<UUID> bedOwners;
 
     /**
      *
+     * @param server server to check
      * @param bedOwners players to check
      */
-    public BedCheck(Collection<UUID> bedOwners) {
+    public BedCheck(Server server, Collection<UUID> bedOwners) {
+        this.server = server;
         this.bedOwners = bedOwners;
     }
 
@@ -31,9 +35,9 @@ public final class BedCheck implements Runnable {
         Iterator<UUID> iterator = bedOwners.iterator();
         while (iterator.hasNext()) {
             UUID uuid = iterator.next();
-            OfflinePlayer player = Global.plugin.getServer().getOfflinePlayer(uuid);
-            if (player == null) {
-                player = Global.plugin.getServer().getPlayer(uuid);
+            OfflinePlayer player = server.getOfflinePlayer(uuid);
+            if (player == null) {//Needed?
+                player = server.getPlayer(uuid);
                 if (player == null) {
                     continue;
                 }
@@ -43,16 +47,20 @@ public final class BedCheck implements Runnable {
             }
             if (player.getBedSpawnLocation() == null || player.getBedSpawnLocation().getBlock().getType() != Material.BED_BLOCK) {
                 iterator.remove();
-                Utils.debug("player '%s' no longer has a bed", uuid);
 
-                Statistics stats = group.getStatistics(player.getName());
-                stats.set(Statistic.bedServer, null);
-                stats.set(Statistic.bedWorld, null);
-                stats.set(Statistic.bedCoords, null);
-                stats.flush();
-                if (!player.isOnline()) {
-                    group.removeStatistics(stats);
-                }
+                final InquisitorPlayer player_ = new InquisitorPlayer.InquisitorPlayerImpl(player.getUniqueId(), player.getName());
+
+                PlayerStats.submitChange(() -> {
+                    Utils.debug("player '%s' no longer has a bed", player_.getUUID());
+                    Statistics stats = group.getStatistics(player_);
+                    stats.set(Statistic.bedServer, null);
+                    stats.set(Statistic.bedWorld, null);
+                    stats.set(Statistic.bedCoords, null);
+                    stats.flush();
+                    if (!player_.isOnline()) {
+                        group.removeStatistics(stats);
+                    }
+                });
             }
         }
     }
