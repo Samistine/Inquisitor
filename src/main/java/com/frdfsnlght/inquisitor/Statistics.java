@@ -101,7 +101,7 @@ public final class Statistics {
     }
 
     public void removeStatistic(Statistic statistic) {
-        if (! stats.containsKey(statistic.getName())) return;
+        if (!stats.containsKey(statistic.getName())) return;
         stats.remove(statistic.getName());
         dirty.remove(statistic);
     }
@@ -111,7 +111,7 @@ public final class Statistics {
     }
 
     public boolean purge() {
-        if (! valid) {
+        if (!valid) {
             group.removeStatistics(key);
             return true;
         }
@@ -161,43 +161,9 @@ public final class Statistics {
     }*/
 
     public void set(Statistic statistic, Object value) {
-        if (statistic.isMapped())
-            throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
-        String name = statistic.getName();
-        switch (statistic.getType()) {
-            case STRING:
-                stats.set(name, (value == null) ? null : value.toString());
-                break;
-            case BOOLEAN:
-                stats.set(name, (value == null) ? false : (value instanceof Boolean) ? (Boolean)value : true);
-                break;
-            case OBJECT:
-                stats.set(name, value);
-                break;
-            case TIMESTAMP:
-                stats.set(name, (value == null) ? null :
-                                (value instanceof Date) ? (Date)value :
-                                (value instanceof Calendar) ? new Date(((Calendar)value).getTimeInMillis()) :
-                                0);
-                break;
-            case INTEGER:
-                stats.set(name, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).intValue() : 0);
-                break;
-            case LONG:
-                stats.set(name, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).longValue() : 0);
-                break;
-            case ELAPSED_TIME:
-            case DISTANCE:
-            case FLOAT:
-                stats.set(name, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).floatValue() : 0);
-                break;
-            case DOUBLE:
-                stats.set(name, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).doubleValue() : 0);
-                break;
-            default:
-                throw new UnsupportedOperationException(statistic.getType() + " can not be set");
-        }
-        dirty.add(statistic);
+        if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
+
+        set(statistic, statistic.getName(), value, stats);
     }
 
     /*public void set(String name, String key, Object value) {
@@ -208,46 +174,51 @@ public final class Statistics {
     }*/
 
     public void set(Statistic statistic, String key, Object value) {
-        if (! statistic.isMapped())
-            throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
+        if (!statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
+        
         String name = statistic.getName();
         TypeMap map = stats.getMap(name);
         if (map == null) {
             map = new TypeMap();
             stats.set(name, map);
         }
+
+        set(statistic, key, value, map);
+    }
+    
+    private void set(Statistic statistic, String key, Object value, TypeMap map) {
         switch (statistic.getType()) {
             case STRING:
                 map.set(key, (value == null) ? null : value.toString());
                 break;
             case BOOLEAN:
-                map.set(key, (value == null) ? false : (value instanceof Boolean) ? (Boolean)value : true);
+                map.set(key, (value == null) ? false : (value instanceof Boolean) ? (Boolean) value : true);
                 break;
             case OBJECT:
                 map.set(key, value);
                 break;
             case TIMESTAMP:
                 map.set(key, (value == null) ? null :
-                                (value instanceof Date) ? (Date)value :
-                                (value instanceof Calendar) ? new Date(((Calendar)value).getTimeInMillis()) :
-                                0);
+                             (value instanceof Date) ? (Date) value :
+                             (value instanceof Calendar) ? new Date(((Calendar) value).getTimeInMillis()) :
+                             0);
                 break;
             case INTEGER:
-                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).intValue() : 0);
+                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number) value).intValue() : 0);
                 break;
             case LONG:
-                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).longValue() : 0);
+                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number) value).longValue() : 0);
                 break;
             case ELAPSED_TIME:
             case DISTANCE:
             case FLOAT:
-                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).floatValue() : 0);
+                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number) value).floatValue() : 0);
                 break;
             case DOUBLE:
-                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number)value).doubleValue() : 0);
+                map.set(key, (value == null) ? 0 : (value instanceof Number) ? ((Number) value).doubleValue() : 0);
                 break;
             default:
-                throw new UnsupportedOperationException(statistic.getType() + " cannot be set");
+                throw new UnsupportedOperationException(statistic.getType() + " can not be set");
         }
         dirty.add(statistic);
     }
@@ -261,47 +232,33 @@ public final class Statistics {
 
     public void add(Statistic statistic, Number value) {
         if (value == null) return;
-        if (statistic.isMapped())
-            throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
-        String name = statistic.getName();
-        switch (statistic.getType()) {
-            case INTEGER:
-                stats.set(name, stats.getInt(name, 0) + value.intValue());
-                break;
-            case LONG:
-                stats.set(name, stats.getLong(name, 0L) + value.longValue());
-                break;
-            case ELAPSED_TIME:
-            case DISTANCE:
-            case FLOAT:
-                stats.set(name, stats.getFloat(name, 0f) + value.floatValue());
-                break;
-            case DOUBLE:
-                stats.set(name, stats.getDouble(name, 0d) + value.doubleValue());
-                break;
-            default:
-                throw new UnsupportedOperationException(statistic.getType() + " cannot be added");
-        }
-        dirty.add(statistic);
+        if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
+
+        add(statistic, statistic.getName(), value, stats);
     }
 
-    /*public void add(String name, String key, Number value) {
-        Statistic statistic = group.getStatistic(name);
-        if (statistic == null)
-            throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
-        add(statistic, key, value);
-    }*/
-
+    /**
+     * Mapped
+     *
+     * @param statistic
+     * @param key
+     * @param value
+     */
     public void add(Statistic statistic, String key, Number value) {
         if (value == null) return;
-        if (! statistic.isMapped())
-            throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
+        if (!statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
+
         String name = statistic.getName();
         TypeMap map = stats.getMap(name);
         if (map == null) {
             map = new TypeMap();
             stats.set(name, map);
         }
+
+        add(statistic, key, value, map);
+    }
+    
+    private void add(Statistic statistic, String key, Number value, TypeMap map) {
         switch (statistic.getType()) {
             case INTEGER:
                 map.set(key, map.getInt(key, 0) + value.intValue());
@@ -335,6 +292,12 @@ public final class Statistics {
         add(name, key, 1);
     }*/
 
+    /**
+     * Mapped
+     *
+     * @param statistic
+     * @param key
+     */
     public void incr(Statistic statistic, String key) {
         add(statistic, key, 1);
     }
@@ -346,26 +309,27 @@ public final class Statistics {
     public void flushSync() {
         Job job = _flush();
         if (job == null) return;
-        if (! valid) return;
+        if (!valid) return;
         synchronized (job) {
-            while (! job.isCommitted())
+            while (!job.isCommitted())
                 try {
                     job.wait();
-                } catch (InterruptedException ie) {}
+                } catch (InterruptedException ie) {
+                }
         }
     }
 
     private Job _flush() {
         group.fireBeforeFlush(this);
         if (dirty.isEmpty()) return null;
-        Map<String,Object> jobData = new HashMap<>();
+        Map<String, Object> jobData = new HashMap<>();
         TypeMap mappedObjects = null;
         for (Statistic statistic : dirty) {
             if (statistic == null) continue;
             if (statistic.isMapped()) {
                 if (mappedObjects == null) {
                     mappedObjects = new TypeMap();
-                    for (String sName : stats.keySet()) { 
+                    for (String sName : stats.keySet()) {
                         Statistic s = Statistic.getFromName(sName);
                         if (s.isMapped()) {
                             mappedObjects.set(sName, stats.get(sName));
@@ -424,10 +388,10 @@ public final class Statistics {
         else {
             switch (group.getKeyType()) {
                 case INTEGER:
-                    jobData.put(group.getKeyName(), ((Number)key).intValue());
+                    jobData.put(group.getKeyName(), ((Number) key).intValue());
                     break;
                 case LONG:
-                    jobData.put(group.getKeyName(), ((Number)key).longValue());
+                    jobData.put(group.getKeyName(), ((Number) key).longValue());
                     break;
                 case STRING:
                     jobData.put(group.getKeyName(), key.toString());
@@ -436,8 +400,7 @@ public final class Statistics {
             job = new Job(group.getName(), jobData, key);
         }
 
-        if (valid)
-            StatisticsManager.submitJob(job);
+        if (valid) StatisticsManager.submitJob(job);
         lastFlushed = System.currentTimeMillis();
         inDB = true;
         dirty.clear();

@@ -22,9 +22,12 @@ import com.frdfsnlght.inquisitor.command.HelpCommand;
 import com.frdfsnlght.inquisitor.command.PlayersCommands;
 import com.frdfsnlght.inquisitor.command.StatsCommands;
 import com.frdfsnlght.inquisitor.command.WebServerCommands;
+import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 import com.frdfsnlght.inquisitor.test.TestCommands;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Server;
 
 /**
  *
@@ -55,8 +58,24 @@ public final class Global {
 
     }
 
+//    public static Server getServer() {
+//        validatePlugin();
+//        return plugin.getServer();
+//    }
+//
+//    public static File getDataFolder() {
+//        validatePlugin();
+//        return plugin.getDataFolder();
+//    }
+//
+//    public static void validatePlugin() {
+//        if (plugin == null) {
+//            throw new NullPointerException("Inquisitor plugin variable is null.");
+//        }
+//    }
+
     public static boolean isTesting() {
-    	//return true;
+        //return true;
         return System.getenv("INQUISITOR_TEST") != null;
     }
 
