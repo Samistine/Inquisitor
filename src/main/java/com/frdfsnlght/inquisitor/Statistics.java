@@ -48,7 +48,7 @@ public final class Statistics {
             throw new IllegalArgumentException("key cannot be null");
         this.group = group;
         this.key = key;
-        this.group.getStatistics().forEach(statistic -> addStatistic(statistic));
+        this.group.getStatistics().forEach(this::addStatistic);
         dirty.clear();
     }
 
