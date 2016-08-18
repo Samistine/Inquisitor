@@ -39,6 +39,8 @@ import java.util.regex.PatternSyntaxException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,9 +74,10 @@ public final class PlayerStats {
 
     public static final StatisticsGroup group = new StatisticsGroup("players", "name", Type.STRING, 30);
 
-    protected static final Set<UUID> bedOwners = Collections.synchronizedSet(new HashSet<UUID>());
-    private static final Set<String> ignoredPlayerJoins = Collections.synchronizedSet(new HashSet<>());
-    private static final Set<UUID> kickedPlayers = Collections.synchronizedSet(new HashSet<>());
+    private static final Set<UUID> bedOwners = Collections.synchronizedSet(new HashSet<UUID>());
+    private static final Set<String> ignoredPlayerJoins = new HashSet<>();
+    private static final Set<UUID> kickedPlayers = new HashSet<>();
+    private static final Map<UUID, PlayerState> playerStates = Collections.synchronizedMap(new HashMap<UUID, PlayerState>());
 
     private static boolean started = false;
     private static int bedCheckTask = -1;
@@ -183,7 +186,7 @@ public final class PlayerStats {
         bedOwners.clear();
         ignoredPlayerJoins.clear();
         kickedPlayers.clear();
-        PlayerState.getPlayerStates().clear();
+        playerStates.clear();
         Utils.info("player stats collection stopped");
     }
 
@@ -248,7 +251,7 @@ public final class PlayerStats {
             if (bedServer != null && bedServer.equals(servername)) {
                 bedOwners.add(player.getUUID());
             }
-            PlayerState.getPlayerStates().put(player.getUUID(), new PlayerState(stats.getFloat("totalTime")));
+            playerStates.put(player.getUUID(), new PlayerState(stats.getFloat("totalTime")));
 
             Utils.debug("totalTime: " + stats.getFloat("totalTime"));
 
@@ -365,7 +368,7 @@ public final class PlayerStats {
         stats.flushSync();
 
         group.removeStatistics(player.getName());
-        PlayerState.getPlayerStates().remove(player.getUUID());
+        playerStates.remove(player.getUUID());
     }
 
     public static void onPlayerKick(PlayerSnapshot player, String message) {
@@ -403,7 +406,7 @@ public final class PlayerStats {
         stats.flushSync();
 
         onPlayerMove(player, player.getLocation());
-        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final PlayerState state = playerStates.get(player.getUUID());
         if (state != null) {
             state.reset();
         }
@@ -413,7 +416,7 @@ public final class PlayerStats {
         Utils.debug("onPlayerMove '%s'", player.getName());
 
         final Statistics stats = group.getStatistics(player);
-        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final PlayerState state = playerStates.get(player.getUUID());
         if (state == null) {
             return;
         }
@@ -511,7 +514,7 @@ public final class PlayerStats {
         if (!started) {
             return;
         }
-        final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
+        final PlayerState state = playerStates.get(player.getUUID());
         if (state != null) {
             onPlayerMove(player, player.getLocation());
             state.lastLocation = to;
@@ -654,7 +657,7 @@ public final class PlayerStats {
             }
         }
 
-        PlayerState state = PlayerState.getPlayerStates().get(player.getUniqueId());
+        PlayerState state = playerStates.get(player.getUniqueId());
         if (state != null) {
             float sessionTime = (float) (System.currentTimeMillis() - state.joinTime) / 1000f;
             stats.set(Statistic.sessionTime, sessionTime);
