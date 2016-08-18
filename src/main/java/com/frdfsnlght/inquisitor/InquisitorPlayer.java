@@ -38,5 +38,10 @@ public interface InquisitorPlayer {
             return name;
         }
 
+        @Override
+        public String toString() {
+            return "InquisitorPlayerImpl{" + "uuid=" + uuid + ", name=" + name + '}';
+        }
+
     }
 }

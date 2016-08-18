@@ -167,6 +167,11 @@ public final class StatisticsGroup {
         }
     }
 
+    /**
+     * A copy of the the statistics in this group.
+     *
+     * @return statistics
+     */
     public Set<Statistic> getStatistics() {
         synchronized (statistics) {
             return new HashSet<>(statistics);
