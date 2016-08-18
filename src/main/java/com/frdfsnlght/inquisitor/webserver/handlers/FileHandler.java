@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public final class FileHandler extends WebHandler {
+public final class FileHandler implements WebHandler {
 
     public static final Map<String,String> MIME_TYPES = new HashMap<>();
     

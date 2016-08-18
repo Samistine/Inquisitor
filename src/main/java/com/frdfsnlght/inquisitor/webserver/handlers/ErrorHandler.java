@@ -24,7 +24,7 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public final class ErrorHandler extends WebHandler {
+public final class ErrorHandler implements WebHandler {
 
     private final int status;
     private final String message;

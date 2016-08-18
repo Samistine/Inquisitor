@@ -22,12 +22,12 @@ import java.io.IOException;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public abstract class WebHandler {
+public interface WebHandler {
 
-    public boolean matchesRequest(WebRequest request, TypeMap pathParams) {
+    default public boolean matchesRequest(WebRequest request, TypeMap pathParams) {
         return true;
     }
 
-    public abstract void handleRequest(WebRequest request, WebResponse response) throws IOException;
+    public void handleRequest(WebRequest request, WebResponse response) throws IOException;
 
 }
