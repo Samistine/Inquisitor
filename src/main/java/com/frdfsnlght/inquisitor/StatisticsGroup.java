@@ -39,10 +39,10 @@ import java.util.regex.Pattern;
  */
 public final class StatisticsGroup {
 
-    private String name;
-    private String keyName;
-    private Type keyType;
-    private int keySize;
+    private final String name;
+    private final String keyName;
+    private final Type keyType;
+    private final int keySize;
     private long flushInterval = 1000 * 60; // every minute
     private long deleteInterval = 1000 * 3600; // every hour
     private long deleteAge = -1;
