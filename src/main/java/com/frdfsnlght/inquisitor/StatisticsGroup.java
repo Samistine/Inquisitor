@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +50,7 @@ public final class StatisticsGroup {
 
     private long lastDelete = 0;
 
-    private final EnumSet<Statistic> statistics = EnumSet.noneOf(Statistic.class);
+    private final Set<Statistic> statistics = Collections.synchronizedSet(EnumSet.noneOf(Statistic.class));
 
     private final Map<Object, Statistics> stats = new HashMap<>();
 
@@ -146,27 +147,23 @@ public final class StatisticsGroup {
     }
 
     public void addStatistic(Statistic statistic) {
-        synchronized (statistics) {
-            if (statistics.contains(statistic)) {
-                throw new IllegalArgumentException(statistic + " already exists in " + this);
+        if (statistics.add(statistic)) {
+            statistic.validate(this);
+            for (Statistics s : stats.values()) {
+                s.addStatistic(statistic);
             }
-            statistics.add(statistic);
-        }
-        statistic.validate(this);
-        for (Statistics s : stats.values()) {
-            s.addStatistic(statistic);
+        } else {
+            throw new IllegalArgumentException(statistic + " already exists in " + this);
         }
     }
 
     public void removeStatistic(Statistic statistic) {
-        synchronized (statistics) {
-            if (!statistics.contains(statistic)) {
-                return;
+        if (statistics.remove(statistic)) {
+            for (Statistics s : stats.values()) {
+                s.removeStatistic(statistic);
             }
-            statistics.remove(statistic);
-        }
-        for (Statistics s : stats.values()) {
-            s.removeStatistic(statistic);
+        } else {
+            throw new IllegalArgumentException(statistic + " does not exists in " + this);
         }
     }
 
@@ -276,7 +273,7 @@ public final class StatisticsGroup {
     }
 
     public TypeMap loadStatistics(ResultSet rs) throws SQLException {
-        return loadStatistics(rs, new HashSet<>(statistics));
+        return loadStatistics(rs, getStatistics());
     }
 
     public TypeMap loadStatistics(ResultSet rs, Collection<Statistic> stats) throws SQLException {
