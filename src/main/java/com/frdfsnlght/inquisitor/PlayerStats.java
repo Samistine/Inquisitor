@@ -385,7 +385,7 @@ public final class PlayerStats {
             return;
         }
 
-        final Statistics stats = group.getStatistics(player.getName());
+        final Statistics stats = group.getStatistics(player);
         stats.incr(Statistic.kicks);
         stats.set(Statistic.lastKick, player.getDate());
         stats.set(Statistic.lastKickMessage, message);
@@ -395,7 +395,7 @@ public final class PlayerStats {
     public static void onPlayerDeath(PlayerSnapshot player, String message, EntityDamageEvent.DamageCause cause) {
         Utils.debug("onPlayerDeath '%s'", player.getName());
 
-        final Statistics stats = group.getStatistics(player.getName());
+        final Statistics stats = group.getStatistics(player);
         stats.incr(Statistic.deaths);
         stats.set(Statistic.lastDeath, player.getDate());
         stats.set(Statistic.lastDeathMessage, message);
@@ -412,7 +412,7 @@ public final class PlayerStats {
     public static void onPlayerMove(PlayerSnapshot player, Location to) {
         Utils.debug("onPlayerMove '%s'", player.getName());
 
-        final Statistics stats = group.getStatistics(player.getName());
+        final Statistics stats = group.getStatistics(player);
         final PlayerState state = PlayerState.getPlayerStates().get(player.getUUID());
         if (state == null) {
             return;

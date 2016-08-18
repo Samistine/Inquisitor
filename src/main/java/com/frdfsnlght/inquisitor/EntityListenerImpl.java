@@ -77,28 +77,26 @@ public final class EntityListenerImpl implements Listener {
             return;
         }
 
-        PlayerSnapshot player = new PlayerSnapshot((Player) killerEnt);
-        if (!PlayerStats.isStatsPlayer(player)) {
+        PlayerSnapshot killer = new PlayerSnapshot((Player) killerEnt);
+        if (!PlayerStats.isStatsPlayer(killer)) {
             return;
         }
 
-        ItemStack inHand = player.getItemInHand();
+        ItemStack inHand = killer.getItemInHand();
         Material weapon = null;
         if (inHand != null) {
             weapon = inHand.getType();
         }
-
-        String killerName = player.getName();
 
         String weaponName = ((weapon == null) || (weapon == Material.AIR)) ? "None" : Utils.titleCase(weapon.toString());
 
         if (deadEnt instanceof Player) {
             String deadName = ((Player) deadEnt).getName();
             PlayerStats.submitChange(() -> {
-                Utils.debug("onPlayerKill '%s'", killerName);
-                Statistics stats = PlayerStats.group.getStatistics(killerName);
+                Utils.debug("onPlayerKill '%s'", killer.getName());
+                Statistics stats = PlayerStats.group.getStatistics(killer);
                 stats.incr(Statistic.totalPlayersKilled);
-                stats.set(Statistic.lastPlayerKill, player.getDate());
+                stats.set(Statistic.lastPlayerKill, killer.getDate());
                 stats.set(Statistic.lastPlayerKilled, deadName);
                 stats.incr(Statistic.playersKilled, deadName);
                 stats.incr(Statistic.playersKilledByWeapon, weaponName);
@@ -106,10 +104,10 @@ public final class EntityListenerImpl implements Listener {
         } else {
             String deadName = Utils.normalizeEntityTypeName(deadEnt.getType());
             PlayerStats.submitChange(() -> {
-                Utils.debug("onMobKill '%s'", killerName);
-                Statistics stats = PlayerStats.group.getStatistics(killerName);
+                Utils.debug("onMobKill '%s'", killer.getName());
+                Statistics stats = PlayerStats.group.getStatistics(killer);
                 stats.incr(Statistic.totalMobsKilled);
-                stats.set(Statistic.lastMobKill, player.getDate());
+                stats.set(Statistic.lastMobKill, killer.getDate());
                 stats.set(Statistic.lastMobKilled, deadName);
                 stats.incr(Statistic.mobsKilled, deadName);
                 stats.incr(Statistic.mobsKilledByWeapon, weaponName);
