@@ -19,6 +19,7 @@ import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.bukkit.World;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -33,7 +34,7 @@ public final class Permissions {
     private static net.milkbowl.vault.permission.Permission vaultPlugin = null;
 
     public static boolean vaultAvailable() {
-        if ((vaultPlugin != null) && vaultPlugin.isEnabled()) {
+        if (vaultPlugin != null && vaultPlugin.isEnabled()) {
             return true;
         }
         if (vaultChecked) {
@@ -67,7 +68,7 @@ public final class Permissions {
             return true;
         }
         try {
-            require(player.getWorld().getName(), player.getName(), true, perm);
+            require(player.getWorld(), player, true, perm);
             return true;
         } catch (PermissionsException e) {
             return false;
@@ -78,23 +79,27 @@ public final class Permissions {
         if (player == null) {
             return;
         }
-        require(player.getWorld().getName(), player.getName(), true, perm);
+        require(player.getWorld(), player, true, perm);
     }
 
     public static void require(Player player, boolean requireAll, String... perms) throws PermissionsException {
         if (player == null) {
             return;
         }
-        require(player.getWorld().getName(), player.getName(), requireAll, perms);
+        require(player.getWorld(), player, requireAll, perms);
     }
 
-    public static void require(String worldName, String playerName, String perm) throws PermissionsException {
-        require(worldName, playerName, true, perm);
+    public static void require(World world, Player player, String perm) throws PermissionsException {
+        require(world, player, true, perm);
     }
 
-    private static void require(String worldName, String playerName, boolean requireAll, String... perms) throws PermissionsException {
-        if (isOp(playerName)) {
-            Utils.debug("player '%s' is op", playerName);
+    private static void require(World world, Player player, boolean requireAll, String... perms) throws PermissionsException {
+        String worldName = world.getName();
+
+        if (player == null) throw new PermissionsException("not permitted");
+
+        if (player.isOp()) {
+            Utils.debug("player '%s' is op", player.getName());
             return;
         }
 
@@ -102,11 +107,11 @@ public final class Permissions {
             if (vaultAvailable()) {
                 for (String perm : perms) {
                     if (requireAll) {
-                        if (!vaultPlugin.has(worldName, playerName, perm)) {
+                        if (!vaultPlugin.playerHas(worldName, player, perm)) {
                             throw new PermissionsException("not permitted");
                         }
                     } else {
-                        if (vaultPlugin.has(worldName, playerName, perm)) {
+                        if (vaultPlugin.playerHas(worldName, player, perm)) {
                             return;
                         }
                     }
@@ -122,44 +127,20 @@ public final class Permissions {
                     ex.getMessage());
         }
 
-        Player player = Global.plugin.getServer().getPlayer(playerName);
-        if (player != null) {
-            for (String perm : perms) {
-                if (requireAll) {
-                    if (!player.hasPermission(perm)) {
-                        throw new PermissionsException("not permitted");
-                    }
-                } else {
-                    if (player.hasPermission(perm)) {
-                        return;
-                    }
+        for (String perm : perms) {
+            if (requireAll) {
+                if (!player.hasPermission(perm)) {
+                    throw new PermissionsException("not permitted");
+                }
+            } else {
+                if (player.hasPermission(perm)) {
+                    return;
                 }
             }
-            if ((!requireAll) && (perms.length > 0)) {
-                throw new PermissionsException("not permitted");
-            }
-            return;
         }
-
-        throw new PermissionsException("not permitted");
-
-    }
-
-    public static boolean isOp(Player player) {
-        if (player == null) {
-            return true;
+        if ((!requireAll) && (perms.length > 0)) {
+            throw new PermissionsException("not permitted");
         }
-        return player.isOp();
-    }
-
-    public static boolean isOp(String playerName) {
-        // Set<OfflinePlayer> ops = Global.plugin.getServer().getOperators();
-        for (OfflinePlayer p : Global.plugin.getServer().getOperators()) {
-            if (p.getName().equalsIgnoreCase(playerName)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /*
