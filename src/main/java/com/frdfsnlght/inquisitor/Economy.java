@@ -39,7 +39,11 @@ public final class Economy {
         if (p == null || !p.isEnabled()) {
             return false;
         }
-        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin.getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global.plugin
+                .getServer()
+                .getServicesManager()
+                .getRegistration(net.milkbowl.vault.economy.Economy.class);
+
         if (rsp == null) {
             Utils.warning("Vault didn't return a service provider for economy!");
             return false;
