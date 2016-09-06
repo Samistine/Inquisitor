@@ -482,25 +482,9 @@ public final class WebServer {
         if (i < 1) i = 1;
         Config.setPropertyDirect("webServer.playersPageSize", i);
     }
-
-    public static void getOptions(Context ctx, String name) throws OptionsException, PermissionsException {
-        options.getOptions(ctx, name);
-    }
-
-    public static String getOption(Context ctx, String name) throws OptionsException, PermissionsException {
-        return options.getOption(ctx, name);
-    }
-
-    public static void setOption(Context ctx, String name, String value) throws OptionsException, PermissionsException {
-        options.setOption(ctx, name, value);
-    }
-
-    public static void addOption(Context ctx, String name, String value) throws OptionsException, PermissionsException {
-        options.addOption(ctx, name, value);
-    }
-
-    public static void removeOption(Context ctx, String name, String value) throws OptionsException, PermissionsException {
-        options.removeOption(ctx, name, value);
+   
+    public static Options options() {
+        return options;
     }
 
     /* End options */

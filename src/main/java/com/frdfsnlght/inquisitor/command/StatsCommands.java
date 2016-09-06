@@ -136,7 +136,7 @@ public class StatsCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            StatisticsManager.setOption(ctx, option, value);
+            StatisticsManager.options().setOption(ctx, option, value);
             return;
         }
 
@@ -144,7 +144,7 @@ public class StatsCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option name required");
             String option = args.remove(0);
-            StatisticsManager.getOptions(ctx, option);
+            StatisticsManager.options().getOptions(ctx, option);
             return;
         }
 

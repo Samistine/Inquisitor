@@ -68,7 +68,7 @@ public class DBCommands extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            DB.setOption(ctx, option, value);
+            DB.options().setOption(ctx, option, value);
             return;
         }
 
@@ -76,7 +76,7 @@ public class DBCommands extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option name required");
             String option = args.remove(0);
-            DB.getOptions(ctx, option);
+            DB.options().getOptions(ctx, option);
             return;
         }
 

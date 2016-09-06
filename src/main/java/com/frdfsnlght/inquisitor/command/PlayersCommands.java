@@ -60,7 +60,7 @@ public class PlayersCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            PlayerStats.setOption(ctx, option, value);
+            PlayerStats.options().setOption(ctx, option, value);
             return;
         }
 
@@ -68,7 +68,7 @@ public class PlayersCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option name required");
             String option = args.remove(0);
-            PlayerStats.getOptions(ctx, option);
+            PlayerStats.options().getOptions(ctx, option);
             return;
         }
 

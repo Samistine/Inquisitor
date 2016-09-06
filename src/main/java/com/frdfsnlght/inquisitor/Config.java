@@ -119,18 +119,8 @@ public final class Config {
         config.set("global.debug", b);
     }
 
-
-
-    public static void getOptions(Context ctx, String name) throws OptionsException, PermissionsException {
-        options.getOptions(ctx, name);
-    }
-
-    public static String getOption(Context ctx, String name) throws OptionsException, PermissionsException {
-        return options.getOption(ctx, name);
-    }
-
-    public static void setOption(Context ctx, String name, String value) throws OptionsException, PermissionsException {
-        options.setOption(ctx, name, value);
+    public static Options options() {
+        return options;
     }
 
     /* End options */

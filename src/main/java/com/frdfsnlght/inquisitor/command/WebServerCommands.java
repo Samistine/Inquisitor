@@ -72,7 +72,7 @@ public class WebServerCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            WebServer.setOption(ctx, option, value);
+            WebServer.options().setOption(ctx, option, value);
             return;
         }
 
@@ -80,7 +80,7 @@ public class WebServerCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option name required");
             String option = args.remove(0);
-            WebServer.getOptions(ctx, option);
+            WebServer.options().getOptions(ctx, option);
             return;
         }
 
@@ -91,7 +91,7 @@ public class WebServerCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            WebServer.addOption(ctx, option, value);
+            WebServer.options().addOption(ctx, option, value);
             return;
         }
 
@@ -102,7 +102,7 @@ public class WebServerCommands  extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            WebServer.removeOption(ctx, option, value);
+            WebServer.options().removeOption(ctx, option, value);
             return;
         }
 

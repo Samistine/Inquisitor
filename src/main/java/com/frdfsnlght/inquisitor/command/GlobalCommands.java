@@ -71,7 +71,7 @@ public final class GlobalCommands extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option value required");
             String value = args.remove(0);
-            Config.setOption(ctx, option, value);
+            Config.options().setOption(ctx, option, value);
             return;
         }
 
@@ -79,7 +79,7 @@ public final class GlobalCommands extends CommandProcessor {
             if (args.isEmpty())
                 throw new CommandException("option name required");
             String option = args.remove(0);
-            Config.getOptions(ctx, option);
+            Config.options().getOptions(ctx, option);
         }
 
     }
