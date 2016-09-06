@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class Job {
+public final class Job {
 
     private String tableName;
     private Map<String, Object> data;
