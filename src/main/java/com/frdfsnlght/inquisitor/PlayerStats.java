@@ -15,8 +15,6 @@
  */
 package com.frdfsnlght.inquisitor;
 
-import com.frdfsnlght.inquisitor.exceptions.OptionsException;
-import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import com.frdfsnlght.inquisitor.Statistic.Type;
 import com.frdfsnlght.inquisitor.StatisticsGroup.BeforeFlushListener;
 import com.frdfsnlght.inquisitor.StatisticsManager.StatisticsManagerListener;

@@ -22,12 +22,9 @@ import com.frdfsnlght.inquisitor.command.HelpCommand;
 import com.frdfsnlght.inquisitor.command.PlayersCommands;
 import com.frdfsnlght.inquisitor.command.StatsCommands;
 import com.frdfsnlght.inquisitor.command.WebServerCommands;
-import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
 import com.frdfsnlght.inquisitor.test.TestCommands;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Server;
 
 /**
  *

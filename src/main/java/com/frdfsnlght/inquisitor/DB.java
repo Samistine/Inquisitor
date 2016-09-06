@@ -15,9 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
-import com.frdfsnlght.inquisitor.exceptions.OptionsException;
 import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
-import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,9 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import javax.sql.rowset.serial.SerialClob;
 

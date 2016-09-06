@@ -2,7 +2,6 @@ package com.frdfsnlght.inquisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
