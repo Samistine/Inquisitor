@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.World;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;

@@ -306,9 +306,7 @@ public final class StatisticsManager {
     }
 
     public static interface StatisticsManagerListener {
-
         public void onStatisticsManagerStarted();
-
         public void onStatisticsManagerStopping();
     }
 

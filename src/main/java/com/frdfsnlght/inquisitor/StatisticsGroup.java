@@ -624,7 +624,6 @@ public final class StatisticsGroup {
     }
 
     public interface BeforeFlushListener {
-
         public void beforeFlush(Statistics stats);
     }
 

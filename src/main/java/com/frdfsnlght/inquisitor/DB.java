@@ -95,15 +95,10 @@ public final class DB {
         }
 
         try {
-            if (getUrl() == null) {
-                throw new InquisitorException("url is not set");
-            }
-            if (getUsername() == null) {
-                throw new InquisitorException("username is not set");
-            }
-            if (getPassword() == null) {
-                throw new InquisitorException("password is not set");
-            }
+            if (getUrl() == null)      throw new InquisitorException("url is not set");
+            if (getUsername() == null) throw new InquisitorException("username is not set");
+            if (getPassword() == null) throw new InquisitorException("password is not set");
+
             connect();
 
         } catch (Exception e) {
@@ -112,10 +107,8 @@ public final class DB {
     }
 
     public static void stop() {
-        if (db == null) {
-            return;
-        }
-        listeners.forEach(listener -> listener.onDBDisconnecting());
+        if (db == null) return;
+        listeners.forEach(DBListener::onDBDisconnecting);
         try {
             db.close();
         } catch (SQLException se) {
@@ -213,10 +206,8 @@ public final class DB {
             db.setAutoCommit(true);
             db.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             Utils.info("connected to database");
-            if (!didUpdates) {
-                doUpdates();
-            }
-            listeners.forEach(listener -> listener.onDBConnected());
+            if (!didUpdates) doUpdates();
+            listeners.forEach(DBListener::onDBConnected);
         }
         return db;
     }
@@ -236,30 +227,22 @@ public final class DB {
     }
 
     public static Clob encodeToJSON(Object obj) throws SQLException {
-        if (obj == null) {
-            return null;
-        }
+        if (obj == null) return null;
         return new SerialClob(JSON.encode(obj).toCharArray());
     }
 
     public static Object decodeFromJSON(Clob clob) throws SQLException {
-        if (clob == null) {
-            return null;
-        }
+        if (clob == null) return null;
         return JSON.decode(clob.getSubString(1L, (int) clob.length()));
     }
 
     public static Date decodeTimestamp(Timestamp ts) throws SQLException {
-        if (ts == null) {
-            return null;
-        }
+        if (ts == null) return null;
         return new Date(ts.getTime());
     }
 
     public static Timestamp encodeTimestamp(Date d) throws SQLException {
-        if (d == null) {
-            return null;
-        }
+        if (d == null) return null;
         return new Timestamp(d.getTime());
     }
 
@@ -279,9 +262,7 @@ public final class DB {
     }
 
     public static boolean dropTable(String name) throws SQLException {
-        if (!tableExists(name)) {
-            return false;
-        }
+        if (!tableExists(name)) return false;
         Utils.debug("dropping table '%s'", name);
         try (PreparedStatement stmt = prepare("DROP TABLE " + tableName(name))) {
             stmt.executeUpdate();
@@ -291,8 +272,7 @@ public final class DB {
 
     public static boolean columnExists(String tableName, String columnName) throws SQLException {
         boolean exists;
-        try (PreparedStatement stmt = prepare("SHOW COLUMNS FROM "
-                + tableName(tableName) + " LIKE ?")) {
+        try (PreparedStatement stmt = prepare("SHOW COLUMNS FROM " + tableName(tableName) + " LIKE ?")) {
             stmt.setString(1, columnName);
             try (ResultSet rs = stmt.executeQuery()) {
                 exists = rs.next();
@@ -306,21 +286,18 @@ public final class DB {
             return false;
         }
         Utils.debug("adding column '%s' to table '%s'", columnName, tableName);
-        try (PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
-                + " ADD `" + columnName + "` " + columnDef)) {
+        try (PreparedStatement stmt = prepare(
+                "ALTER TABLE " + tableName(tableName) + " ADD `" + columnName + "` " + columnDef)) {
             stmt.executeUpdate();
         }
         return true;
     }
 
     public static boolean dropColumn(String tableName, String columnName) throws SQLException {
-        if (!columnExists(tableName, columnName)) {
-            return false;
-        }
-        Utils.debug("dropping column '%s' from table '%s'", columnName,
-                tableName);
-        try (PreparedStatement stmt = prepare("ALTER TABLE " + tableName(tableName)
-                + " DROP `" + columnName + "`")) {
+        if (!columnExists(tableName, columnName)) return false;
+        Utils.debug("dropping column '%s' from table '%s'", columnName, tableName);
+        try (PreparedStatement stmt = prepare(
+                "ALTER TABLE " + tableName(tableName) + " DROP `" + columnName + "`")) {
             stmt.executeUpdate();
         }
         return true;
@@ -472,9 +449,7 @@ public final class DB {
     }
 
     public static interface DBListener {
-
         public void onDBConnected();
-
         public void onDBDisconnecting();
     }
 
