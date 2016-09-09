@@ -128,5 +128,9 @@ public class PlayerSnapshot implements InquisitorPlayer {
     public Date getDate() {
         return date;
     }
+    @Override
+    public String toString() {
+        return "PlayerSnapshot{" + "uuid=" + uuid + ", name=" + name + '}';
+    }
 
 }

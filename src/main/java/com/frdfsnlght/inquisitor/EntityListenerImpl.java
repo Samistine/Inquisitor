@@ -51,7 +51,7 @@ public final class EntityListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player)) {
                 float fallDistance = event.getEntity().getFallDistance();
                 PlayerStats.submitChange(() -> {
-                    Utils.debug("onPlayerFall '%s'", player.getName());
+                    Utils.debug("onPlayerFall '%s'", player);
                     Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.add(Statistic.travelDistances, "Falling", fallDistance);
                 });
@@ -93,7 +93,7 @@ public final class EntityListenerImpl implements Listener {
         if (deadEnt instanceof Player) {
             String deadName = ((Player) deadEnt).getName();
             PlayerStats.submitChange(() -> {
-                Utils.debug("onPlayerKill '%s'", killer.getName());
+                Utils.debug("onPlayerKill '%s'", killer);
                 Statistics stats = PlayerStats.group.getStatistics(killer);
                 stats.incr(Statistic.totalPlayersKilled);
                 stats.set(Statistic.lastPlayerKill, killer.getDate());
@@ -104,7 +104,7 @@ public final class EntityListenerImpl implements Listener {
         } else {
             String deadName = Utils.normalizeEntityTypeName(deadEnt.getType());
             PlayerStats.submitChange(() -> {
-                Utils.debug("onMobKill '%s'", killer.getName());
+                Utils.debug("onMobKill '%s'", killer);
                 Statistics stats = PlayerStats.group.getStatistics(killer);
                 stats.incr(Statistic.totalMobsKilled);
                 stats.set(Statistic.lastMobKill, killer.getDate());
@@ -126,7 +126,7 @@ public final class EntityListenerImpl implements Listener {
             PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
             if (PlayerStats.isStatsPlayer(player)) {
                 PlayerStats.submitChange(() -> {
-                    Utils.debug("onPlayerBowShoot '%s'", player.getName());
+                    Utils.debug("onPlayerBowShoot '%s'", player);
                     Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.incr(Statistic.arrowsShot);
                 });
@@ -146,7 +146,7 @@ public final class EntityListenerImpl implements Listener {
             if (PlayerStats.isStatsPlayer(player)) {
                 EntityType entityType = event.getEntityType();
                 PlayerStats.submitChange(() -> {
-                    Utils.debug("onPlayerTameAnimal '%s'", player.getName());
+                    Utils.debug("onPlayerTameAnimal '%s'", player);
                     Statistics stats = PlayerStats.group.getStatistics(player);
                     stats.incr(Statistic.animalsTamed, Utils.normalizeEntityTypeName(entityType));
                 });
@@ -172,7 +172,7 @@ public final class EntityListenerImpl implements Listener {
                 Material food = player.getItemInHand().getType();
                 if (food.isEdible()) {
                     PlayerStats.submitChange(() -> {
-                        Utils.debug("onPlayerEat '%s'", player.getName());
+                        Utils.debug("onPlayerEat '%s'", player);
                         Statistics stats = PlayerStats.group.getStatistics(player);
                         stats.incr(Statistic.foodEaten, Utils.titleCase(food.name()));
                     });
