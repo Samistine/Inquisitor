@@ -511,7 +511,7 @@ public final class StatisticsGroup {
         }
     }
 
-    public boolean validateColumn(String colName, Type type, int size, String def, Set<String> oldNames) {
+    public boolean validateColumn(String colName, Type type, int size, String def, Iterable<String> oldNames) {
         if (!DB.isConnected()) {
             return false;
         }

@@ -16,8 +16,7 @@
 package com.frdfsnlght.inquisitor;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
 
 /**
  *
@@ -197,14 +196,14 @@ public enum Statistic {
         return def;
     }
 
-    public Set<String> getOldNames() {
+    public Collection<String> getOldNames() {
         switch (this) {
             case mooshroomsMilked:
-                return new HashSet<>(Arrays.asList("mushroomCowsMilked"));
+                return Arrays.asList("mushroomCowsMilked");
             case totalPlayersKilled:
-                return new HashSet<>(Arrays.asList("playerKills"));
+                return Arrays.asList("playerKills");
             case totalMobsKilled:
-                return new HashSet<>(Arrays.asList("mobKills"));
+                return Arrays.asList("mobKills");
             default:
                 return null;
         }
@@ -241,7 +240,7 @@ public enum Statistic {
         FLOAT("float"),
         DOUBLE("double");
 
-        private String sqlType;
+        private final String sqlType;
 
         Type(String sqlType) {
             this.sqlType = sqlType;
