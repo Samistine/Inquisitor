@@ -152,25 +152,11 @@ public final class Statistics {
         return stats.getDouble(name);
     }
 
-    /*public void set(String name, Object value) {
-        Statistic statistic = group.getStatistic(name);
-        if (statistic == null)
-            throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
-        set(statistic, value);
-    }*/
-
     public void set(Statistic statistic, Object value) {
         if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
 
         set(statistic, statistic.getName(), value, stats);
     }
-
-    /*public void set(String name, String key, Object value) {
-        Statistic statistic = group.getStatistic(name);
-        if (statistic == null)
-            throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
-        set(statistic, key, value);
-    }*/
 
     public void set(Statistic statistic, String key, Object value) {
         if (!statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
@@ -222,13 +208,6 @@ public final class Statistics {
         dirty.add(statistic);
     }
 
-    /*public void add(String name, Number value) {
-        Statistic statistic = group.getStatistic(name);
-        if (statistic == null)
-            throw new IllegalArgumentException("statistic '" + name + "' does not belong to " + group);
-        add(statistic, value);
-    }*/
-
     public void add(Statistic statistic, Number value) {
         if (value == null) return;
         if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
@@ -279,17 +258,9 @@ public final class Statistics {
         dirty.add(statistic);
     }
 
-    /*public void incr(String name) {
-        add(name, 1);
-    }*/
-
     public void incr(Statistic statistic) {
         add(statistic, 1);
     }
-
-    /*public void incr(String name, String key) {
-        add(name, key, 1);
-    }*/
 
     /**
      * Mapped

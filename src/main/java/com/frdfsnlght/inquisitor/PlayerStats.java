@@ -257,68 +257,6 @@ public final class PlayerStats {
         }
     }
 
-    /*    public static void onPlayerJoin(Player player) {
-     if (ignoredPlayerJoins.contains(player.getName())) {
-     Utils.debug("ignored join for player '%s'", player.getName());
-     return;
-     }
-
-     Utils.debug("onPlayerJoin '%s'", player.getName());
-     if (! isStatsPlayer(player)) return;
-
-     final Statistics stats = group.getStatistics(player.getName());
-     stats.incr("joins");
-     stats.set("lastJoin", new Date());
-     stats.set("sessionTime", 0);
-     stats.set("online", true);
-     if (! stats.isInDB())
-     stats.set("firstJoin", new Date());
-     String bedServer = stats.getString("bedServer");
-     if ((bedServer != null) && bedServer.equals(Global.plugin.getServer().getServerName()))
-     bedOwners.add(player.getName());
-     playerStates.put(player.getName(), new PlayerState(stats.getFloat("totalTime")));
-     Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-     public void run() {
-     stats.flushSync();
-     }
-     });
-     }*/
-
- /*	public static void onPlayerQuit(final Player player) {
-     Global.plugin.getServer().getScheduler().runTaskAsynchronously(Global.plugin, new Runnable() {
-			
-     String pname = player.getName();
-     Date date = new Date();
-			
-     public void run() {
-     if (!isStatsPlayer(player))
-     return;
-     if (ignoredPlayerJoins.remove(pname)) {
-     Utils.debug("ignored quit for player '%s'", pname);
-     return;
-     }
-     Utils.debug("onPlayerQuit '%s'", pname);
-
-     try {
-     Statistics stats = group.getStatistics(pname);
-     if (!kickedPlayers.remove(pname)) {
-     stats.incr("quits");
-     stats.set("lastQuit", date);
-     }
-     stats.set("online", false);
-     stats.flushSync();
-
-     group.removeStatistics(pname);
-     playerStates.remove(pname);
-     } catch (Exception ex) {
-     Utils.severe("OnPlayerQuit Exception message: " + ex.getMessage());
-     StringWriter sw = new StringWriter();
-     ex.printStackTrace(new PrintWriter(sw));
-     Utils.severe("Stack Trace: " + sw.toString());
-     }
-     }
-     });
-     }*/
     public static void onPlayerQuit(PlayerSnapshot player) {
         if (ignoredPlayerJoins.remove(player.getName())) {
             Utils.debug("ignored quit for player '%s'", player.getName());
