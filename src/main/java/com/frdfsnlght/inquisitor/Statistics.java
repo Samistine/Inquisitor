@@ -48,7 +48,6 @@ public final class Statistics {
         this.group = group;
         this.key = key;
         this.group.getStatistics().forEach(this::addStatistic);
-        dirty.clear();
     }
 
     public StatisticsGroup getGroup() {
@@ -152,12 +151,29 @@ public final class Statistics {
         return stats.getDouble(name);
     }
 
+    /**
+     * Set a statistic to a specified value.
+     * <br>
+     * <b>For use with non map based statistics.</b>
+     *
+     * @param statistic statistic to modify
+     * @param value new value to set the statistic to
+     */
     public void set(Statistic statistic, Object value) {
         if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
 
         set(statistic, statistic.getName(), value, stats);
     }
 
+    /**
+     * Set the value of a key, in a statistic.
+     * <br>
+     * <b>For use with map based statistics.</b>
+     *
+     * @param statistic the statistic we are modifying
+     * @param key the key whose associated value is to be set
+     * @param value the value to set
+     */
     public void set(Statistic statistic, String key, Object value) {
         if (!statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the non-mapped setter");
         
@@ -208,6 +224,14 @@ public final class Statistics {
         dirty.add(statistic);
     }
 
+    /**
+     * Increment a statistic by a specified amount.
+     * <br>
+     * <b>For use with numeric based statistics.</b>
+     *
+     * @param statistic statistic to modify
+     * @param value the value to increment by
+     */
     public void add(Statistic statistic, Number value) {
         if (value == null) return;
         if (statistic.isMapped()) throw new UnsupportedOperationException(statistic + " requires use of the mapped setter");
@@ -216,11 +240,13 @@ public final class Statistics {
     }
 
     /**
-     * Mapped
+     * Increment the value of a key, in a statistic, by a specified amount.
+     * <br>
+     * <b>For use with map based statistics.</b>
      *
-     * @param statistic
-     * @param key
-     * @param value
+     * @param statistic statistic to modify
+     * @param key the key whose associated value is to be incremented
+     * @param value the value to increment by
      */
     public void add(Statistic statistic, String key, Number value) {
         if (value == null) return;
@@ -258,15 +284,24 @@ public final class Statistics {
         dirty.add(statistic);
     }
 
+    /**
+     * Increment a statistic by 1.
+     * <br>
+     * <b>For use with numeric based statistics.</b>
+     *
+     * @param statistic the statistic we are modifying
+     */
     public void incr(Statistic statistic) {
         add(statistic, 1);
     }
 
     /**
-     * Mapped
+     * Increment the value of a key, in a statistic, by 1.
+     * <br>
+     * <b>For use with map based statistics.</b>
      *
-     * @param statistic
-     * @param key
+     * @param statistic the statistic we are modifying
+     * @param key the key whose associated value is to be incremented
      */
     public void incr(Statistic statistic, String key) {
         add(statistic, key, 1);

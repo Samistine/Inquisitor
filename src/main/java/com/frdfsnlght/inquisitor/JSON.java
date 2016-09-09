@@ -28,10 +28,35 @@ import java.util.regex.Pattern;
  */
 public final class JSON {
 
+    /**
+     * Encode data to a JSON formatted String.
+     *
+     * <p>
+     * Supported data types:
+     * <ul>
+     * <li>String</li>
+     * <li>Number</li>
+     * <li>Boolean</li>
+     * <li>Map</li>
+     * <li>Collection</li>
+     * <li>Array</li>
+     * </ul>
+     *
+     * @param o object to encode
+     * @return json formatted string
+     */
     public static String encode(Object o) {
         return encodeValue(o);
     }
 
+    /**
+     * Decode a JSON formatted String.
+     *
+     * @param cs encoded data
+     * @return object decoded data
+     *
+     * @see #encode(java.lang.Object)
+     */
     public static Object decode(CharSequence cs) {
         StringBuilder sb = new StringBuilder(cs);
         int[] pos = new int[1];
