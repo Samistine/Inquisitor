@@ -64,11 +64,6 @@ public final class DB {
                             start();
                         }
                     }
-
-                    @Override
-                    public String getOptionPermission(Context ctx, String name) {
-                        return name;
-                    }
                 });
     }
 

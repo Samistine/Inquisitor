@@ -124,10 +124,6 @@ public final class WebServer {
                     start();
                 }
             }
-            @Override
-            public String getOptionPermission(Context ctx, String name) {
-                return name;
-            }
         });
 
         PlayerStats.addListener(new PlayerStatsListener() {

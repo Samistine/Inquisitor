@@ -60,11 +60,6 @@ public final class StatisticsManager {
                     start();
                 }
             }
-
-            @Override
-            public String getOptionPermission(Context ctx, String name) {
-                return name;
-            }
         });
 
         DB.addListener(new DBListener() {

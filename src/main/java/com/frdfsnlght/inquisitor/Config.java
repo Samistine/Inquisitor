@@ -38,10 +38,6 @@ public final class Config {
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("global option '%s' set to '%s'", name, value);
             }
-            @Override
-            public String getOptionPermission(Context ctx, String name) {
-                return name;
-            }
         });
     }
 

@@ -22,6 +22,9 @@ package com.frdfsnlght.inquisitor;
 public interface OptionsListener {
 
     public void onOptionSet(Context ctx, String name, String value);
-    public String getOptionPermission(Context ctx, String name);
+
+    default public String getOptionPermission(Context ctx, String name) {
+        return name;
+    }
 
 }

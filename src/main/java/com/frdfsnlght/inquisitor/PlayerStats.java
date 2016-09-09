@@ -102,11 +102,6 @@ public final class PlayerStats {
                     start();
                 }
             }
-
-            @Override
-            public String getOptionPermission(Context ctx, String name) {
-                return name;
-            }
         });
 
         EnumSet.range(Statistic.displayName, Statistic.totalTime).forEach(group::addStatistic);
