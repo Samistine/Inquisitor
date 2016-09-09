@@ -47,7 +47,6 @@ public final class EntityListenerImpl implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             PlayerSnapshot player = new PlayerSnapshot((Player) event.getEntity());
-
             if (PlayerStats.isStatsPlayer(player)) {
                 float fallDistance = event.getEntity().getFallDistance();
                 PlayerStats.submitChange(() -> {
@@ -95,9 +94,9 @@ public final class EntityListenerImpl implements Listener {
             PlayerStats.submitChange(() -> {
                 Utils.debug("onPlayerKill '%s'", killer);
                 Statistics stats = PlayerStats.group.getStatistics(killer);
-                stats.incr(Statistic.totalPlayersKilled);
                 stats.set(Statistic.lastPlayerKill, killer.getDate());
                 stats.set(Statistic.lastPlayerKilled, deadName);
+                stats.incr(Statistic.totalPlayersKilled);
                 stats.incr(Statistic.playersKilled, deadName);
                 stats.incr(Statistic.playersKilledByWeapon, weaponName);
             });
@@ -106,9 +105,9 @@ public final class EntityListenerImpl implements Listener {
             PlayerStats.submitChange(() -> {
                 Utils.debug("onMobKill '%s'", killer);
                 Statistics stats = PlayerStats.group.getStatistics(killer);
-                stats.incr(Statistic.totalMobsKilled);
                 stats.set(Statistic.lastMobKill, killer.getDate());
                 stats.set(Statistic.lastMobKilled, deadName);
+                stats.incr(Statistic.totalMobsKilled);
                 stats.incr(Statistic.mobsKilled, deadName);
                 stats.incr(Statistic.mobsKilledByWeapon, weaponName);
             });

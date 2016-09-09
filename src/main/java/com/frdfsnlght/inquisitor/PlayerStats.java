@@ -490,19 +490,6 @@ public final class PlayerStats {
         }
     }
 
-    public static boolean isInside(Location loc, int maxSpacesBetweenHeadandCeiling) {
-        loc.add(0, 1, 0);
-        maxSpacesBetweenHeadandCeiling++;
-        for (int x = 1; x < maxSpacesBetweenHeadandCeiling; x++) {
-            Location newLoc = loc.clone();
-            Location finalLoc = newLoc.add(0, x, 0);
-            if (!finalLoc.getBlock().isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static void onPlayerTeleport(PlayerSnapshot player, Location to) {
         if (!started) {
             return;
@@ -519,6 +506,19 @@ public final class PlayerStats {
         bedOwners.add(player.getUUID());
         final Statistics stats = group.getStatistics(player);
         stats.incr(Statistic.timesSlept);
+    }
+
+    public static boolean isInside(Location loc, int maxSpacesBetweenHeadandCeiling) {
+        loc.add(0, 1, 0);
+        maxSpacesBetweenHeadandCeiling++;
+        for (int x = 1; x < maxSpacesBetweenHeadandCeiling; x++) {
+            Location newLoc = loc.clone();
+            Location finalLoc = newLoc.add(0, x, 0);
+            if (!finalLoc.getBlock().isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void checkBeds() {
@@ -801,9 +801,7 @@ public final class PlayerStats {
 
     // Inner classes
     public static interface PlayerStatsListener {
-
         public void onPlayerStatsStarted();
-
         public void onPlayerStatsStopping();
     }
 
