@@ -15,6 +15,7 @@
  */
 package com.frdfsnlght.inquisitor;
 
+import com.frdfsnlght.inquisitor.StatisticsManager.Job;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
