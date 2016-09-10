@@ -63,7 +63,7 @@ public class Inquisitor extends JavaPlugin {
         final Context ctx = new Context();
 
         // install/update resources
-        File dataFolder = Global.plugin.getDataFolder();
+        File dataFolder = Global.getDataFolder();
 
         if (!dataFolder.exists()) {
             ctx.sendLog("creating data folder");
@@ -77,7 +77,7 @@ public class Inquisitor extends JavaPlugin {
         }
 
         // copy FreeMarker
-        if (Utils.copyFileFromJar("/resources/freemarker.jar", Global.plugin.getDataFolder(), false)) {
+        if (Utils.copyFileFromJar("/resources/freemarker.jar", dataFolder, false)) {
             ctx.sendLog("installed FreeMarker");
         }
 
@@ -90,7 +90,7 @@ public class Inquisitor extends JavaPlugin {
             method.setAccessible(true);
 
             try {
-                URL u = (new File(Global.plugin.getDataFolder(), "freemarker.jar")).toURI().toURL();
+                URL u = (new File(Global.getDataFolder(), "freemarker.jar")).toURI().toURL();
                 method.invoke(classLoader, u);
             } catch (IllegalAccessException | InvocationTargetException | MalformedURLException ex) {
                 ex.printStackTrace();

@@ -58,9 +58,9 @@ public final class GlobalCommands extends CommandProcessor {
         String subCmd = args.remove(0).toLowerCase();
 
         if ("status".startsWith(subCmd)) {
-            Global.plugin.getServer().dispatchCommand(ctx.getSender(), "inq db status");
-            Global.plugin.getServer().dispatchCommand(ctx.getSender(), "inq stats status");
-            Global.plugin.getServer().dispatchCommand(ctx.getSender(), "inq webserver status");
+            Global.getServer().dispatchCommand(ctx.getSender(), "inq db status");
+            Global.getServer().dispatchCommand(ctx.getSender(), "inq stats status");
+            Global.getServer().dispatchCommand(ctx.getSender(), "inq webserver status");
             return;
         }
 

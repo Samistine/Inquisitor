@@ -238,7 +238,7 @@ public final class Utils {
      */
     public static int fire(Runnable run) {
         if (! Global.enabled) return -1;
-        return Global.plugin.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run);
+        return Global.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run);
     }
 
     /**
@@ -252,7 +252,7 @@ public final class Utils {
     public static int fireDelayed(Runnable run, long delay) {
         if (! Global.enabled) return -1;
         long ticks = delay / 50;
-        return Global.plugin.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run, ticks);
+        return Global.getServer().getScheduler().scheduleSyncDelayedTask(Global.plugin, run, ticks);
     }
 
 //    // delay is millis

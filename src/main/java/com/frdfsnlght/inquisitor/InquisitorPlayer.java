@@ -14,7 +14,7 @@ public interface InquisitorPlayer {
     public String getName();
 
     public default boolean isOnline() {
-        org.bukkit.entity.Player bukkitPlayer = Global.plugin.getServer().getPlayer(getUUID());
+        org.bukkit.entity.Player bukkitPlayer = Global.getServer().getPlayer(getUUID());
         return bukkitPlayer != null && bukkitPlayer.isOnline();
     }
 

@@ -88,7 +88,7 @@ public final class SkinHandler extends TemplateHandler {
 
     private File cacheSkin(String name) throws IOException {
         if (cacheDir == null) {
-            cacheDir = new File(Global.plugin.getDataFolder(), CACHE_DIR);
+            cacheDir = new File(Global.getDataFolder(), CACHE_DIR);
             if (! cacheDir.exists())
                 cacheDir.mkdirs();
         }

@@ -152,7 +152,7 @@ public final class WebServer {
             if (! StatisticsManager.isStarted())
                 throw new Exception("statisticsManager is not started");
 
-            webRoot = new File(Global.plugin.getDataFolder(), "web-root");
+            webRoot = new File(Global.getDataFolder(), "web-root");
 
             // copy web-root
             if (! webRoot.isDirectory()) {

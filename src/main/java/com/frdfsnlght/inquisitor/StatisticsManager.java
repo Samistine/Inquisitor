@@ -127,7 +127,7 @@ public final class StatisticsManager {
         }
         listeners.forEach(listener -> listener.onStatisticsManagerStopping());
         if (flushCheckTask != -1) {
-            Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
+            Global.getServer().getScheduler().cancelTask(flushCheckTask);
         }
         flushCheckTask = -1;
         flushAllSync();
@@ -258,7 +258,7 @@ public final class StatisticsManager {
     /* End options */
     private static void scheduleFlushCheck() {
         if (flushCheckTask != -1) {
-            Global.plugin.getServer().getScheduler().cancelTask(flushCheckTask);
+            Global.getServer().getScheduler().cancelTask(flushCheckTask);
         }
         flushCheckTask = Utils.fireDelayed(() -> {
             PlayerStats.submitChange(() -> {

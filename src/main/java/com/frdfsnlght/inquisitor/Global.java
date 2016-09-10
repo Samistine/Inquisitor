@@ -25,6 +25,8 @@ import com.frdfsnlght.inquisitor.command.WebServerCommands;
 import com.frdfsnlght.inquisitor.test.TestCommands;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.File;
+import org.bukkit.Server;
 
 /**
  *
@@ -55,21 +57,21 @@ public final class Global {
 
     }
 
-//    public static Server getServer() {
-//        validatePlugin();
-//        return plugin.getServer();
-//    }
-//
-//    public static File getDataFolder() {
-//        validatePlugin();
-//        return plugin.getDataFolder();
-//    }
-//
-//    public static void validatePlugin() {
-//        if (plugin == null) {
-//            throw new NullPointerException("Inquisitor plugin variable is null.");
-//        }
-//    }
+    public static Server getServer() {
+        validatePlugin();
+        return plugin.getServer();
+    }
+
+    public static File getDataFolder() {
+        validatePlugin();
+        return plugin.getDataFolder();
+    }
+
+    public static void validatePlugin() {
+        if (plugin == null) {
+            throw new NullPointerException("Inquisitor plugin variable is null.");
+        }
+    }
 
     public static boolean isTesting() {
         //return true;

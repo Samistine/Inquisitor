@@ -42,7 +42,7 @@ public final class Config {
     }
 
     public static File getConfigFile() {
-        File dataFolder = Global.plugin.getDataFolder();
+        File dataFolder = Global.getDataFolder();
         return new File(dataFolder, "config.yml");
     }
 
@@ -55,7 +55,7 @@ public final class Config {
 
     public static void save(Context ctx) {
         if (config == null) return;
-        File configDir = Global.plugin.getDataFolder();
+        File configDir = Global.getDataFolder();
         if (! configDir.exists()) configDir.mkdirs();
         config.save();
         if (ctx != null)

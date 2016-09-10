@@ -172,7 +172,7 @@ public final class PlayerStats {
         }
         listeners.forEach(PlayerStatsListener::onPlayerStatsStopping);
         if (bedCheckTask != -1) {
-            Global.plugin.getServer().getScheduler().cancelTask(bedCheckTask);
+            Global.getServer().getScheduler().cancelTask(bedCheckTask);
         }
         bedCheckTask = -1;
         started = false;
@@ -210,7 +210,7 @@ public final class PlayerStats {
     }
 
     public static void onPlayerJoin(PlayerSnapshot player) {
-        String servername = Global.plugin.getServer().getServerName();
+        String servername = Global.getServer().getServerName();
         if (ignoredPlayerJoins.contains(player.getName())) {
             Utils.debug("ignored join for player '%s'", player.getName());
             return;
@@ -460,11 +460,11 @@ public final class PlayerStats {
     }
 
     public static void checkBeds() {
-        Utils.fire(new BedCheck(Global.plugin.getServer(), bedOwners));
+        Utils.fire(new BedCheck(Global.getServer(), bedOwners));
     }
 
     public static TypeMap getPlayerStats(String playerName) {
-        boolean isOnline = Global.plugin.getServer().getPlayer(playerName) != null;
+        boolean isOnline = Global.getServer().getPlayer(playerName) != null;
         final Statistics stats = group.getStatistics(playerName);
         if (!isOnline) {
             group.removeStatistics(stats);
@@ -535,7 +535,7 @@ public final class PlayerStats {
     /* End options */
     private static void savePlayerInfo(Statistics stats) {
         String name = (String) stats.getKey();
-        Player player = Global.plugin.getServer().getPlayer(name);
+        Player player = Global.getServer().getPlayer(name);
         if (player == null) {
             return;
         }
@@ -559,7 +559,7 @@ public final class PlayerStats {
         stats.set(Statistic.totalExperience, player.getTotalExperience());
         stats.set(Statistic.potionEffects, encodePotionEffects(player.getActivePotionEffects()));
 
-        stats.set(Statistic.server, Global.plugin.getServer().getServerName());
+        stats.set(Statistic.server, Global.getServer().getServerName());
         stats.set(Statistic.world, player.getWorld().getName());
         stats.set(Statistic.coords, encodeCoords(player.getLocation()));
 
@@ -574,7 +574,7 @@ public final class PlayerStats {
                 stats.set(Statistic.bedWorld, null);
                 stats.set(Statistic.bedCoords, null);
             } else {
-                stats.set(Statistic.bedServer, Global.plugin.getServer().getServerName());
+                stats.set(Statistic.bedServer, Global.getServer().getServerName());
                 stats.set(Statistic.bedWorld, player.getBedSpawnLocation().getWorld().getName());
                 stats.set(Statistic.bedCoords, encodeCoords(player.getBedSpawnLocation()));
             }
@@ -672,7 +672,7 @@ public final class PlayerStats {
         try {
             stmt = DB.prepare("SELECT `name` FROM "
                     + DB.tableName(group.getName()) + " WHERE `bedServer`=?");
-            stmt.setString(1, Global.plugin.getServer().getServerName());
+            stmt.setString(1, Global.getServer().getServerName());
             rs = stmt.executeQuery();
             while (rs.next()) {
                 bedOwners.add(UUID.fromString(rs.getString("uuid")));
@@ -695,7 +695,7 @@ public final class PlayerStats {
 
     private static void scheduleBedCheck() {
         if (bedCheckTask != -1) {
-            Global.plugin.getServer().getScheduler().cancelTask(bedCheckTask);
+            Global.getServer().getScheduler().cancelTask(bedCheckTask);
         }
         bedCheckTask = -1;
         if (!DB.getShared()) {
@@ -713,7 +713,7 @@ public final class PlayerStats {
         try {
             stmt = DB.prepare("UPDATE " + DB.tableName(group.getName())
                     + " SET `online`=0 WHERE `online`=1 AND `server`=?");
-            stmt.setString(1, Global.plugin.getServer().getServerName());
+            stmt.setString(1, Global.getServer().getServerName());
             stmt.executeUpdate();
         } catch (SQLException se) {
             Utils.warning("SQLException during online state change: %s", se.getMessage());
