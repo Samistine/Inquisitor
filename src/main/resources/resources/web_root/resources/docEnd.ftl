@@ -10,7 +10,7 @@
                 Other icons and images &copy; 2012 Mojang. All rights reserved.
             </p>
             <p>
-                <a href="https://code.google.com/p/inquisitor-mc/" target="_blank"><img src="https://storage.googleapis.com/google-code-archive/v2/code.google.com/inquisitor-mc/logo.png"/></a>
+                <a href="https://code.google.com/p/inquisitor-mc/" target="_blank"><img src="../img/logo.png"/></a>
             </p>
         </div>
         <div class="clear"></div>
