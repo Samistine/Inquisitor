@@ -133,9 +133,7 @@ public final class DB {
     }
 
     public static String getPassword() {
-        if (getRealPassword() == null) {
-            return null;
-        }
+        if (getRealPassword() == null) return null;
         return "*******";
     }
 
