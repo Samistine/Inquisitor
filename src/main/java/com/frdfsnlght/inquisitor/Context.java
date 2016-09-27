@@ -19,13 +19,14 @@ import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 /**
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class Context {
+public final class Context {
 
     private static final ChatColor HL_ON = ChatColor.DARK_PURPLE;
     private static final ChatColor HL_OFF = ChatColor.WHITE;
@@ -42,29 +43,46 @@ public class Context {
         return sender;
     }
 
+    /**
+     * Send a message to this context. If this context is null then we log it to console
+     *
+     * @param msg message to send
+     * @param args arguments
+     */
     public void send(String msg, Object ... args) {
-        if (args.length > 0)
-            msg = String.format(msg, args);
+        if (args.length > 0) msg = String.format(msg, args);
         if (msg.isEmpty()) return;
-        if (sender == null)
-            Utils.info(msg);
-        else if (isPlayer()) {
+
+        if (sender != null)
             sender.sendMessage(HL_ON + "[" + Global.pluginName + "] " + HL_OFF + msg);
-        } else {
-            msg = ChatColor.stripColor(msg);
-            sender.sendMessage("[" + Global.pluginName + "] " + msg);
-        }
+        else
+            Utils.info(msg);
     }
 
+    /**
+     * Send a message to this context & additionally log the context and message
+     *
+     * @param msg message to send
+     * @param args arguments
+     */
     public void sendLog(String msg, Object ... args) {
         if (args.length > 0)
             msg = String.format(msg, args);
         if (msg.isEmpty()) return;
         send(msg);
-        if (! isPlayer()) return;
-        Utils.info("->[%s] %s", ((Player)sender).getName(), msg);
+
+        //In addition we log player actions to console.
+        if (isPlayer()) {
+            Utils.info("->[%s] %s", sender.getName(), msg);
+        }
     }
 
+    /**
+     * Send a warning to this context. If this context is null then we log it to console
+     *
+     * @param msg message to send
+     * @param args arguments
+     */
     public void warn(String msg, Object ... args) {
         if (args.length > 0)
             msg = String.format(msg, args);
@@ -75,13 +93,22 @@ public class Context {
             sender.sendMessage(HL_ON + "[" + Global.pluginName + "] " + ChatColor.RED + msg);
     }
 
+    /**
+     * Send a warning to this context & additionally log the context's name and warning
+     *
+     * @param msg message to send
+     * @param args arguments
+     */
     public void warnLog(String msg, Object ... args) {
         if (args.length > 0)
             msg = String.format(msg, args);
         if (msg.isEmpty()) return;
         warn(msg);
-        if (! isPlayer()) return;
-        Utils.warning("->[%s] %s", ((Player)sender).getName(), msg);
+
+        //In addition we log player actions to console.
+        if (isPlayer()) {
+            Utils.info("->[%s] %s", sender.getName(), msg);
+        }
     }
 
     public boolean isPlayer() {
@@ -89,19 +116,15 @@ public class Context {
     }
 
     public boolean isConsole() {
-        return (sender != null) && (! (sender instanceof Player));
+        return sender instanceof ConsoleCommandSender;
     }
 
     public boolean isSystem() {
         return sender == null;
     }
 
-    public boolean isHuman() {
-        return sender != null;
-    }
-
     public boolean isOp() {
-        return isConsole() || (isPlayer() && ((Player)sender).isOp());
+        return sender.isOp();
     }
 
     public Player getPlayer() {

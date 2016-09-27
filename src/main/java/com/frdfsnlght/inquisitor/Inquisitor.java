@@ -60,7 +60,7 @@ public class Inquisitor extends JavaPlugin {
 
         Global.enabled = true;
 
-        final Context ctx = new Context();
+        final Context ctx = new Context(getServer().getConsoleSender());
 
         // install/update resources
         File dataFolder = Global.getDataFolder();
@@ -146,7 +146,7 @@ public class Inquisitor extends JavaPlugin {
             return;
         }
         Global.enabled = false;
-        Context ctx = new Context();
+        Context ctx = new Context(getServer().getConsoleSender());
         Config.save(ctx);
         DB.stop();
         ctx.sendLog("disabled");
