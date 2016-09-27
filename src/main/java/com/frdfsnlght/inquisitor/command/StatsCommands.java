@@ -17,7 +17,6 @@ package com.frdfsnlght.inquisitor.command;
 
 import com.frdfsnlght.inquisitor.Context;
 import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
-import com.frdfsnlght.inquisitor.Permissions;
 import com.frdfsnlght.inquisitor.Statistics;
 import com.frdfsnlght.inquisitor.StatisticsGroup;
 import com.frdfsnlght.inquisitor.StatisticsManager;
@@ -61,7 +60,7 @@ public class StatsCommands  extends CommandProcessor {
         args.remove(0);
 
         if ("status".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.stats.status");
+            ctx.requirePermission("inq.stats.status");
             ctx.send("statistics manager %s started", StatisticsManager.isStarted() ? "is" : "is not");
             Collection<StatisticsGroup> groups = StatisticsManager.getGroups();
             ctx.send("%s groups registered", groups.size());
@@ -79,7 +78,7 @@ public class StatsCommands  extends CommandProcessor {
         }
 
         if ("flush".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.stats.flush");
+            ctx.requirePermission("inq.stats.flush");
             if (! StatisticsManager.isStarted())
                 throw new CommandException("statistics manager has not been started");
             if (args.isEmpty()) {
@@ -103,7 +102,7 @@ public class StatsCommands  extends CommandProcessor {
         }
 
         if ("purge".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.stats.purge");
+            ctx.requirePermission("inq.stats.purge");
             if (! StatisticsManager.isStarted())
                 throw new CommandException("statistics manager has not been started");
             if (args.isEmpty()) {

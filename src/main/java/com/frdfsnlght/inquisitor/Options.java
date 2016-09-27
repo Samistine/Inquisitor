@@ -90,7 +90,7 @@ public final class Options {
         option = resolveOption(option);
         if (option == null)
             throw new OptionsException("unknown option");
-        Permissions.require(ctx.getPlayer(), basePerm + ".option.get." + listener.getOptionPermission(ctx, option));
+        ctx.requirePermission(basePerm + ".option.get." + listener.getOptionPermission(ctx, option));
         String methodName = "get" +
                 option.substring(0, 1).toUpperCase() +
                 option.substring(1);
@@ -129,7 +129,7 @@ public final class Options {
         option = resolveOption(option);
         if (option == null)
             throw new OptionsException("unknown option");
-        Permissions.require(ctx.getPlayer(), basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
+        ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
         String setMethodName = "set" +
                 option.substring(0, 1).toUpperCase() +
                 option.substring(1);
@@ -178,7 +178,7 @@ public final class Options {
         option = resolveOption(option);
         if (option == null)
             throw new OptionsException("unknown option");
-        Permissions.require(ctx.getPlayer(), basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
+        ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
         String addMethodName = "add" +
                 option.substring(0, 1).toUpperCase() +
                 option.substring(1);
@@ -222,7 +222,7 @@ public final class Options {
         option = resolveOption(option);
         if (option == null)
             throw new OptionsException("unknown option");
-        Permissions.require(ctx.getPlayer(), basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
+        ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
         String removeMethodName = "remove" +
                 option.substring(0, 1).toUpperCase() +
                 option.substring(1);

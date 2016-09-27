@@ -17,7 +17,6 @@ package com.frdfsnlght.inquisitor.command;
 
 import com.frdfsnlght.inquisitor.Context;
 import com.frdfsnlght.inquisitor.exceptions.InquisitorException;
-import com.frdfsnlght.inquisitor.Permissions;
 import com.frdfsnlght.inquisitor.webserver.WebServer;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +59,7 @@ public class WebServerCommands  extends CommandProcessor {
         args.remove(0);
 
         if ("status".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.webserver.status");
+            ctx.requirePermission("inq.webserver.status");
             ctx.send("web server %s started", WebServer.isStarted() ? "is" : "is not");
             return;
         }
@@ -107,13 +106,13 @@ public class WebServerCommands  extends CommandProcessor {
         }
 
         if ("enable".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.webserver.enable");
+            ctx.requirePermission("inq.webserver.enable");
             WebServer.setEnabled(true);
             return;
         }
 
         if ("disable".startsWith(subCmd)) {
-            Permissions.require(ctx.getPlayer(), "inq.webserver.disable");
+            ctx.requirePermission("inq.webserver.disable");
             WebServer.setEnabled(false);
             return;
         }

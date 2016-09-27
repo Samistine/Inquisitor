@@ -62,37 +62,7 @@ public final class Permissions {
         return true;
     }
 
-    public static boolean has(Player player, String perm) {
-        if (player == null) {
-            return true;
-        }
-        try {
-            require(player.getWorld(), player, true, perm);
-            return true;
-        } catch (PermissionsException e) {
-            return false;
-        }
-    }
-
-    public static void require(Player player, String perm) throws PermissionsException {
-        if (player == null) {
-            return;
-        }
-        require(player.getWorld(), player, true, perm);
-    }
-
-    public static void require(Player player, boolean requireAll, String... perms) throws PermissionsException {
-        if (player == null) {
-            return;
-        }
-        require(player.getWorld(), player, requireAll, perms);
-    }
-
-    public static void require(World world, Player player, String perm) throws PermissionsException {
-        require(world, player, true, perm);
-    }
-
-    private static void require(World world, Player player, boolean requireAll, String... perms) throws PermissionsException {
+    static void require(World world, Player player, boolean requireAll, String... perms) throws PermissionsException {
         String worldName = world.getName();
 
         if (player == null) throw new PermissionsException("not permitted");
