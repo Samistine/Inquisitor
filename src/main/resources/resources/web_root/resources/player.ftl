@@ -103,47 +103,48 @@
             </#list>
         </tr>
     </table>
-	<#if player.ender?has_content>
-	    <h2>Ender Chest</h2>
-	
-	    <table class="inventory stuff">
-	        <tr>
-	            <#list 0..8 as slot>
-	                <td class="slot">
-	                    <#if player.ender[slot]?has_content>
-	                        <@inventory.slot item=player.ender[slot]/>
-	                    <#else>
-	                        <@inventory.emptySlot/>
-	                    </#if>
-	                </td>
-	            </#list>
-	        </tr>
-	        <tr>
-	            <#list 9..17 as slot>
-	                <td class="slot">
-	                    <#if player.ender[slot]?has_content>
-	                        <@inventory.slot item=player.ender[slot]/>
-	                    <#else>
-	                        <@inventory.emptySlot/>
-	                    </#if>
-	                </td>
-	            </#list>
-	        </tr>
-	        <tr>
-	            <#list 18..26 as slot>
-	                <td class="slot">
-	                    <#if player.ender[slot]?has_content>
-	                        <@inventory.slot item=player.ender[slot]/>
-	                    <#else>
-	                        <@inventory.emptySlot/>
-	                    </#if>
-	                </td>
-	            </#list>
-	        </tr>
-	    </table>
-	</#if>
-    <h2>Armor</h2>
 
+    <#if player.ender?has_content>
+        <h2>Ender Chest</h2>
+
+        <table class="inventory stuff">
+            <tr>
+                <#list 0..8 as slot>
+                    <td class="slot">
+                        <#if player.ender[slot]?has_content>
+                            <@inventory.slot item=player.ender[slot]/>
+                        <#else>
+                            <@inventory.emptySlot/>
+                        </#if>
+                    </td>
+                </#list>
+            </tr>
+            <tr>
+                <#list 9..17 as slot>
+                    <td class="slot">
+                        <#if player.ender[slot]?has_content>
+                            <@inventory.slot item=player.ender[slot]/>
+                        <#else>
+                            <@inventory.emptySlot/>
+                        </#if>
+                    </td>
+                </#list>
+            </tr>
+            <tr>
+                <#list 18..26 as slot>
+                    <td class="slot">
+                        <#if player.ender[slot]?has_content>
+                            <@inventory.slot item=player.ender[slot]/>
+                        <#else>
+                            <@inventory.emptySlot/>
+                        </#if>
+                    </td>
+                </#list>
+            </tr>
+        </table>
+    </#if>
+
+    <h2>Armor</h2>
     <table class="inventory armor">
         <tr>
             <#list 3..0 as slot>

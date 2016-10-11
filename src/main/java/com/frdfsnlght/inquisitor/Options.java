@@ -45,6 +45,10 @@ public final class Options {
         this.listener = listener;
     }
 
+    public Options(Object target, String name, String basePerm, OptionsListener listener) {
+        this(target, Collections.singleton(name), basePerm, listener);
+    }
+
     public void getOptions(Context ctx, String option) throws OptionsException, PermissionsException {
         List<String> options = new ArrayList<>();
         String opt = resolveOption(option);

@@ -41,7 +41,7 @@ public final class DB {
     private static final Set<DBListener> listeners = new HashSet<>();
 
     static {
-        OPTIONS.add("debug");
+        //OPTIONS.add("debug");
         OPTIONS.add("url");
         OPTIONS.add("username");
         OPTIONS.add("password");
@@ -115,10 +115,7 @@ public final class DB {
     }
 
     public static void setUrl(String s) {
-        if ((s != null) && (s.equals("-") || s.equals("*"))) {
-            s = null;
-        }
-        Config.setPropertyDirect("db.url", s);
+        Config.setPropertyDirect("db.url", parseString(s));
     }
 
     public static String getUsername() {
@@ -126,10 +123,7 @@ public final class DB {
     }
 
     public static void setUsername(String s) {
-        if ((s != null) && (s.equals("-") || s.equals("*"))) {
-            s = null;
-        }
-        Config.setPropertyDirect("db.username", s);
+        Config.setPropertyDirect("db.username", parseString(s));
     }
 
     public static String getPassword() {
@@ -142,10 +136,7 @@ public final class DB {
     }
 
     public static void setPassword(String s) {
-        if ((s != null) && (s.equals("-") || s.equals("*"))) {
-            s = null;
-        }
-        Config.setPropertyDirect("db.password", s);
+        Config.setPropertyDirect("db.password", parseString(s));
     }
 
     public static String getPrefix() {
@@ -153,9 +144,7 @@ public final class DB {
     }
 
     public static void setPrefix(String s) {
-        if ((s != null) && (s.equals("-") || s.equals("*"))) {
-            s = null;
-        }
+        s = parseString(s);
         if (s != null) {
             if (!s.matches("^\\w+$")) {
                 throw new IllegalArgumentException("illegal character");
@@ -170,6 +159,13 @@ public final class DB {
 
     public static void setShared(boolean b) {
         Config.setPropertyDirect("db.shared", b);
+    }
+
+    private static String parseString(String s) {
+        if ((s != null) && (s.equals("-") || s.equals("*"))) {
+            s = null;
+        }
+        return s;
     }
 
     public static Options options() {

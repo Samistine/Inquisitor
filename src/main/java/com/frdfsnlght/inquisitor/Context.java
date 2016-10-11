@@ -17,7 +17,6 @@ package com.frdfsnlght.inquisitor;
 
 import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -135,32 +134,13 @@ public final class Context {
     public boolean has(String perm) {
         Player player = getPlayer();
         if (player == null) return true;
-
-        try {
-            Permissions.require(player.getWorld(), player, true, perm);
-            return true;
-        } catch (PermissionsException e) {
-            return false;
-        }
+        return sender.hasPermission(perm);
     }
 
     public void requirePermission(String perm) throws PermissionsException {
-        Player player = getPlayer();
-        if (player == null) return;
-
-        Permissions.require(player.getWorld(), player, true, perm);
-    }
-
-    public void requirePermission(boolean requireAll, String... perms) throws PermissionsException {
-        Player player = getPlayer();
-        if (player == null) return;
-
-        Permissions.require(player.getWorld(), player, requireAll, perms);
-    }
-
-    public void requirePermission(World world, String perm) throws PermissionsException {
-        Player player = getPlayer();
-        Permissions.require(world, player, true, perm);
+        if (!has(perm)) {
+            throw new PermissionsException("not permitted");
+        }
     }
 
 }

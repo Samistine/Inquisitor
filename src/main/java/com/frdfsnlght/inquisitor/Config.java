@@ -16,9 +16,7 @@
 package com.frdfsnlght.inquisitor;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  *
@@ -26,14 +24,11 @@ import java.util.Set;
  */
 public final class Config {
 
-    private static final Set<String> OPTIONS = new HashSet<>();
     private static final Options options;
     private static TypeMap config = null;
 
     static {
-        OPTIONS.add("debug");
-
-        options = new Options(Config.class, OPTIONS, "inq", new OptionsListener() {
+        options = new Options(Config.class, "debug", "inq", new OptionsListener() {
             @Override
             public void onOptionSet(Context ctx, String name, String value) {
                 ctx.sendLog("global option '%s' set to '%s'", name, value);

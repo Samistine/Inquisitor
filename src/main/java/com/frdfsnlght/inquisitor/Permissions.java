@@ -15,11 +15,9 @@
  */
 package com.frdfsnlght.inquisitor;
 
-import com.frdfsnlght.inquisitor.exceptions.PermissionsException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -60,56 +58,6 @@ public final class Permissions {
         vaultPlugin = plugin;
         Utils.info("Initialized Vault for Permissions");
         return true;
-    }
-
-    static void require(World world, Player player, boolean requireAll, String... perms) throws PermissionsException {
-        String worldName = world.getName();
-
-        if (player == null) throw new PermissionsException("not permitted");
-
-        if (player.isOp()) {
-            Utils.debug("player '%s' is op", player.getName());
-            return;
-        }
-
-        try {
-            if (vaultAvailable()) {
-                for (String perm : perms) {
-                    if (requireAll) {
-                        if (!vaultPlugin.playerHas(worldName, player, perm)) {
-                            throw new PermissionsException("not permitted");
-                        }
-                    } else {
-                        if (vaultPlugin.playerHas(worldName, player, perm)) {
-                            return;
-                        }
-                    }
-                }
-                if ((!requireAll) && (perms.length > 0)) {
-                    throw new PermissionsException("not permitted");
-                }
-                return;
-            }
-        } catch (Exception ex) {
-            Utils.warning(
-                    "Vault or your Vault compatible permissions plugin threw an exception getting player permissions: %s",
-                    ex.getMessage());
-        }
-
-        for (String perm : perms) {
-            if (requireAll) {
-                if (!player.hasPermission(perm)) {
-                    throw new PermissionsException("not permitted");
-                }
-            } else {
-                if (player.hasPermission(perm)) {
-                    return;
-                }
-            }
-        }
-        if ((!requireAll) && (perms.length > 0)) {
-            throw new PermissionsException("not permitted");
-        }
     }
 
     /*
