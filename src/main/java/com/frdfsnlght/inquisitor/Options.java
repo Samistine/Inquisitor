@@ -92,18 +92,21 @@ public final class Options {
 
     public String getOption(Context ctx, String option) throws OptionsException, PermissionsException {
         option = resolveOption(option);
-        if (option == null)
-            throw new OptionsException("unknown option");
+        if (option == null) throw new OptionsException("unknown option");
         ctx.requirePermission(basePerm + ".option.get." + listener.getOptionPermission(ctx, option));
-        String methodName = "get" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
+
+        final String methodName = "get"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+
         try {
-            Class<?> cls;
-            if (target instanceof Class)
-                cls = (Class)target;
-            else
+            final Class<?> cls;
+            if (target instanceof Class) {
+                cls = (Class) target;
+            } else {
                 cls = target.getClass();
+            }
+
             Method m = cls.getMethod(methodName);
             Object value = m.invoke(target);
             if (value == null) return "";
@@ -131,21 +134,24 @@ public final class Options {
     @SuppressWarnings("unchecked")
     public void setOption(Context ctx, String option, String value) throws OptionsException, PermissionsException {
         option = resolveOption(option);
-        if (option == null)
-            throw new OptionsException("unknown option");
+        if (option == null) throw new OptionsException("unknown option");
         ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
-        String setMethodName = "set" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
-        String getMethodName = "get" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
+
+        final String setMethodName = "set"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+        final String getMethodName = "get"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+
         try {
-            Class<?> cls;
-            if (target instanceof Class)
-                cls = (Class)target;
-            else
+            final Class<?> cls;
+            if (target instanceof Class) {
+                cls = (Class) target;
+            } else {
                 cls = target.getClass();
+            }
+
             Method m = cls.getMethod(getMethodName);
             Class rCls = m.getReturnType();
             m = cls.getMethod(setMethodName, rCls);
@@ -180,21 +186,24 @@ public final class Options {
     @SuppressWarnings("unchecked")
     public void addOption(Context ctx, String option, String value) throws OptionsException, PermissionsException {
         option = resolveOption(option);
-        if (option == null)
-            throw new OptionsException("unknown option");
+        if (option == null) throw new OptionsException("unknown option");
         ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
-        String addMethodName = "add" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
-        String getMethodName = "get" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
+
+        final String addMethodName = "add"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+        final String getMethodName = "get"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+
         try {
-            Class<?> cls;
-            if (target instanceof Class)
-                cls = (Class)target;
-            else
+            final Class<?> cls;
+            if (target instanceof Class) {
+                cls = (Class) target;
+            } else {
                 cls = target.getClass();
+            }
+
             Method m = cls.getMethod(getMethodName);
             Class rCls = m.getReturnType();
             if (! rCls.isArray())
@@ -224,21 +233,24 @@ public final class Options {
     @SuppressWarnings("unchecked")
     public void removeOption(Context ctx, String option, String value) throws OptionsException, PermissionsException {
         option = resolveOption(option);
-        if (option == null)
-            throw new OptionsException("unknown option");
+        if (option == null) throw new OptionsException("unknown option");
         ctx.requirePermission(basePerm + ".option.set." + listener.getOptionPermission(ctx, option));
-        String removeMethodName = "remove" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
-        String getMethodName = "get" +
-                option.substring(0, 1).toUpperCase() +
-                option.substring(1);
+
+        final String removeMethodName = "remove"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+        final String getMethodName = "get"
+                + option.substring(0, 1).toUpperCase()
+                + option.substring(1);
+
         try {
-            Class<?> cls;
-            if (target instanceof Class)
-                cls = (Class)target;
-            else
+            final Class<?> cls;
+            if (target instanceof Class) {
+                cls = (Class) target;
+            } else {
                 cls = target.getClass();
+            }
+
             Method m = cls.getMethod(getMethodName);
             Class rCls = m.getReturnType();
             if (! rCls.isArray())
@@ -265,16 +277,11 @@ public final class Options {
     }
 
     private Object convertValue(String value, Class type) throws OptionsException {
-        if (type == Boolean.TYPE)
-            return Boolean.parseBoolean(value);
-        else if (type == Integer.TYPE)
-            return Integer.parseInt(value);
-        else if (type == Float.TYPE)
-            return Float.parseFloat(value);
-        else if (type == Double.TYPE)
-            return Double.parseDouble(value);
-        else if (type == String.class)
-            return value;
+        if (type == Boolean.TYPE) return Boolean.parseBoolean(value);
+        else if (type == Integer.TYPE) return Integer.parseInt(value);
+        else if (type == Float.TYPE) return Float.parseFloat(value);
+        else if (type == Double.TYPE) return Double.parseDouble(value);
+        else if (type == String.class) return value;
         else if (type.isEnum())
             try {
                 return Utils.valueOf(type, value);
