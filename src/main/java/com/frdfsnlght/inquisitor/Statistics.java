@@ -49,6 +49,7 @@ public final class Statistics {
         this.group = group;
         this.key = key;
         this.group.getStatistics().forEach(this::addStatistic);
+        this.dirty.clear();
     }
 
     public StatisticsGroup getGroup() {
