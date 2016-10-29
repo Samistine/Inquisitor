@@ -117,7 +117,7 @@ public class TemplateHandler implements WebHandler {
 
         res.setContentType("text/html; charset=utf-8");
         res.setContentLength(content.length);
-        res.setLastModified(new Date(tempFile.lastModified()));
+        //res.setLastModified(new Date(tempFile.lastModified()));
         res.flushHeaders();
         if (req.getMethod().equals("HEAD")) return;
         res.getPrintStream().write(content);
