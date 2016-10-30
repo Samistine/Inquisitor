@@ -1,7 +1,10 @@
 
         <div id="footer" class="grid_16">
             <p>
-                Powered by <a href="https://www.spigotmc.org/resources/inquistor-refresh.5821/" target="_blank">${pluginName} v${pluginVersion}</a> &copy; ${now?string("yyyy")} frdfsnlght, snarfattack
+                Page generated: ${now?string("MMM dd, yyyy HH:mm:ss z")}
+            </p>
+            <p>
+                Powered by <a href="https://samistine.com/" target="_blank">Samistine's</a> <a href="https://www.spigotmc.org/resources/inquistor-refresh.5821/" target="_blank">${pluginName} v${pluginVersion}</a> Original Authors: frdfsnlght, snarfattack
             </p>
             <p>
                 Fugue Icons &copy; 2012 Yusuke Kamiyamane. All rights reserved. Icons are available under a <a href="https://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 License</a>.
@@ -10,7 +13,7 @@
                 Other icons and images &copy; 2012 Mojang. All rights reserved.
             </p>
             <p>
-                <a href="https://code.google.com/p/inquisitor-mc/" target="_blank"><img src="../img/logo.png"/></a>
+                <a href="https://github.com/Samistine/Inquisitor/" target="_blank"><img src="../img/logo.png"/></a>
             </p>
         </div>
         <div class="clear"></div>
