@@ -633,7 +633,7 @@ public final class PlayerStats {
                 continue;
             }
             TypeMap peMap = new TypeMap();
-            peMap.put("type", effect.getType().toString());
+            peMap.put("type", effect.getType().getName());
             peMap.put("duration", effect.getDuration());
             peMap.put("amplifier", effect.getAmplifier());
             peMaps.add(peMap);
