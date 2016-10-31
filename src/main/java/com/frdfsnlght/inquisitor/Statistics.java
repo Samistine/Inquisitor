@@ -32,8 +32,8 @@ import java.util.Set;
  */
 public final class Statistics {
 
-    private StatisticsGroup group;
-    private Object key;
+    private final StatisticsGroup group;
+    private final Object key;
 
     private boolean inDB = false;
     private TypeMap stats = new TypeMap();
