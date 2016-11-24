@@ -659,32 +659,22 @@ public final class PlayerStats {
     }
 
     private static void initializeBedOwners() {
-        if (!DB.getShared()) {
-            return;
-        }
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            stmt = DB.prepare("SELECT `name` FROM "
-                    + DB.tableName(group.getName()) + " WHERE `bedServer`=?");
+        if (!DB.getShared()) return;
+
+        final String tableName = DB.tableName(group.getName());
+        try (PreparedStatement stmt
+                = DB.prepare("SELECT `name` FROM " + tableName + " WHERE `bedServer`=?")) {
+
             stmt.setString(1, Global.getServer().getServerName());
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                bedOwners.add(UUID.fromString(rs.getString("uuid")));
-                Utils.debug("added '%s' as a bed owner", rs.getString("name"));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    bedOwners.add(UUID.fromString(rs.getString("uuid")));
+                    Utils.debug("added '%s' as a bed owner", rs.getString("name"));
+                }
             }
         } catch (SQLException se) {
             Utils.warning("SQLException during bed owner initialization: %s", se.getMessage());
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException se) {
-            }
         }
     }
 

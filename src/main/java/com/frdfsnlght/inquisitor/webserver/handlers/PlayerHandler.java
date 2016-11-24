@@ -57,8 +57,6 @@ public final class PlayerHandler extends TemplateHandler {
 
     private TypeMap getPlayer(String name) {
         Set<Statistic> stats = PlayerStats.group.getStatistics();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT `").append(Statistic.MappedObjectsColumn).append('`');
@@ -68,22 +66,19 @@ public final class PlayerHandler extends TemplateHandler {
             }
             sql.append(" FROM ").append(DB.tableName(PlayerStats.group.getName()));
             sql.append(" WHERE `name`=?");
-            stmt = DB.prepare(sql.toString());
-            stmt.setString(1, name);
-            rs = stmt.executeQuery();
-            if (! rs.next()) return null;
-            TypeMap player = PlayerStats.group.loadStatistics(rs, stats);
-            if (player == null) return null;
-            player.set("name", name);
-            return player;
+            try (PreparedStatement stmt = DB.prepare(sql.toString())) {
+                stmt.setString(1, name);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (! rs.next()) return null;
+                    TypeMap player = PlayerStats.group.loadStatistics(rs, stats);
+                    if (player == null) return null;
+                    player.set("name", name);
+                    return player;
+                }
+            }
         } catch (SQLException se) {
             Utils.severe("SQLException while selecting player '%s': %s", name, se.getMessage());
             return null;
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException se) {}
         }
     }
 

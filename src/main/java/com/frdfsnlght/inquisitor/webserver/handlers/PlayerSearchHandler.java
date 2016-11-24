@@ -44,37 +44,32 @@ public final class PlayerSearchHandler extends TemplateHandler {
         playerName = playerName.trim();
         data.set("playerName", playerName);
 
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
         try {
             Connection conn = DB.connect();
             StringBuilder sql = new StringBuilder();
             sql.append("SELECT name FROM ").append(DB.tableName("players"));
             sql.append(" WHERE name LIKE ?");
             Utils.debug(sql.toString());
-            stmt = conn.prepareStatement(sql.toString());
-            stmt.setString(1, "%" + playerName + "%");
-            rs = stmt.executeQuery();
-            if (! rs.next()) {
-                renderTemplate(req, res, "resources/playerNotFound.ftl");
-                return;
-            }
-            String name = rs.getString("name");
-            if (rs.next()) {
-                // multiple rows
-                res.redirect("/players/?playerName=" + URLEncoder.encode(playerName, "US-ASCII"));
-            } else {
-                // single row
-                res.redirect("/player/" + URLEncoder.encode(name, "US-ASCII"));
+            try (PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+                stmt.setString(1, "%" + playerName + "%");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (! rs.next()) {
+                        renderTemplate(req, res, "resources/playerNotFound.ftl");
+                        return;
+                    }
+                    String name = rs.getString("name");
+                    if (rs.next()) {
+                        // multiple rows
+                        res.redirect("/players/?playerName=" + URLEncoder.encode(playerName, "US-ASCII"));
+                    } else {
+                        // single row
+                        res.redirect("/player/" + URLEncoder.encode(name, "US-ASCII"));
+                    }
+                }
             }
         } catch (SQLException se) {
             res.setStatus(500, "Internal Server Error");
             Utils.severe("SQLException while selecting players: %s", se.getMessage());
-        } finally {
-            try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-            } catch (SQLException se) {}
         }
     }
 
