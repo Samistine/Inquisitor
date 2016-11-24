@@ -42,13 +42,13 @@ import org.mcstats.Metrics;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-public class Inquisitor extends JavaPlugin {
+public final class Inquisitor extends JavaPlugin {
 
     private BlockListenerImpl blockListener;
     private PlayerListenerImpl playerListener;
     private EntityListenerImpl entityListener;
 
-    private API api = null;
+    private API api;
 
     @Override
     public void onEnable() {
@@ -115,8 +115,8 @@ public class Inquisitor extends JavaPlugin {
 
         DB.start();
 
+        /* Register Bukkit Event Listeners */
         PluginManager pm = getServer().getPluginManager();
-
         pm.registerEvents(blockListener, this);
         pm.registerEvents(playerListener, this);
         pm.registerEvents(entityListener, this);
@@ -221,9 +221,7 @@ public class Inquisitor extends JavaPlugin {
     }
 
     public API getAPI() {
-        if (api == null) {
-            api = new API();
-        }
+        if (api == null) api = new API();
         return api;
     }
 

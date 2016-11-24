@@ -534,11 +534,9 @@ public final class PlayerStats {
 
     /* End options */
     private static void savePlayerInfo(Statistics stats) {
-        String name = (String) stats.getKey();
-        Player player = Global.getServer().getPlayer(name);
-        if (player == null) {
-            return;
-        }
+        final String name = (String) stats.getKey();
+        final Player player = Global.getServer().getPlayer(name);
+        if (player == null) return;
 
         stats.set(Statistic.displayName, player.getDisplayName());
 
@@ -589,9 +587,8 @@ public final class PlayerStats {
     }
 
     private static Object encodeItemStacks(ItemStack[] stacks) {
-        if (stacks == null) {
-            return null;
-        }
+        if (stacks == null) return null;
+
         List<TypeMap> stackMaps = new ArrayList<>();
         for (int slot = 0; slot < stacks.length; slot++) {
             ItemStack stack = stacks[slot];
@@ -624,14 +621,12 @@ public final class PlayerStats {
     }
 
     private static Object encodePotionEffects(Collection<PotionEffect> effects) {
-        if (effects == null) {
-            return null;
-        }
+        if (effects == null) return null;
+
         List<TypeMap> peMaps = new ArrayList<>(effects.size());
         for (PotionEffect effect : effects) {
-            if (effect == null) {
-                continue;
-            }
+            if (effect == null) continue;
+
             TypeMap peMap = new TypeMap();
             peMap.put("type", effect.getType().getName());
             peMap.put("duration", effect.getDuration());
@@ -642,22 +637,22 @@ public final class PlayerStats {
     }
 
     private static String encodeCoords(Location loc) {
-        if (loc == null) {
-            return null;
-        }
+        if (loc == null) return null;
+
         return DOUBLE_FORMAT.format(loc.getX()) + ","
                 + DOUBLE_FORMAT.format(loc.getY()) + ","
                 + DOUBLE_FORMAT.format(loc.getZ());
     }
 
     public static double[] decodeCoords(String coords) {
-        if (coords == null) {
-            return null;
-        }
-        String[] ords = coords.split(",");
+        if (coords == null) return null;
+
+        final String[] ords = coords.split(",");
         try {
-            return new double[]{Double.parseDouble(ords[0]),
-                Double.parseDouble(ords[1]), Double.parseDouble(ords[2])};
+            return new double[]{
+                Double.parseDouble(ords[0]),
+                Double.parseDouble(ords[1]), 
+                Double.parseDouble(ords[2])};
         } catch (Throwable t) {
             return null;
         }

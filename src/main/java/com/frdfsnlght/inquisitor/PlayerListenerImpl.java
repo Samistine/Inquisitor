@@ -167,7 +167,7 @@ public final class PlayerListenerImpl implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
+        final PlayerSnapshot player = new PlayerSnapshot(event.getPlayer());
         final ItemStack itemstack = event.getItem().getItemStack();
         final int amount = itemstack.getAmount();
         final Material type = itemstack.getType();

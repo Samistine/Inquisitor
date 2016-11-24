@@ -427,8 +427,7 @@ public final class StatisticsGroup {
                 Utils.info("Deleted %s %s records", count, this);
             }
         } catch (SQLException se) {
-            Utils.severe("SQLException while deleting from %s: %s", this,
-                    se.getMessage());
+            Utils.severe("SQLException while deleting from %s: %s", this, se.getMessage());
         } finally {
             try {
                 if (rs != null) {

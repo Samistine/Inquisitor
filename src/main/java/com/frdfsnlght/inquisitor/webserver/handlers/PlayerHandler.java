@@ -32,8 +32,6 @@ import java.util.Set;
  *
  * @author frdfsnlght <frdfsnlght@gmail.com>
  */
-
-
 public final class PlayerHandler extends TemplateHandler {
 
     @Override
