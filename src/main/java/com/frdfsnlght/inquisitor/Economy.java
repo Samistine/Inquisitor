@@ -25,46 +25,81 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public final class Economy {
 
     private static boolean vaultChecked = false;
-    private static net.milkbowl.vault.economy.Economy vaultPlugin = null;
+    private static net.milkbowl.vault.economy.Economy vaultService = null;
 
-    public static synchronized boolean vaultAvailable() {
-        if (vaultPlugin != null && vaultPlugin.isEnabled()) {
-            return true;
-        }
-        if (vaultChecked) {
-            return false;
-        }
-        vaultChecked = true;
-        Plugin p = Global.getServer().getPluginManager().getPlugin("Vault");
-        if (p == null || !p.isEnabled()) {
-            return false;
-        }
-        RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global
-                .getServer()
-                .getServicesManager()
-                .getRegistration(net.milkbowl.vault.economy.Economy.class);
+    /**
+     * Check if the Vault Economy API is available.
+     * <br>
+     * This method is synchronized to prevent two threads from initializing vault simultaneously.
+     *
+     * @return true if API is available
+     */
+    private static synchronized boolean vaultAvailable() {
+        //Returns true if Vault was already aquired and Vault is still running
+        if (vaultService != null && vaultService.isEnabled()) return true;
 
-        if (rsp == null) {
-            Utils.warning("Vault didn't return a service provider for economy!");
-            return false;
+        //Return false because we already did initialization for Vault
+        if (vaultChecked) return false;
+
+        try {
+            //Get the Vault Plugin
+            Plugin p = Global.getServer().getPluginManager().getPlugin("Vault");
+
+            //If the plugin doesn't exist? Break and return false!
+            if (p == null || !p.isEnabled()) return false;
+
+            RegisteredServiceProvider<net.milkbowl.vault.economy.Economy> rsp = Global
+                    .getServer()
+                    .getServicesManager()
+                    .getRegistration(net.milkbowl.vault.economy.Economy.class);
+
+            if (rsp == null) {
+                Utils.warning("Vault didn't return a service provider for economy!");
+                return false;
+            }
+
+            net.milkbowl.vault.economy.Economy provider = rsp.getProvider();
+
+            if (provider == null) {
+                Utils.warning("Vault didn't return an economy provider!");
+                return false;
+            } else {
+                vaultService = provider;
+                Utils.info("Initialized Vault for Economy");
+                return true;
+            }
+
+        } finally {
+            vaultChecked = true;
         }
-        net.milkbowl.vault.economy.Economy plugin = rsp.getProvider();
-        if (plugin == null) {
-            Utils.warning("Vault didn't return an economy provider!");
-            return false;
-        }
-        vaultPlugin = plugin;
-        Utils.info("Initialized Vault for Economy");
-        return true;
     }
 
-    /*
-     * public static boolean canGetBalance() { return vaultAvailable(); }
+    /**
+     * Public method to check if the {@link #getBalanace(org.bukkit.entity.Player) }
+     * method will attempt to return accurate results.
+     *
+     * @return true for economy integration with Vault
+     */
+    public static boolean canGetBalance() {
+        return vaultAvailable();
+    }
+
+    /**
+     * Get the balance of the player.
+     *
+     * <br>
+     * Returns 0.0 if Vault is not installed,
+     * you don't have an economy plugin,
+     * your economy plugin doesn't support Vault,
+     * or a general error occurs.
+     *
+     * @param player
+     * @return balance
      */
     public static double getBalanace(Player player) {
         try {
             if (vaultAvailable()) {
-                return vaultPlugin.getBalance(player);
+                return vaultService.getBalance(player);
             }
         } catch (Exception ex) {
             Utils.warning("Vault or your Vault compatible economy plugin threw an exception getting player balance: %s", ex.getMessage());

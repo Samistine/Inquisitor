@@ -29,45 +29,80 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 public final class Permissions {
 
     private static boolean vaultChecked = false;
-    private static net.milkbowl.vault.permission.Permission vaultPlugin = null;
+    private static net.milkbowl.vault.permission.Permission vaultService = null;
 
-    public static synchronized boolean vaultAvailable() {
-        if (vaultPlugin != null && vaultPlugin.isEnabled()) {
-            return true;
+    /**
+     * Check if the Vault Permission API is available.
+     * <br>
+     * This method is synchronized to prevent two threads from initializing vault simultaneously.
+     *
+     * @return true if API is available
+     */
+    private static synchronized boolean vaultAvailable() {
+        //Returns true if Vault was already aquired and Vault is still running
+        if (vaultService != null && vaultService.isEnabled()) return true;
+
+        //Return false because we already did initialization for Vault
+        if (vaultChecked) return false;
+
+        try {
+            //Get the Vault Plugin
+            Plugin p = Global.getServer().getPluginManager().getPlugin("Vault");
+
+            //If the plugin doesn't exist? Break and return false!
+            if (p == null || !p.isEnabled()) return false;
+
+            RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> rsp = Global
+                    .getServer()
+                    .getServicesManager()
+                    .getRegistration(net.milkbowl.vault.permission.Permission.class);
+
+            if (rsp == null) {
+                Utils.warning("Vault didn't return a service provider for permissions!");
+                return false;
+            }
+
+            net.milkbowl.vault.permission.Permission provider = rsp.getProvider();
+
+            if (provider == null) {
+                Utils.warning("Vault didn't return a permissions provider!");
+                return false;
+            } else {
+                vaultService = provider;
+                Utils.info("Initialized Vault for Permissions");
+                return true;
+            }
+
+        } finally {
+            vaultChecked = true;
         }
-        if (vaultChecked) {
-            return false;
-        }
-        vaultChecked = true;
-        Plugin p = Global.getServer().getPluginManager().getPlugin("Vault");
-        if (p == null || !p.isEnabled()) {
-            return false;
-        }
-        RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> rsp = Global
-                .getServer()
-                .getServicesManager()
-                .getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (rsp == null) {
-            Utils.warning("Vault didn't return a service provider for permissions!");
-            return false;
-        }
-        net.milkbowl.vault.permission.Permission plugin = rsp.getProvider();
-        if (plugin == null) {
-            Utils.warning("Vault didn't return a permissions provider!");
-            return false;
-        }
-        vaultPlugin = plugin;
-        Utils.info("Initialized Vault for Permissions");
-        return true;
     }
 
-    /*
-     * public static boolean canGetGroups() { return vaultAvailable(); }
+    /**
+     * Public method to check if the {@link #getGroups(org.bukkit.entity.Player) }
+     * method will attempt to return accurate results.
+     *
+     * @return true for permissions integration with Vault
+     */
+    public static boolean canGetGroups() {
+        return vaultAvailable();
+    }
+
+    /**
+     * Get the permission groups that the player is part of.
+     *
+     * <br>
+     * Return an unmodifiable empty set if Vault is not installed,
+     * your permissions permissions plugin doesn't support Vault,
+     * or a general error occurs.
+     *
+     * @param player
+     * @return groups
      */
     public static Set<String> getGroups(Player player) {
         try {
             if (vaultAvailable()) {
-                return new HashSet<>(Arrays.asList(vaultPlugin.getPlayerGroups(player)));
+                return new HashSet<>(Arrays.asList(vaultService.getPlayerGroups(player)));
             }
         } catch (Exception ex) {
             Utils.warning("Vault threw an exception getting player groups: %s", ex.getMessage());
