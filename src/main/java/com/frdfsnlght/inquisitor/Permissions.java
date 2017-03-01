@@ -16,6 +16,7 @@
 package com.frdfsnlght.inquisitor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.bukkit.entity.Player;
@@ -71,7 +72,7 @@ public final class Permissions {
         } catch (Exception ex) {
             Utils.warning("Vault threw an exception getting player groups: %s", ex.getMessage());
         }
-        return new HashSet<>();
+        return Collections.emptySet();
     }
 
 }
