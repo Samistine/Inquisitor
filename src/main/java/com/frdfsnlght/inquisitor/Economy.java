@@ -27,7 +27,7 @@ public final class Economy {
     private static boolean vaultChecked = false;
     private static net.milkbowl.vault.economy.Economy vaultPlugin = null;
 
-    public static boolean vaultAvailable() {
+    public static synchronized boolean vaultAvailable() {
         if (vaultPlugin != null && vaultPlugin.isEnabled()) {
             return true;
         }

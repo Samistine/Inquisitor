@@ -31,7 +31,7 @@ public final class Permissions {
     private static boolean vaultChecked = false;
     private static net.milkbowl.vault.permission.Permission vaultPlugin = null;
 
-    public static boolean vaultAvailable() {
+    public static synchronized boolean vaultAvailable() {
         if (vaultPlugin != null && vaultPlugin.isEnabled()) {
             return true;
         }
