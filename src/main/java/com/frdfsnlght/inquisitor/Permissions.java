@@ -32,7 +32,7 @@ public final class Permissions {
     private static net.milkbowl.vault.permission.Permission vaultService = null;
 
     /**
-     * Check if the Vault Permission API is available.
+     * Check if the Vault Permission API is available and that it supports groups.
      * <br>
      * This method is synchronized to prevent two threads from initializing vault simultaneously.
      *
@@ -67,6 +67,9 @@ public final class Permissions {
             if (provider == null) {
                 Utils.warning("Vault didn't return a permissions provider!");
                 return false;
+            } else if (!provider.hasGroupSupport()) {
+                Utils.warning("Vault returned false on its permissions provider for hasGroupSupport.");
+                return false;
             } else {
                 vaultService = provider;
                 Utils.info("Initialized Vault for Permissions");
@@ -93,7 +96,7 @@ public final class Permissions {
      *
      * <br>
      * Return an unmodifiable empty set if Vault is not installed,
-     * your permissions permissions plugin doesn't support Vault,
+     * your permissions permissions plugin doesn't support Vault or groups,
      * or a general error occurs.
      *
      * @param player
